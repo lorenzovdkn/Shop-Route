@@ -1,13 +1,16 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout,QMainWindow
-from PyQt6.QtWidgets import QPushButton,QFileDialog,QComboBox,QLabel
+from PyQt6.QtWidgets import QPushButton,QFileDialog,QComboBox,QLabel,QListWidget,QInputDialog,QMessageBox
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QFont
+import json
+
 
 class Case(QWidget):
     
 
     def __init__(self):
+        
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
@@ -38,21 +41,68 @@ class Case(QWidget):
         category_label = QLabel("Catégorie de la case:")
         self.layout3.addWidget(category_label)
         self.category_combo = QComboBox()
-        self.category_combo.addItems( ["Légumes","Poissons","Viandes","Épicerie","Épicerie sucrée","Petit déjeuner","Fruits","Rayon frais","Crèmerie","Conserves","Apéritifs","Boissons","Articles Maison","Hygiène","Bureau","Animaux"])
+        self.loadData()
         self.layout3.addWidget(self.category_combo)
             
         # Alignement des layouts
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
 
+    def loadData(self):
+        with open('Course.json', 'r', encoding='utf-8') as f:
+            self.data = json.load(f)
+
+        # Ajouter les catégories au ComboBox
+        self.category_combo.addItems(self.data.keys())
+        
+
 class Contenu(QWidget):
     def __init__(self):
         super().__init__()
         self.layout1 = QVBoxLayout()
-        self.layout2 = QHBoxLayout()
-        
+        self.setLayout(self.layout1)
+        self.resize(800, 600) 
+        contenu = QLabel("Contenu :")
+        self.layout1.addWidget(contenu)
+        self.productList = QListWidget()
+        self.layout1.addWidget(self.productList)
+        self.addButton = QPushButton('Ajouter un produit')
+        self.layout1.addWidget(self.addButton)
+        self.addButton.clicked.connect(self.addProduct)
+        self.removeButton = QPushButton('Supprimer un produit')
+        self.layout1.addWidget(self.removeButton)
+        self.removeButton.clicked.connect(self.removeProduct)
+        self.editButton = QPushButton('Modifier un produit')
+        self.layout1.addWidget(self.editButton)
+
+
+    def addProduct(self):
+        products = QComboBox()
+        products.addItem("Lalala")
+        product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:', products, 0, False)        
+        if ok and product:
+            quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
+            if ok:
+                return {product : [quantity,False]}
+                
+
+    def removeProduct(self):
+        selectedItems = self.productList.selectedItems()
+        if not selectedItems:
+            QMessageBox.information(self, 'Erreur', 'Veuillez sélectionner un produit à supprimer.')
+            return
+
+        for item in selectedItems:
+            self.productList.takeItem(self.productList.row(item))
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     vue = Case() 
     vue.show()
+    vue1 = Contenu()
+    vue1.show()
+    
     sys.exit(app.exec())
