@@ -7,8 +7,6 @@ import json
 
 
 class Case(QWidget):
-    
-
     def __init__(self):
         
         super().__init__()
@@ -41,21 +39,20 @@ class Case(QWidget):
         category_label = QLabel("Catégorie de la case:")
         self.layout3.addWidget(category_label)
         self.category_combo = QComboBox()
-        self.loadData()
         self.layout3.addWidget(self.category_combo)
-            
         # Alignement des layouts
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-    def loadData(self):
-        with open('Course.json', 'r', encoding='utf-8') as f:
-            self.data = json.load(f)
-
-        # Ajouter les catégories au ComboBox
+    def updateProductCategory(self,dico_article : dict):
         self.category_combo.addItems(self.data.keys())
-        
+    
+    def currentCategory(self):
+        return self.category_combo.currentText()
+    
 
 class Contenu(QWidget):
+    productSignal = pyqtSignal(dict)
+    categorySignal = pyqtSignal(str)
     def __init__(self):
         super().__init__()
         self.layout1 = QVBoxLayout()
@@ -67,7 +64,7 @@ class Contenu(QWidget):
         self.layout1.addWidget(self.productList)
         self.addButton = QPushButton('Ajouter un produit')
         self.layout1.addWidget(self.addButton)
-        self.addButton.clicked.connect(self.addProduct)
+        self.addButton.clicked.connect(self.sendCategory)
         self.removeButton = QPushButton('Supprimer un produit')
         self.layout1.addWidget(self.removeButton)
         self.removeButton.clicked.connect(self.removeProduct)
@@ -75,14 +72,16 @@ class Contenu(QWidget):
         self.layout1.addWidget(self.editButton)
 
 
-    def addProduct(self):
-        products = QComboBox()
-        products.addItem("Lalala")
-        product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:', products, 0, False)        
+    def sendCategory(self):
+        category = Case.currentCategory
+        self.categorySignal.emit(category)
+
+    def addProduct(self,liste_produit : list):
+        product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',liste_produit,0,False)        
         if ok and product:
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
             if ok:
-                return {product : [quantity,False]}
+                self.productSignal.emit({product : [quantity,False]})
                 
 
     def removeProduct(self):
@@ -95,6 +94,7 @@ class Contenu(QWidget):
             self.productList.takeItem(self.productList.row(item))
 
 
+        
 
 
 
