@@ -1,10 +1,12 @@
+import json
+
 class Case:
     def __init__(self, position, articles, categorie, couleur, statut):
         self.position = position
         self.articles = articles
         self.categorie = categorie
         self.couleur = couleur
-        self.statut = statut
+        self.statut = statut # False = public ; True = private
         
     def getposition(self):
         return self.position
@@ -23,15 +25,34 @@ class Case:
         
 class Grille:
     def __init__(self, image : str, tailleGrille : tuple, verrouiller : bool):
+        self.image : str = image
+        self.tailleGrille : tuple = tailleGrille
+        self.verouiller : bool = verrouiller
+        
+    def getImage(self) -> str:
+        return self.image
+    
+    def getTailleGrille(self) -> tuple:
+        return self.tailleGrille
+    
+    def getVerouiller(self) -> bool:
+        return self.verouiller
+    
+    def setImage(self, image : str) -> None:
         self.image = image
-        self.tailleGrille = tailleGrille
-        self.verouiller = verrouiller
+        
+    def setTailleGrille(self, taille : tuple) -> None:
+        self.tailleGrille = taille
+        
+    def setVerouiller(self, state : bool) -> None:
+        self.verouiller = state
 
 class ModelMagasin:
     def __init__(self, jsonFile : (str|None) = None) -> None:
         # attributs
-        self.__listCase = [Grille, []]
-        self.__current : (tuple|None) = None
+        self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), False)
+        self.__listCase = [self.grille, []]
+        self.__current : int = 0
         
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
@@ -58,12 +79,30 @@ class ModelMagasin:
                 if nom_article in case.articles:
                     del case.articles[nom_article]
                     break
-
-
     
+    def nextArticle(self) -> int:
+        self.__current = (self.__current + 1) % len(self.__listeCase[1])
+        
+    def PreviousArticle(self) -> int:
+        self.__current = (self.__current - 1) % len(self.__listeCase[1])
+        
+    def setArticleIndex(self, index: int) -> None:
+        self.__current = index
+        
+    def changerImage(self, image : str) -> None:
+        self.grille.setImage(image)
+    
+    def getProductsJson(self) -> dict:
+        with open('liste_produits.json', 'r', encoding='utf-8') as f:
+            self.data = json.load(f)
 
-
-
+        return self.data
+    
+    def getArticlesJson(self, nomCategory : str) -> list:
+        dict_product = self.getProductsJson()
+        
+        return dict_product[nomCategory]
+        
     
     def __str__(self):
         if not self.__listCase[1]:
@@ -124,3 +163,4 @@ if __name__ == '__main__':
     
     magasin.supprimerArticle(position_vegetable, 'dentifrice')
     print(magasin)
+    
