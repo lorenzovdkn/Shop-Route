@@ -1,14 +1,11 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout,QMainWindow
-from PyQt6.QtWidgets import QPushButton,QFileDialog,QComboBox,QLabel,QListWidget,QInputDialog,QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow
+from PyQt6.QtWidgets import QPushButton, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QMessageBox
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QFont
-import json
-
 
 class Case(QWidget):
     def __init__(self):
-        
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
@@ -43,16 +40,20 @@ class Case(QWidget):
         # Alignement des layouts
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-    def updateProductCategory(self,dico_article : dict):
-        self.category_combo.addItems(self.data.keys())
+    def updateProductCategory(self, dico_article: dict):
+        self.category_combo.addItems(dico_article.keys())
     
     def currentCategory(self):
         return self.category_combo.currentText()
-    
+
 
 class Contenu(QWidget):
     productSignal = pyqtSignal(dict)
     categorySignal = pyqtSignal(str)
+    addProduct = pyqtSignal()
+    supprimerProduct = pyqtSignal(int)
+    productClickedSignal = pyqtSignal(list)
+    
     def __init__(self):
         super().__init__()
         self.layout1 = QVBoxLayout()
@@ -62,47 +63,64 @@ class Contenu(QWidget):
         self.layout1.addWidget(contenu)
         self.productList = QListWidget()
         self.layout1.addWidget(self.productList)
+        self.productList.itemClicked.connect(self.productClicked)
         self.addButton = QPushButton('Ajouter un produit')
         self.layout1.addWidget(self.addButton)
-        self.addButton.clicked.connect(self.sendCategory)
+        self.addButton.clicked.connect(self.addProduct)
         self.removeButton = QPushButton('Supprimer un produit')
         self.layout1.addWidget(self.removeButton)
         self.removeButton.clicked.connect(self.removeProduct)
         self.editButton = QPushButton('Modifier un produit')
         self.layout1.addWidget(self.editButton)
 
-
-    def sendCategory(self):
-        category = Case.currentCategory
-        self.categorySignal.emit(category)
-
-    def addProduct(self,liste_produit : list):
-        product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',liste_produit,0,False)        
+    def addProduct(self):
+        product_list = ["Produit A", "Produit B", "Produit C"]
+        product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',product_list,0,False)        
         if ok and product:
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
             if ok:
-                self.productSignal.emit({product : [quantity,False]})
+                item_text = f"{product} - Quantité: {quantity}"
+                self.productList.addItem(item_text)
+                self.productSignal.emit({product: [quantity, False]})
                 
 
-    def removeProduct(self):
-        selectedItems = self.productList.selectedItems()
-        if not selectedItems:
-            QMessageBox.information(self, 'Erreur', 'Veuillez sélectionner un produit à supprimer.')
-            return
+    def removeProduct(self,liste_product):
+        for index in range(self.productList.count()):
+            item = self.productList.item(index)
+            liste = item.text().split((" - Quantité: "))
+            liste[1] = int(liste[1])
+            print(liste)
+            if liste == liste_product  :
+                self.productList.takeItem(index)
+                break
+    
+            
+    
+    def productClicked(self, item):
+        item_text = item.text()
+        product, quantity = item_text.split(" - Quantité: ")
+        quantity = int(quantity)
+        print([product,quantity])
+        self.productClickedSignal.emit([product, quantity])
 
-        for item in selectedItems:
-            self.productList.takeItem(self.productList.row(item))
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-        
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.layout1 = QVBoxLayout(self.central_widget)
 
+        self.case_widget = Case()
+        self.contenu_widget = Contenu()
+
+        self.layout1.addWidget(self.case_widget)
+        self.layout1.addWidget(self.contenu_widget)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    vue = Case() 
-    vue.show()
-    vue1 = Contenu()
-    vue1.show()
-    
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec())
