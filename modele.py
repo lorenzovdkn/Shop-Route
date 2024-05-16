@@ -26,6 +26,8 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
+    def ajouterArticle(self, article):
+        self.articles.update(article)
     
     # setters
     def setposition(self, position : tuple):
@@ -140,7 +142,7 @@ class ModelMagasin:
     
     def changerQuant(self, position : tuple, nomArticle : str, quantite: int) -> str | None:
         for case in self.__listCase[1]: 
-            if case.getPosition() == position:
+            if case.getposition() == position:
                 if (case.getArticles()[nomArticle][1] == True ):
                     return ("Quantité verrouillée")
                 elif (quantite > 0):
@@ -152,7 +154,7 @@ class ModelMagasin:
         
     def changerVerrouillage(self, position : tuple, nomArticle : str) -> None:
         for case in self.__listCase[1]:
-            if case.getPosition() == position:
+            if case.getposition() == position:
                 if (case.getArticles()[nomArticle][1] == False ):
                     case.getArticles()[nomArticle][1] = True
                 else : 
@@ -162,7 +164,7 @@ class ModelMagasin:
             
     def modifierArticle(self, positionCase : tuple, nomArticle : str, quantite: (int|bool)) -> None:
             for case in self.__listCase[1]:
-                if case.getPosition() == positionCase:
+                if case.getposition() == positionCase:
                     if isinstance(quantite, bool):
                         self.changerVerrouillage(positionCase, nomArticle)
                     else:
