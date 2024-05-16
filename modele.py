@@ -11,12 +11,38 @@ class Case:
     def getposition(self):
         return self.position
     
+    def getArticles(self) -> dict:
+        return self.articles
+    
+    def getCategorie(self) -> str:
+        return self.categorie
+    
+    def getCouleur(self) -> str:
+        return self.couleur
+    
+    def getStatut(self) -> str:
+        return self.statut
+    
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
-    def ajouterArticle(self, article):
-        self.articles.update(article)
-
+    
+    # setters
+    def setposition(self, position : tuple):
+        self.position = position
+        
+    def setArticles(self, articles : dict):
+        self.articles = articles
+        
+    def setCategorie(self, categorie : str):
+        self.categorie = categorie
+        
+    def setCouleur(self, couleur : str):
+        self.couleur = couleur
+        
+    def setStatut(self, statut : str):
+        self.statut = statut
+    
     
     def __str__(self):
         articles_str = ', '.join([f"{key}: {value}" for key, value in self.articles.items()])
@@ -105,19 +131,46 @@ class ModelMagasin:
         
     
     def __str__(self):
-        if not self.__listCase[1]:
-            return "Aucune case dans le magasin."
+        listCases : list = []
+        if self.__listCase[1]:
+            for case in self.__listCase[1]:
+                listCases.append(case.getListe())
         
-        magasin_str = ""
-        index = 1 
+        return str(listCases)
+    
+    def changerQuant(self, position : tuple, nomArticle : str, quantite: int) -> str | None:
+        for case in self.__listCase[1]: 
+            if case.getPosition() == position:
+                if (case.getArticles()[nomArticle][1] == True ):
+                    return ("Quantité verrouillée")
+                elif (quantite > 0):
+                    case.getArticles()[nomArticle][0] = quantite
+                else : 
+                    return ("Quantité invalide")
+            else:
+                return ("Article non trouvé")
+        
+    def changerVerrouillage(self, position : tuple, nomArticle : str) -> None:
         for case in self.__listCase[1]:
-            magasin_str += f"Case {index}:\n{case}\n\n"
-            index += 1  
-        
-        return magasin_str.strip()
-
-
+            if case.getPosition() == position:
+                if (case.getArticles()[nomArticle][1] == False ):
+                    case.getArticles()[nomArticle][1] = True
+                else : 
+                    case.getArticles()[nomArticle][1] = False
+            else:
+                return ("Article non trouvé")
             
+    def modifierArticle(self, positionCase : tuple, nomArticle : str, quantite: (int|bool)) -> None:
+            for case in self.__listCase[1]:
+                if case.getPosition() == positionCase:
+                    if isinstance(quantite, bool):
+                        self.changerVerrouillage(positionCase, nomArticle)
+                    else:
+                        self.changerQuant(positionCase, nomArticle, quantite)  
+                else:
+                    return ("Article non trouvé")
+ 
+             
             
 if __name__ == '__main__':
     # Exemple 1 : Case de légumes
@@ -157,6 +210,19 @@ if __name__ == '__main__':
     magasin.ajouterArticle(position_vegetable, hygiene_articles)
     
     print("test des classes : \n")
+    print(ma_case)
+    magasin.modifierArticle((2,5), 'carotte', 18)
+
+    magasin.modifierArticle((2,5), 'carotte', True)
+    
+    print('changement verrouillage : \n')
+    print(ma_case)
+    magasin.modifierArticle((2,5), 'carotte', 10)
+    print(ma_case)
+    
+    print('changement verrouillage : \n')
+    print(ma_case)
+    magasin.modifierArticle((2,5), 'carotte', 10)
     print(ma_case)
     print("\n\n")
     print(magasin)
