@@ -51,7 +51,7 @@ class Contenu(QWidget):
     productSignal = pyqtSignal(dict)
     categorySignal = pyqtSignal(str)
     addProduct = pyqtSignal()
-    supprimerProduct = pyqtSignal(int)
+    supprimerProduct = pyqtSignal()
     productClickedSignal = pyqtSignal(list)
     
     def __init__(self):
@@ -69,12 +69,13 @@ class Contenu(QWidget):
         self.addButton.clicked.connect(self.addProduct)
         self.removeButton = QPushButton('Supprimer un produit')
         self.layout1.addWidget(self.removeButton)
-        self.removeButton.clicked.connect(self.removeProduct)
+        self.removeButton.clicked.connect(self.removeProductClicked)
         self.editButton = QPushButton('Modifier un produit')
         self.layout1.addWidget(self.editButton)
+        self.editButton.clicked.connect(self.editProductClicked)
 
     def addProduct(self):
-        product_list = ["Produit A", "Produit B", "Produit C"]
+        product_list = ["Produit A", "Produit B", "Produit C","Chaussure"]
         product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',product_list,0,False)        
         if ok and product:
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
@@ -94,14 +95,35 @@ class Contenu(QWidget):
                 self.productList.takeItem(index)
                 break
     
-            
-    
+    def removeProductClicked(self):
+        self.supprimerProduct.emit()
+
     def productClicked(self, item):
         item_text = item.text()
         product, quantity = item_text.split(" - Quantité: ")
         quantity = int(quantity)
-        print([product,quantity])
-        self.productClickedSignal.emit([product, quantity])
+        print({product : [quantity, False]})
+        self.productClickedSignal.emit({product : [quantity, False]})
+
+    def editProductClicked(self):
+        liste_product = {"Produit A": [1, False]}
+        produit = list(liste_product.keys())[0]
+        print(type(produit))  # This will print <class 'str'> since produit is a string
+
+        new_quantity, ok = QInputDialog.getInt(self, 'Modifier un produit', f'Nouvelle quantité pour {produit}:', liste_product[produit][0], 1)
+
+        if ok:
+            for index in range(self.productList.count()):
+                item = self.productList.item(index)
+                print(item.text())
+                if item.text().startswith(produit) and item.text().endswith(str(liste_product[produit][0])):                    
+                    # Correctly emit the signal with the updated product details
+                    print({produit: [new_quantity, False]})
+                    self.productSignal.emit({produit: [new_quantity, False]})
+
+                    item.setText(f"{produit} - Quantité: {new_quantity}")
+
+                    break
 
 
 class MainWindow(QMainWindow):
