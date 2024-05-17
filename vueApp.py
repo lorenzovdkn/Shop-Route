@@ -24,6 +24,8 @@ class Grid(QGraphicsView):
         self.locked : bool = True
         
         self.drawGrid()
+        self.sceneWidth = self.scene.width()
+        self.sceneHeight = self.scene.height()
 
 
     # Draw the grid
@@ -32,8 +34,8 @@ class Grid(QGraphicsView):
         pixmap = QPixmap('./plan11.jpg')
         self.image_item = QGraphicsPixmapItem(pixmap)
         self.scene.addItem(self.image_item)
-        for x in range(0, self.gridSize):
-            for y in range(0, self.gridSize):
+        for x in range(-1, self.gridSize):
+            for y in range(-1, self.gridSize):
                 self.scene.addItem(QGraphicsRectItem(x*self.gridStep + self.offset.x(), y*self.gridStep + self.offset.y(), self.gridStep, self.gridStep))
      
      # Manage the click event
@@ -56,6 +58,19 @@ class Grid(QGraphicsView):
         if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
+            if self.offset.x() <= -self.sceneWidth//10:
+                self.offset.setX(0)
+                self.dragging = False
+            if self.offset.x() + (self.gridSize * self.gridStep) > self.sceneWidth:
+                self.offset.setX((int) (self.sceneWidth - (self.gridSize * self.gridStep)))
+                self.dragging = False
+            if self.offset.y() <= -self.sceneHeight//10:
+                self.offset.setY(0)
+                self.dragging = False
+            if self.offset.y() + (self.gridSize * self.gridStep) > self.sceneHeight:
+                self.offset.setY((int) (self.sceneHeight - (self.gridSize * self.gridStep)))
+                self.dragging = False
+            
             self.lastPos = event.pos()
             self.drawGrid()
 
