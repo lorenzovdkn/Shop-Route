@@ -1,19 +1,27 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsRectItem
-from PyQt6.QtCore import Qt, QPoint
+from PyQt6.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal
+from PyQt6.QtGui import QPixmap
 
 class Grid(QGraphicsView):
+    
+    positionSignal : pyqtSignal = pyqtSignal(QPoint)
+    lockedSignal : pyqtSignal = pyqtSignal(bool)
+    sizeSignal : pyqtSignal = pyqtSignal(int)
+    stepSignal : pyqtSignal = pyqtSignal(int)
+    
     def __init__(self, parent=None):
         super(Grid, self).__init__(parent)
-        self.scene = QGraphicsScene(self)
+        
+        self.scene : QGraphicsScene = QGraphicsScene(self)
         self.setScene(self.scene)
         
-        self.gridSize = 100
-        self.gridStep = 20
-
-        self.offset = QPoint(int(-self.gridStep * (self.gridSize/2)) , (int)(-self.gridStep * (self.gridSize/2)))
-        self.lastPos = QPoint(0,0)
-        self.dragging = False
+        self.gridSize : int = 20
+        self.gridStep : int = 20
+        self.offset : QPoint = QPoint(0,0)
+        self.lastPos : QPoint = QPoint(0,0)
+        self.dragging : bool = False
+        self.locked : bool = True
         
         self.drawGrid()
 
@@ -21,23 +29,34 @@ class Grid(QGraphicsView):
     # Draw the grid
     def drawGrid(self):
         self.scene.clear()
+        pixmap = QPixmap('./plan11.jpg')
+        self.image_item = QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(self.image_item)
         for x in range(0, self.gridSize):
             for y in range(0, self.gridSize):
                 self.scene.addItem(QGraphicsRectItem(x*self.gridStep + self.offset.x(), y*self.gridStep + self.offset.y(), self.gridStep, self.gridStep))
      
-     # Enable the click move event   
+     # Manage the click event
     def mousePressEvent(self, event):
         if event.buttons() == Qt.MouseButton.LeftButton:
-            self.lastPos = event.pos()
-            self.dragging = True
+            if self.locked:
+                # Get the case who the user clicked
+                scenePos : QPoint = self.mapToScene(event.pos())
+                posX : int = (int) (scenePos.x() - self.offset.x()) // self.gridStep + 1
+                posY : int = (int) (scenePos.y() - self.offset.y()) // self.gridStep + 1
+                print(posX, posY)
+                self.positionSignal.emit(QPoint(posX, posY))
+            else:
+                # Enable grid movement
+                self.lastPos = event.pos()
+                self.dragging = True
 
     # Move the grid if a click is detected
     def mouseMoveEvent(self, event):
-        if self.dragging:
+        if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
             self.lastPos = event.pos()
-            print(self.offset.x(),self.offset.y())
             self.drawGrid()
 
     # Disable the move click event
@@ -50,7 +69,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow,self).__init__()
         self.setGeometry(100, 100, 600, 400)
-        self.setWindowTitle("Grille déplaçable avec PyQt6")
+        self.setWindowTitle("Grille")
 
         self.grid = Grid()
         self.setCentralWidget(self.grid)
