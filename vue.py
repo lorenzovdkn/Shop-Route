@@ -50,7 +50,7 @@ class Case(QWidget):
 class Contenu(QWidget):
     productSignal = pyqtSignal(dict)
     categorySignal = pyqtSignal(str)
-    addProduct = pyqtSignal()
+    addSignal = pyqtSignal()
     supprimerProduct = pyqtSignal()
     productClickedSignal = pyqtSignal(list)
     
@@ -80,8 +80,6 @@ class Contenu(QWidget):
         if ok and product:
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
             if ok:
-                item_text = f"{product} - Quantité: {quantity}"
-                self.productList.addItem(item_text)
                 self.productSignal.emit({product: [quantity, False]})
                 
 
@@ -90,8 +88,7 @@ class Contenu(QWidget):
             item = self.productList.item(index)
             liste = item.text().split((" - Quantité: "))
             liste[1] = int(liste[1])
-            print(liste)
-            if liste == liste_product  :
+            if liste == liste_product :
                 self.productList.takeItem(index)
                 break
     
@@ -108,8 +105,6 @@ class Contenu(QWidget):
     def editProductClicked(self):
         liste_product = {"Produit A": [1, False]}
         produit = list(liste_product.keys())[0]
-        print(type(produit))  # This will print <class 'str'> since produit is a string
-
         new_quantity, ok = QInputDialog.getInt(self, 'Modifier un produit', f'Nouvelle quantité pour {produit}:', liste_product[produit][0], 1)
 
         if ok:
@@ -117,7 +112,6 @@ class Contenu(QWidget):
                 item = self.productList.item(index)
                 print(item.text())
                 if item.text().startswith(produit) and item.text().endswith(str(liste_product[produit][0])):                    
-                    # Correctly emit the signal with the updated product details
                     print({produit: [new_quantity, False]})
                     self.productSignal.emit({produit: [new_quantity, False]})
 
