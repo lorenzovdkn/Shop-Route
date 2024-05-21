@@ -23,7 +23,9 @@ class Grid(QGraphicsView):
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
         self.locked : bool = False
+        self.picture : str = None
         
+        self.setPicture("./plan11.jpg")
         self.drawGrid()
         self.sceneWidth = self.scene.width()
         self.sceneHeight = self.scene.height()
@@ -37,6 +39,8 @@ class Grid(QGraphicsView):
     def isLocked(self):
         self.lockedSignal.emit(self.locked)
 
+    def setPicture(self, picture : str):
+        self.picture = picture
     # Draw the grid
     def drawGrid(self, width: int = None, height: int = None):
         
@@ -50,9 +54,10 @@ class Grid(QGraphicsView):
             self.height = height
             
         self.scene.clear()
-        pixmap = QPixmap('./plan11.jpg')
-        self.image_item = QGraphicsPixmapItem(pixmap)
-        self.scene.addItem(self.image_item)
+        if(self.picture != None):
+            pixmap = QPixmap(self.picture)
+            self.image_item = QGraphicsPixmapItem(pixmap)
+            self.scene.addItem(self.image_item)
         
         for x in range(-1, width):
             for y in range(-1, height):
