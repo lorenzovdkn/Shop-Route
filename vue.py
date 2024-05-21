@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QFont
 
@@ -9,6 +9,7 @@ class Grid(QGraphicsView):
     lockedSignal : pyqtSignal = pyqtSignal(bool)
     sizeSignal : pyqtSignal = pyqtSignal(int,int)
     stepSignal : pyqtSignal = pyqtSignal(int)
+    offsetSignal : pyqtSignal = pyqtSignal(tuple)
     
     def __init__(self, parent=None):
         super(Grid, self).__init__(parent)
@@ -22,22 +23,21 @@ class Grid(QGraphicsView):
         self.offset : QPoint = QPoint(0,0)
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
-        self.locked : bool = False
+        self.locked : bool = True
         self.picture : str = None
         
-        self.setPicture("./plan11.jpg")
         self.drawGrid()
         self.sceneWidth = self.scene.width()
         self.sceneHeight = self.scene.height()
 
     def getGridSize(self):
-        self.sizeSignal.emit(self.width,self.height)
+        return (self.width,self.height)
     
     def getGridStep(self):
-        self.stepSignal.emit(self.gridStep)
+        return self.gridStep
         
     def isLocked(self):
-        self.lockedSignal.emit(self.locked)
+        return self.locked
 
     def setPicture(self, picture : str):
         self.picture = picture
@@ -54,10 +54,13 @@ class Grid(QGraphicsView):
             self.height = height
             
         self.scene.clear()
+        
         if(self.picture != None):
             pixmap = QPixmap(self.picture)
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
+        
+        self.offsetSignal.emit((self.offset.x(), self.offset.y()))
         
         for x in range(-1, width):
             for y in range(-1, height):
@@ -121,7 +124,9 @@ class Grid(QGraphicsView):
                 self.drawGrid()
         
 class Case(QWidget):
+    
     def __init__(self):
+        
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
@@ -130,116 +135,149 @@ class Case(QWidget):
 
         self.setLayout(self.layout1)
         self.resize(800, 600) 
-        titre = QLabel("Mode Edition de plan")
+        
+        self.titre = QLabel("Mode Edition de plan")
+        self.titre_font = QFont()
+        self.titre_font.setPointSize(30)
+        self.titre.setFont(self.titre_font)
 
-        self.layout1.addWidget(titre)
-        titre_font = QFont()
-        titre_font.setPointSize(30)
-        titre.setFont(titre_font)
+        self.case = QLabel("Case")
+        self.case_font = QFont()
+        self.case_font.setPointSize(20)
+        self.case.setFont(self.case_font)
 
-        case = QLabel("Case")
-        case_font = QFont()
-        case_font.setPointSize(20)
-        case.setFont(case_font)
-        self.layout1.addWidget(case)
-        self.layout1.addLayout(self.layout2)
-        self.layout1.addLayout(self.layout3)
-        type_case_label = QLabel("Type de case:")
-        self.layout2.addWidget(type_case_label)
+        self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
         self.type_case_combo.addItems(["publique", "privé"])
-        self.layout2.addWidget(self.type_case_combo)
-        category_label = QLabel("Catégorie de la case:")
-        self.layout3.addWidget(category_label)
+        
+        self.category_label = QLabel("Catégorie de la case:")
         self.category_combo = QComboBox()
+        
+        position = (0, 0)
+        self.case_number_label = QLabel("Numéro de la case:")
+        self.case_number = QLineEdit(f"{position[0]}, {position[1]}")
+        self.case_number.setReadOnly(True)
+        
+        # layouts
+        self.layout1.addWidget(self.titre)
+        self.layout1.addWidget(self.case)
+        self.layout1.addLayout(self.layout2)
+        self.layout1.addLayout(self.layout3)
+        self.layout1.addLayout(self.layout4)
+        self.layout2.addWidget(self.type_case_label)
+        self.layout2.addWidget(self.type_case_combo)
+        self.layout3.addWidget(self.category_label)
         self.layout3.addWidget(self.category_combo)
+        self.layout4.addWidget(self.case_number_label)
+        self.layout4.addSpacing(61)
+        self.layout4.addWidget(self.case_number)
+        
         # Alignement des layouts
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-    def updateProductCategory(self, dico_article: dict):
-        self.category_combo.addItems(dico_article.keys())
+        
+        # signaux
+        #self.category_combo.currentIndexChanged.connect(self.signalChangedCategory.emit)
+        
+    # Set the display of the current case
+    def setCase(self, position : QPoint):
+        self.case_number.setText(f"{position.x()}, {position.y()}")
+    
+    def updateProductCategory(self, list_article: list):
+        self.category_combo.addItems(list_article)
     
     def currentCategory(self):
         return self.category_combo.currentText()
+    
+    def currentCase(self):
+        pass
 
 
 class Contenu(QWidget):
-    productSignal = pyqtSignal(dict)
-    categorySignal = pyqtSignal(str)
-    addProduct = pyqtSignal()
-    supprimerProduct = pyqtSignal()
-    productClickedSignal = pyqtSignal(list)
+    
+    signalAddProduct = pyqtSignal()
+    signalProduct = pyqtSignal(dict)
+    signalDeleteProduct = pyqtSignal(str)
+    signalEditProduct = pyqtSignal(list) # [nomDuProduit, Quantité]
+    signalProductClick = pyqtSignal(dict)
     
     def __init__(self):
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.setLayout(self.layout1)
         self.resize(800, 600) 
+        self.case = None
+        
         contenu = QLabel("Contenu :")
-        self.layout1.addWidget(contenu)
         self.productList = QListWidget()
-        self.layout1.addWidget(self.productList)
-        self.productList.itemClicked.connect(self.productClicked)
         self.addButton = QPushButton('Ajouter un produit')
-        self.layout1.addWidget(self.addButton)
-        self.addButton.clicked.connect(self.addProduct)
         self.removeButton = QPushButton('Supprimer un produit')
+        
+        self.layout1.addWidget(contenu)
+        self.layout1.addWidget(self.productList)
+        self.layout1.addWidget(self.addButton)
         self.layout1.addWidget(self.removeButton)
+        
+        self.productList.itemClicked.connect(self.productClicked)
+        self.productList.itemDoubleClicked.connect(self.editProductDoubleClicked)
+        self.addButton.clicked.connect(self.signalAddProduct.emit)
         self.removeButton.clicked.connect(self.removeProductClicked)
-        self.editButton = QPushButton('Modifier un produit')
-        self.layout1.addWidget(self.editButton)
-        self.editButton.clicked.connect(self.editProductClicked)
-
-    def addProduct(self):
-        product_list = ["Produit A", "Produit B", "Produit C","Chaussure"]
+      
+    def setCase(self, case : QPoint):
+        self.case = (case.x(), case.y()); 
+    
+    def getCase(self):
+        return self.case;
+        
+    # Permet d'ajouter un produit dans la liste si une catégorie est choisie
+    def addProduct(self, product_list_import : list, current_category : str):
+        if current_category == 'aucune':
+            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
+            return 
+        
+        product_list = product_list_import
         product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',product_list,0,False)        
         if ok and product:
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', 'Quantité:', 1, 1)
             if ok:
                 item_text = f"{product} - Quantité: {quantity}"
-                self.productList.addItem(item_text)
-                self.productSignal.emit({product: [quantity, False]})
+                self.signalProduct.emit({product: [quantity, False]})
                 
-
-    def removeProduct(self,liste_product):
-        for index in range(self.productList.count()):
-            item = self.productList.item(index)
-            liste = item.text().split((" - Quantité: "))
-            liste[1] = int(liste[1])
-            print(liste)
-            if liste == liste_product  :
-                self.productList.takeItem(index)
-                break
+    # Permet de mettre à jour l'affichage de la liste des produits       
+    def updateArticle(self, articles : dict | None) :
+        self.productList.clear()
+        if articles != None :
+            for key, value in articles.items():
+                item_text = f"{key} - Quantité : {value[0]}"
+                self.productList.addItem(item_text)
     
+    # Permet de supprimer un élement de la liste
     def removeProductClicked(self):
-        self.supprimerProduct.emit()
+        selected_items = self.productList.selectedItems()
+        
+        if selected_items:
+            item = selected_items[0]
+            nameSelection = item.text()
+            parts = nameSelection.split(' - ')
+            nameArticle = parts[0]
+            print(nameArticle)
+            self.signalDeleteProduct.emit(nameArticle)
 
     def productClicked(self, item):
         item_text = item.text()
-        product, quantity = item_text.split(" - Quantité: ")
+        product, quantity = item_text.split(" - Quantité : ")
         quantity = int(quantity)
         print({product : [quantity, False]})
-        self.productClickedSignal.emit({product : [quantity, False]})
+        self.signalProductClick.emit({product : [quantity, False]})
 
-    def editProductClicked(self):
-        liste_product = {"Produit A": [1, False]}
-        produit = list(liste_product.keys())[0]
-        print(type(produit))  # This will print <class 'str'> since produit is a string
-
-        new_quantity, ok = QInputDialog.getInt(self, 'Modifier un produit', f'Nouvelle quantité pour {produit}:', liste_product[produit][0], 1)
+        
+    def editProductDoubleClicked(self, item):
+        item_text = item.text()
+        product, quantity = item_text.split(" - Quantité : ")
+        
+        new_quantity, ok = QInputDialog.getInt(self, 'Modifier un produit', f'Nouvelle quantité pour {product}:', int(quantity), 1)
 
         if ok:
-            for index in range(self.productList.count()):
-                item = self.productList.item(index)
-                print(item.text())
-                if item.text().startswith(produit) and item.text().endswith(str(liste_product[produit][0])):                    
-                    # Correctly emit the signal with the updated product details
-                    print({produit: [new_quantity, False]})
-                    self.productSignal.emit({produit: [new_quantity, False]})
-
-                    item.setText(f"{produit} - Quantité: {new_quantity}")
-
-                    break
+            self.signalEditProduct.emit([product, new_quantity])
 
 
 class MainWindow(QMainWindow):
@@ -248,16 +286,15 @@ class MainWindow(QMainWindow):
         
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
-        menu_editer = menu_bar.addMenu("Editer")
-        menu_consulter = menu_bar.addMenu("Consulter")
-        menu_theme = menu_bar.addMenu("Themes")
-
+        
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.mainLayout = QHBoxLayout(self.central_widget)
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
         
+        
+        # Widget creation
         self.case_widget = Case()
         self.contenu_widget = Contenu()
         self.grid = Grid()
@@ -266,9 +303,14 @@ class MainWindow(QMainWindow):
         self.leftLayout.addWidget(self.contenu_widget)
         
         self.mainLayout.addWidget(self.grid)
+        
+        # Signals definition
+        self.grid.positionSignal.connect(self.case_widget.setCase)
+        self.grid.positionSignal.connect(self.contenu_widget.setCase)
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.showMaximized()
+    window.show()
     sys.exit(app.exec())
