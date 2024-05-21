@@ -157,9 +157,6 @@ if __name__ == '__main__':
 
     magasin.modifierArticle((2,5), 'carotte', True)
     
-    print('changement verrouillage : \n')
-    print(ma_case)
-    magasin.modifierArticle((2,5), 'carotte', 10)
-    print(ma_case)
+    
     print(magasin)
 
