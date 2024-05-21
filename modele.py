@@ -103,6 +103,10 @@ class ModelMagasin:
         
         return dict_product[nomCategory]
         
+    def getCategoryJson(self) -> list:
+        dict_product = self.getProductsJson()
+        
+        return dict_product.keys()
     
     def __str__(self):
         if not self.__listCase[1]:
