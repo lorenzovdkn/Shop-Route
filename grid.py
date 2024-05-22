@@ -4,7 +4,7 @@
 :Auteur : L. Conoir
 :Date : 05/2020
 '''
-from collections import deque
+from filepile import File
 
 class Case(object) :
     '''Classe définissant une case à partir de sa position : x, y.
@@ -45,6 +45,9 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
 
     def setLock(self,choice : bool) -> None:
         self.__locked = choice
+
+    def isLocked(self):
+        return self.__locked
         
 
 
@@ -98,6 +101,8 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
         '''Méthode publique, renvoie le contenu de la case à la position prévue.'''
         return self.__cases[position[1]][position[0]].getContenu()
 
+    def setLockGrid(self, position: tuple, choice: bool) -> None:
+        self.__cases[position[1]][position[0]].setLock(choice)
 
     def effaceContenu(self) -> None:
         '''Méthode publique, efface le contenu de toutes les cases.'''
@@ -107,14 +112,44 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     
     
     def afficheGrille(self) -> None:
-        '''Méthode publique, affiche la grille vide avec tous les murs.'''                                
-        for ligne in range(self.__hauteur) :
+        for ligne in range(self.__hauteur):
             print('+---' * self.__largeur + '+')
-            print('|   ' * self.__largeur + '|')
-            
+            for colonne in range(self.__largeur):
+                contenu: any = self.__cases[ligne][colonne].getContenu()
+                if contenu is not None:
+                    contenu = str(contenu)[0]
+                else:
+                    contenu = ' '
+                print(f'| {contenu} ', end='')
+            print('|')
         print('+---' * self.__largeur + '+\n')
 
-    
+    def parcours_min(self, depart: tuple, arrivee: tuple) -> list:
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]       
+        f = File()
+        f.enfiler(depart)
+        dico = {depart: None}
+
+        while not f.est_vide():
+            current = f.defiler()
+            if current == arrivee:
+                chemin = []
+                while current:
+                    chemin.append(current)
+                    current = dico[current]
+                chemin.reverse()
+                return chemin
+
+            for direction in directions:
+                next_case = (current[0] + direction[0], current[1] + direction[1])
+                if 0 <= next_case[0] < self.__largeur and 0 <= next_case[1] < self.__hauteur:
+                    case_obj = self.__cases[next_case[1]][next_case[0]]
+                    if not case_obj.isLocked() and next_case not in dico:
+                        f.enfiler(next_case)
+                        dico[next_case] = current
+            
+
+        return None
 
 
 
