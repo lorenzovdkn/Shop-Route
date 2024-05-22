@@ -14,8 +14,14 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
+    def getArticles(self) -> dict:
+        return self.articles
+    
     def ajouterArticle(self, article):
         self.articles.update(article)
+        
+    def setArticles(self, articles : dict) -> None:
+        self.articles = articles
 
     
     def __str__(self):
@@ -102,6 +108,33 @@ class ModelMagasin:
         dict_product = self.getProductsJson()
         
         return dict_product[nomCategory]
+        
+    def getCategoryJson(self) -> list:
+        dict_product = self.getProductsJson()
+        
+        return dict_product.keys()
+    
+    def getArticlesCase(self, caseSearch : tuple) -> dict:
+        for case in self.__listCase[1]:
+            if case.getposition() == caseSearch:
+                return case.getArticles()
+    
+    def changerQuant(self, position : tuple, nomArticle : str, quantite: int) -> str | None:
+        for case in self.__listCase[1]: 
+            if case.getposition() == position:
+                if (case.getArticles()[nomArticle][1] == True ):
+                    return ("Quantité verrouillée")
+                elif (quantite > 0):
+                    case.getArticles()[nomArticle][0] = quantite
+                else : 
+                    return ("Quantité invalide")
+            else:
+                return ("Article non trouvé")
+            
+    def clearArticle(self, position : tuple) -> None:
+        for case in self.__listCase[1]:
+            if case.getposition() == position:
+                case.setArticles({})
         
     
     def __str__(self):
