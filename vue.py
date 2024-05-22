@@ -23,7 +23,7 @@ class Grid(QGraphicsView):
         self.offset : QPoint = QPoint(0,0)
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
-        self.locked : bool = True
+        self.locked : bool = False
         self.picture : str = None
         
         self.drawGrid()
