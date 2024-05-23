@@ -35,8 +35,8 @@ class Controller:
         # Signals linked to the grid (view)
         #self.view.grid.lockedSignal.connect()
         self.view.grid.sizeSignal.connect(self.setGridSize)
-        self.view.grid.stepSignal.connect(self.setStep)
-        self.view.grid.offsetSignal.connect(self.setOffset)
+        #self.view.grid.stepSignal.connect(self.setStep)
+        #self.view.grid.offsetSignal.connect(self.setOffset)
         
         # Signaux Case
         #self.view.case_widget.signalChangedCategory.connect(self.changedCategory)
@@ -78,12 +78,12 @@ class Controller:
         self.model.ajouterArticle(self.view.contenu_widget.getCase(), article) # besoin d'ajouter la case
         self.view.contenu_widget.updateArticle(article)
         
-    def delete_article(self, articleName : str, case : tuple) -> None :
-        self.model.supprimerArticle(case, articleName) # manque la case
+    def delete_article(self, articleName : str) -> None :
+        self.model.supprimerArticle(self.view.contenu_widget.getCase(), articleName) # manque la case
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) # besoin de mettre la case
     
-    def edit_product(self, productInfo : list, case : tuple) -> None :
-        self.model.changerQuant(case, productInfo[0], productInfo[1]) # besoin de mettre la case
+    def edit_product(self, productInfo : list) -> None :
+        self.model.changerQuant(self.view.contenu_widget.getCase(), productInfo[0], productInfo[1]) # besoin de mettre la case
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) #  besoin de mettre la case
 
     def changedCategory(self):
