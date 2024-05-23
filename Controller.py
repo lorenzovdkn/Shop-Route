@@ -37,6 +37,7 @@ class Controller:
         self.view.grid.sizeSignal.connect(self.setGridSize)
         #self.view.grid.stepSignal.connect(self.setStep)
         #self.view.grid.offsetSignal.connect(self.setOffset)
+        self.view.grid.positionSignal.connect(self.setClickedCase)
         
         # Signaux Case
         #self.view.case_widget.signalChangedCategory.connect(self.changedCategory)
@@ -57,6 +58,12 @@ class Controller:
     def setPicture(self, picture : str):
         self.model.grille.setPicture(picture)
         self.view.grid.setPicture(picture)
+        
+    def setClickedCase(self, position : tuple):
+        print("clicked")
+        self.model.setCurrentCase(position)
+        self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
+        
     
     
     def addCategory(self):
@@ -70,25 +77,25 @@ class Controller:
         else:
             list_article = [] 
         self.view.contenu_widget.addProduct(list_article, category)
-        self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) # besoin de mettre la case
+        self.view.contenu_widget.updateArticle(self.model.getArticlesCase()) # besoin de mettre la case
 
         
     def add_article_modele(self, article : dict) -> None :
         # case = self.view.case_widget.
-        self.model.ajouterArticle(self.view.contenu_widget.getCase(), article) # besoin d'ajouter la case
+        self.model.ajouterArticle(article) # besoin d'ajouter la case
         self.view.contenu_widget.updateArticle(article)
         
     def delete_article(self, articleName : str) -> None :
-        self.model.supprimerArticle(self.view.contenu_widget.getCase(), articleName) # manque la case
-        self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) # besoin de mettre la case
+        self.model.supprimerArticle(articleName) # manque la case
+        self.view.contenu_widget.updateArticle(self.model.getArticlesCase()) # besoin de mettre la case
     
     def edit_product(self, productInfo : list) -> None :
-        self.model.changerQuant(self.view.contenu_widget.getCase(), productInfo[0], productInfo[1]) # besoin de mettre la case
-        self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) #  besoin de mettre la case
+        self.model.changerQuant(productInfo[0], productInfo[1]) # besoin de mettre la case
+        self.view.contenu_widget.updateArticle(self.model.getArticlesCase()) #  besoin de mettre la case
 
     def changedCategory(self):
-        self.model.clearArticle(self.view.contenu_widget.getCase()) # besoin de mettre la case
-        self.view.contenu_widget.updateArticle(self.model.getArticlesCase(self.view.contenu_widget.getCase())) # besoin de mettre la case
+        self.model.clearArticle() # besoin de mettre la case
+        self.view.contenu_widget.updateArticle(self.model.getArticlesCase()) # besoin de mettre la case
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

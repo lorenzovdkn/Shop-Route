@@ -8,7 +8,7 @@ class Case:
         self.couleur = couleur
         self.statut = statut # False = public ; True = private
         
-    def getposition(self):
+    def getPosition(self):
         return self.position
     
     def getListe(self) -> list:
@@ -52,36 +52,43 @@ class Grille:
         
     def setVerouiller(self, state : bool) -> None:
         self.verouiller = state
+        
 
 class ModelMagasin:
     def __init__(self, jsonFile : (str|None) = None) -> None:
         # attributs
         self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), False)
         self.__listCase = [self.grille, []]
-        self.__current : int = 0
+        self.currentCase : tuple = (0,0)
         
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
-        
+    
+    def setCurrentCase(self, position : tuple) -> None:
+        self.currentCase = position
+    
+    def getCurrentCase(self) -> tuple:
+        return self.currentCase
+    
     def ajouterCase(self, case : list):
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
         
-    def ajouterArticle(self, positionCase: tuple, articles: dict):
+    def ajouterArticle(self, articles: dict):
         for case in self.__listCase[1]:
-            if case.getposition() == positionCase:
+            if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
                 break
             
-    def supprimerCase(self, positionCase: tuple):
+    def supprimerCase(self):
         for case in self.__listCase[1]:
-            if case.getposition() == positionCase:
+            if case.getposition() == self.currentCase:
                 self.__listCase[1].remove(case)
                 break
     
-    def supprimerArticle(self, positionCase: tuple, nom_article: str):
+    def supprimerArticle(self, nom_article: str):
         for case in self.__listCase[1]:
-            if case.getposition() == positionCase:
+            if case.getposition() == self.currentCase:
                 if nom_article in case.articles:
                     del case.articles[nom_article]
                     break
@@ -114,14 +121,14 @@ class ModelMagasin:
         
         return dict_product.keys()
     
-    def getArticlesCase(self, caseSearch : tuple) -> dict:
+    def getArticlesCase(self) -> dict:
         for case in self.__listCase[1]:
-            if case.getposition() == caseSearch:
+            if case.getPosition() == self.currentCase:
                 return case.getArticles()
     
-    def changerQuant(self, position : tuple, nomArticle : str, quantite: int) -> str | None:
+    def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
         for case in self.__listCase[1]: 
-            if case.getposition() == position:
+            if case.getposition() == self.currentCase:
                 if (case.getArticles()[nomArticle][1] == True ):
                     return ("Quantité verrouillée")
                 elif (quantite > 0):
@@ -131,9 +138,9 @@ class ModelMagasin:
             else:
                 return ("Article non trouvé")
             
-    def clearArticle(self, position : tuple) -> None:
+    def clearArticle(self) -> None:
         for case in self.__listCase[1]:
-            if case.getposition() == position:
+            if case.getposition() == self.currentCase:
                 case.setArticles({})
         
     
