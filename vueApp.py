@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QListWidget, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QListWidgetItem
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QListWidget, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QColor
 
@@ -138,9 +138,9 @@ class Grid(QGraphicsView):
 
 
 class VueProjet(QMainWindow):
-    ajoutClicked = pyqtSignal()
-    supprimerClicked = pyqtSignal()
-    analyseClicked = pyqtSignal()
+    ajoutClicked = pyqtSignal(str) #Envoi le produit a ajouter à la liste de course
+    supprimerClicked = pyqtSignal() #Envoi le produit a delete
+    analyseClicked = pyqtSignal() #Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
 
     def __init__(self):
@@ -186,15 +186,16 @@ class VueProjet(QMainWindow):
         # Docks
         self.dock = QDockWidget('Liste des articles')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
-        self.articles_listWidget = QListWidget()
+        self.articles_listWidget = QTreeWidget()
+        self.articles_listWidget.setHeaderLabel("Sélectionner un article à ajouter à la liste de courses")
         self.dock.setWidget(self.articles_listWidget)
-        self.dock.setMaximumWidth(300)
+        self.dock.setMaximumWidth(500)
         
         self.dock2 = QDockWidget('Liste de course')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock2)
-        self.liste_course = QListWidget()
+        self.liste_course = QTreeWidget()
         self.dock2.setWidget(self.liste_course)
-        self.dock2.setMaximumWidth(300)
+        self.dock2.setMaximumWidth(500)
         
         # Add docks to dock layout
         self.dock_layout.addWidget(self.dock)
@@ -212,6 +213,7 @@ class VueProjet(QMainWindow):
         self.ajout.clicked.connect(self.ajoutClicked.emit)
         self.supprimer.clicked.connect(self.supprimerClicked.emit)
         self.analyse.clicked.connect(self.analyseClicked.emit)
+        
 
     def ouvrir(self) -> str:
         boite = QFileDialog()
@@ -220,24 +222,27 @@ class VueProjet(QMainWindow):
             self.fnameOpen.emit(chemin)
             
     
-    dico_articles = {'Légumes': 'carotte', "Légumes": 'tomate', "Hygiène": 'savon', "Hygiène": 'serviette'}
-    
-    def afficherArticles(self):
-        for categorie, produit in self.liste_articles:
-            # Ajouter la catégorie comme élément de haut niveau si elle n'existe pas déjà
-            if not any(categorie == self.articles_listWidget.item(i).text() for i in range(self.articles_listWidget.count())):
-                categorie_item = QListWidgetItem(categorie)
-                self.articles_listWidget.addItem(categorie_item)
-            # Ajouter le produit comme sous-élément
-            produit_item = QListWidgetItem(produit)
-            for i in range(self.articles_listWidget.count()):
-                if self.articles_listWidget.item(i).text() == categorie:
-                    self.articles_listWidget.item(i).addChild(produit_item)
-
+  
+    def afficherArticles(self, data):        
+            for category, products in data.items():
+                category_item = QTreeWidgetItem([category])
+                self.articles_listWidget.addTopLevelItem(category_item)
+                for product in products:
+                    product_item = QTreeWidgetItem([product])
+                    category_item.addChild(product_item)
+                    
+    def maj_vue(self):
+        pass
             
+            
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    dico_articles = {'Légumes': ['carotte', 'tomate', 'savon'], 'Produits laitiers': ['lait', 'fromage']}  
+
     fenetre = VueProjet()
+    fenetre.afficherArticles(dico_articles)
+
     fenetre.show()
     sys.exit(app.exec())
