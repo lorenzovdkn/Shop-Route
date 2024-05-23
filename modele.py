@@ -2,14 +2,17 @@ import json
 
 class Case:
     def __init__(self, position, articles, categorie, couleur, statut):
-        self.position = position
-        self.articles = articles
-        self.categorie = categorie
-        self.couleur = couleur
-        self.statut = statut # False = public ; True = private
+        self.position : tuple = position
+        self.articles : dict = articles
+        self.categorie : str = categorie
+        self.couleur : str = couleur
+        self.statut : bool = statut # False = public ; True = private
         
     def getposition(self):
         return self.position
+    
+    def getColor(self):
+        return self.couleur
     
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
@@ -30,9 +33,11 @@ class Case:
 
         
 class Grille:
-    def __init__(self, image : str, tailleGrille : tuple, verrouiller : bool):
+    def __init__(self, image : str, tailleGrille : tuple, pasFloat : float, decalage : tuple, verrouiller : bool):
         self.image : str = image
         self.tailleGrille : tuple = tailleGrille
+        self.pas : float = pasFloat
+        self.decalage : tuple = ()
         self.verouiller : bool = verrouiller
         
     def getImage(self) -> str:
@@ -53,105 +58,167 @@ class Grille:
     def setVerouiller(self, state : bool) -> None:
         self.verouiller = state
 
+import json
+
 class ModelMagasin:
-    def __init__(self, jsonFile : (str|None) = None) -> None:
+    def __init__(self, jsonFile: (str | None) = None) -> None:
         # attributs
-        self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), False)
+        self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), 1.0, (2, 5), False)
         self.__listCase = [self.grille, []]
-        self.__current : int = 0
-        
-        # si un fichier est fourni : on charge 
+        self.__current: int = 0
+
+        # si un fichier est fourni : on charge
         # if jsonFile: self.open(jsonFile)
-        
-    def ajouterCase(self, case : list):
+
+    def ajouterCase(self, case: list):
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
-        
+
     def ajouterArticle(self, positionCase: tuple, articles: dict):
         for case in self.__listCase[1]:
             if case.getposition() == positionCase:
                 case.ajouterArticle(articles)
                 break
-            
+
     def supprimerCase(self, positionCase: tuple):
         for case in self.__listCase[1]:
             if case.getposition() == positionCase:
                 self.__listCase[1].remove(case)
                 break
-    
+
     def supprimerArticle(self, positionCase: tuple, nom_article: str):
         for case in self.__listCase[1]:
             if case.getposition() == positionCase:
                 if nom_article in case.articles:
                     del case.articles[nom_article]
                     break
-    
+
     def nextArticle(self) -> int:
-        self.__current = (self.__current + 1) % len(self.__listeCase[1])
-        
+        self.__current = (self.__current + 1) % len(self.__listCase[1])
+
     def PreviousArticle(self) -> int:
-        self.__current = (self.__current - 1) % len(self.__listeCase[1])
-        
+        self.__current = (self.__current - 1) % len(self.__listCase[1])
+
     def setArticleIndex(self, index: int) -> None:
         self.__current = index
-        
-    def changerImage(self, image : str) -> None:
+
+    def changerImage(self, image: str) -> None:
         self.grille.setImage(image)
-    
+
     def getProductsJson(self) -> dict:
         with open('liste_produits.json', 'r', encoding='utf-8') as f:
             self.data = json.load(f)
 
         return self.data
-    
-    def getArticlesJson(self, nomCategory : str) -> list:
+
+    def getArticlesJson(self, nomCategory: str) -> list:
         dict_product = self.getProductsJson()
-        
         return dict_product[nomCategory]
-        
+
     def getCategoryJson(self) -> list:
         dict_product = self.getProductsJson()
-        
         return dict_product.keys()
-    
-    def getArticlesCase(self, caseSearch : tuple) -> dict:
+
+    def getArticlesCase(self, caseSearch: tuple) -> dict:
         for case in self.__listCase[1]:
             if case.getposition() == caseSearch:
                 return case.getArticles()
     
-    def changerQuant(self, position : tuple, nomArticle : str, quantite: int) -> str | None:
-        for case in self.__listCase[1]: 
+    # permet de recuperer une liste de toutes les positions est couleur de produit utilise pour la grille
+    def getPositionColor(self):
+        return [(case.getposition(), case.getColor()) for case in self.__listCase[1]]
+
+    def changerQuant(self, position: tuple, nomArticle: str, quantite: int) -> str | None:
+        for case in self.__listCase[1]:
             if case.getposition() == position:
-                if (case.getArticles()[nomArticle][1] == True ):
+                if case.getArticles()[nomArticle][1] == True:
                     return ("Quantité verrouillée")
-                elif (quantite > 0):
+                elif quantite > 0:
                     case.getArticles()[nomArticle][0] = quantite
-                else : 
+                else:
                     return ("Quantité invalide")
             else:
                 return ("Article non trouvé")
             
-    def clearArticle(self, position : tuple) -> None:
+    def load(self, filename: str):
+        # Lire le fichier JSON
+        with open(filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # Charger la grille
+        grille_data = data["grille"]
+        self.grille = Grille(
+            grille_data["image"],
+            tuple(grille_data["tailleGrille"]),
+            grille_data["pas"],
+            tuple(grille_data["decalage"]),
+            grille_data["verrouiller"]
+        )
+
+        # Charger les cases
+        self.__listCase[1] = []
+        for case_data in data["cases"]:
+            case = Case(
+                tuple(case_data["position"]),
+                case_data["articles"],
+                case_data["categorie"],
+                case_data["couleur"],
+                case_data["statut"]
+            )
+            self.__listCase[1].append(case)
+
+    def save(self, filename: str):
+        # Convertir la grille en dictionnaire
+        grille_dict = {
+            "image": self.grille.getImage(),
+            "tailleGrille": self.grille.getTailleGrille(),
+            "pas": self.grille.pas,
+            "decalage": self.grille.decalage,
+            "verrouiller": self.grille.getVerouiller()
+        }
+        
+        # Convertir les cases en liste de dictionnaires
+        cases_dict = []
+        for case in self.__listCase[1]:
+            case_dict = {
+                "position": case.getposition(),
+                "articles": case.getArticles(),
+                "categorie": case.categorie,
+                "couleur": case.couleur,
+                "statut": case.statut
+            }
+            cases_dict.append(case_dict)
+        
+        # Créer la structure JSON finale
+        data = {
+            "grille": grille_dict,
+            "cases": cases_dict
+        }
+        
+        # Sauvegarder dans un fichier JSON
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
+    def clearArticle(self, position: tuple) -> None:
         for case in self.__listCase[1]:
             if case.getposition() == position:
                 case.setArticles({})
-        
-    
+
     def __str__(self):
         if not self.__listCase[1]:
             return "Aucune case dans le magasin."
-        
+
         magasin_str = ""
-        index = 1 
+        index = 1
         for case in self.__listCase[1]:
             magasin_str += f"Case {index}:\n{case}\n\n"
-            index += 1  
-        
+            index += 1
+
         return magasin_str.strip()
+    
+    
 
 
-            
-            
 if __name__ == '__main__':
     # Exemple 1 : Case de légumes
     position_vegetable = (2, 5)
@@ -196,4 +263,8 @@ if __name__ == '__main__':
     
     magasin.supprimerArticle(position_vegetable, 'dentifrice')
     print(magasin)
+    
+    # Sauvegarder l'état du magasin dans un fichier JSON
+    magasin.save('etat_magasin.json')
+
     
