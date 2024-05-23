@@ -1,0 +1,54 @@
+{
+    "grille": {
+        "image": "/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg",
+        "tailleGrille": [
+            10,
+            20
+        ],
+        "verrouiller": "False"
+    },
+    "cases": [
+        {
+            "position": [
+                2,
+                5
+            ],
+            "articles": {
+                "carotte": [
+                    8,
+                    "False"
+                ],
+                "tomate": [
+                    12,
+                    "True"
+                ],
+                "savon": [
+                    10,
+                    "True"
+                ]
+            },
+            "categorie": "Légumes",
+            "couleur": "vert",
+            "statut": "True"
+        },
+        {
+            "position": [
+                0,
+                1
+            ],
+            "articles": {
+                "lait": [
+                    6,
+                    "False"
+                ],
+                "fromage": [
+                    15,
+                    "True"
+                ]
+            },
+            "categorie": "Produits laitiers",
+            "couleur": "blanc",
+            "statut": "False"
+        }
+    ]
+}
