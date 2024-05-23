@@ -60,7 +60,6 @@ class Controller:
         self.view.grid.setPicture(picture)
         
     def setClickedCase(self, position : tuple):
-        print("clicked")
         self.model.setCurrentCase(position)
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
         

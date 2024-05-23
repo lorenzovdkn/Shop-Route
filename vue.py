@@ -325,15 +325,18 @@ class MainWindow(QMainWindow):
         self.bouton = QPushButton("Verrouiller", self)
         self.bouton.clicked.connect(self.grid.lockGrid)
         
+        self.statusLabel = QLabel("Veuillez positionner la grille - Status : Non verrouillée")
        
         
         self.rightBottomLayout = QHBoxLayout()  
+        self.rightBottomLayout.addWidget(self.statusLabel)
         self.rightBottomLayout.addStretch()
         self.rightBottomLayout.addWidget(self.bouton)
+        self.rightBottomLayout.addSpacing(15)
         
         self.rightLayout = QVBoxLayout()
-        self.rightLayout.addWidget(self.grid)
         self.rightLayout.addLayout(self.rightBottomLayout)
+        self.rightLayout.addWidget(self.grid)
         self.mainLayout.addLayout(self.rightLayout)
 
         self.leftLayout.addWidget(self.case_widget)

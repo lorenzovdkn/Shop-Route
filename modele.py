@@ -2,12 +2,15 @@ import json
 
 class Case:
     def __init__(self, position, articles, categorie, couleur, statut):
-        self.position = position
-        self.articles = articles
-        self.categorie = categorie
-        self.couleur = couleur
-        self.statut = statut # False = public ; True = private
+        self.position : tuple = position
+        self.articles : dict = articles
+        self.categorie : str = categorie
+        self.couleur :str = couleur
+        self.statut : bool = statut # False = public ; True = private
         
+    def getColor(self) -> str:
+        return self.couleur
+    
     def getPosition(self):
         return self.position
     
@@ -60,9 +63,13 @@ class ModelMagasin:
         self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), False)
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
+        self.category : str = None
         
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
+    
+    def setCategory(self, category : str) -> None:
+        self.selectedCategory = category
     
     def setCurrentCase(self, position : tuple) -> None:
         self.currentCase = position
@@ -74,7 +81,16 @@ class ModelMagasin:
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
         
+    def getAllPosition(self) -> list:
+        positionList = []
+        for case in self.__listCase[1]:
+            positionList.append(case.getPosition())
+        return positionList
+        
     def ajouterArticle(self, articles: dict):
+        positionList = self.getAllPosition()
+        if(self.currentCase not in positionList):
+            self.ajouterCase([self.currentCase, {}, None, "white", False])
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
@@ -82,13 +98,13 @@ class ModelMagasin:
             
     def supprimerCase(self):
         for case in self.__listCase[1]:
-            if case.getposition() == self.currentCase:
+            if case.getPosition() == self.currentCase:
                 self.__listCase[1].remove(case)
                 break
     
     def supprimerArticle(self, nom_article: str):
         for case in self.__listCase[1]:
-            if case.getposition() == self.currentCase:
+            if case.getPosition() == self.currentCase:
                 if nom_article in case.articles:
                     del case.articles[nom_article]
                     break
@@ -126,9 +142,16 @@ class ModelMagasin:
             if case.getPosition() == self.currentCase:
                 return case.getArticles()
     
+    # Get all of the case who are not empty     
+    def getUsedCase(self) -> dict:
+        caseList : dict = {} 
+        for case in self.__listCase[1]:
+            caseList[case.getPosition()] = case.getColor()
+            
+    
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
         for case in self.__listCase[1]: 
-            if case.getposition() == self.currentCase:
+            if case.getPosition() == self.currentCase:
                 if (case.getArticles()[nomArticle][1] == True ):
                     return ("Quantité verrouillée")
                 elif (quantite > 0):
@@ -140,7 +163,7 @@ class ModelMagasin:
             
     def clearArticle(self) -> None:
         for case in self.__listCase[1]:
-            if case.getposition() == self.currentCase:
+            if case.getPosition() == self.currentCase:
                 case.setArticles({})
         
     
@@ -194,13 +217,13 @@ if __name__ == '__main__':
     
     magasin.ajouterCase(list_case)
     magasin.ajouterCase(list_case2)
-    magasin.ajouterArticle(position_vegetable, hygiene_articles)
+    magasin.ajouterArticle(hygiene_articles)
     
     print("test des classes : \n")
     print(ma_case)
     print("\n\n")
     print(magasin)
-    
-    magasin.supprimerArticle(position_vegetable, 'dentifrice')
+    magasin.getUsedCase()
+    #magasin.supprimerArticle(position_vegetable, 'dentifrice')
     print(magasin)
     
