@@ -26,7 +26,6 @@ class Case:
     def setArticles(self, articles : dict) -> None:
         self.articles = articles
 
-    
     def __str__(self):
         articles_str = ', '.join([f"{key}: {value}" for key, value in self.articles.items()])
         return f"Position: {self.position}\nArticles: {articles_str}\nCatégorie: {self.categorie}\nCouleur: {self.couleur}\nStatut: {self.statut}"
@@ -37,7 +36,7 @@ class Grille:
         self.image : str = image
         self.tailleGrille : tuple = tailleGrille
         self.pas : float = pasFloat
-        self.decalage : tuple = ()
+        self.decalage : tuple = decalage
         self.verouiller : bool = verrouiller
         
     def getImage(self) -> str:
@@ -58,17 +57,21 @@ class Grille:
     def setVerouiller(self, state : bool) -> None:
         self.verouiller = state
 
-import json
 
 class ModelMagasin:
     def __init__(self, jsonFile: (str | None) = None) -> None:
-        # attributs
+        # Attributs de la grille et des cases
         self.grille = Grille('/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg', (10, 20), 1.0, (2, 5), False)
         self.__listCase = [self.grille, []]
         self.__current: int = 0
 
-        # si un fichier est fourni : on charge
-        # if jsonFile: self.open(jsonFile)
+        # Informations sur le projet
+        self.data_projet = {
+            "nom_projet": "Nom du projet",
+            "auteurs": "",
+            "nom_magasin": "Nom du magasin",
+            "date": "2024-05-23"  # Exemple de date
+        }
 
     def ajouterCase(self, case: list):
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
@@ -124,21 +127,20 @@ class ModelMagasin:
             if case.getposition() == caseSearch:
                 return case.getArticles()
     
-    # permet de recuperer une liste de toutes les positions est couleur de produit utilise pour la grille
     def getPositionColor(self):
         return [(case.getposition(), case.getColor()) for case in self.__listCase[1]]
 
     def changerQuant(self, position: tuple, nomArticle: str, quantite: int) -> str | None:
         for case in self.__listCase[1]:
             if case.getposition() == position:
-                if case.getArticles()[nomArticle][1] == True:
-                    return ("Quantité verrouillée")
+                if case.getArticles().get(nomArticle, [0, False])[1] == True:
+                    return "Quantité verrouillée"
                 elif quantite > 0:
                     case.getArticles()[nomArticle][0] = quantite
                 else:
-                    return ("Quantité invalide")
+                    return "Quantité invalide"
             else:
-                return ("Article non trouvé")
+                return "Article non trouvé"
             
     def load(self, filename: str):
         # Lire le fichier JSON
@@ -191,6 +193,7 @@ class ModelMagasin:
         
         # Créer la structure JSON finale
         data = {
+            "data_projet": self.data_projet,
             "grille": grille_dict,
             "cases": cases_dict
         }
@@ -215,8 +218,6 @@ class ModelMagasin:
             index += 1
 
         return magasin_str.strip()
-    
-    
 
 
 if __name__ == '__main__':
@@ -265,6 +266,6 @@ if __name__ == '__main__':
     print(magasin)
     
     # Sauvegarder l'état du magasin dans un fichier JSON
-    magasin.save('etat_magasin.json')
+    magasin.save('/saves/etat_magasin.json')
 
     
