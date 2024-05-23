@@ -26,6 +26,7 @@ class Grid(QGraphicsView):
         self.locked : bool = False
         self.picture : str = "./plan11.jpg"
         self.grid : dict = {}
+
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
