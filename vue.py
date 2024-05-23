@@ -1,7 +1,7 @@
-import sys
+import sys,time
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
-from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
 class Grid(QGraphicsView):
     
@@ -23,8 +23,9 @@ class Grid(QGraphicsView):
         self.offset : QPoint = QPoint(0,0)
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
-        self.locked : bool = True
-        self.picture : str = None
+        self.locked : bool = False
+        self.picture : str = "./plan11.jpg"
+        self.grid : dict = {}
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -41,8 +42,12 @@ class Grid(QGraphicsView):
 
     def setPicture(self, picture : str):
         self.picture = picture
+    
+    def setGrid(self, grid: dict):
+        self.grid = grid
+        
     # Draw the grid
-    def drawGrid(self, width: int = None, height: int = None):
+    def drawGrid(self, width: int = None, height: int = None, step : float = None, position_dict : dict = None):
         
         if(width is None):
             width = self.width
@@ -52,19 +57,27 @@ class Grid(QGraphicsView):
             height = self.height
         else:
             self.height = height
+        if(step is None):
+            step = self.gridStep
+        if(position_dict is None):
+            position_dict = self.grid
             
         self.scene.clear()
         
         if(self.picture != None):
             pixmap = QPixmap(self.picture)
             self.image_item = QGraphicsPixmapItem(pixmap)
-            self.scene.addItem(self.image_item)
+            self.scene.addItem(self.image_item)    
         
-        self.offsetSignal.emit((self.offset.x(), self.offset.y()))
+        position_dict = {(1,3): "red", (2,5): "blue"}
         
         for x in range(-1, width):
             for y in range(-1, height):
-                rect : QGraphicsRectItem = QGraphicsRectItem(x*self.gridStep + self.offset.x(), y*self.gridStep + self.offset.y(), self.gridStep, self.gridStep)
+                rect : QGraphicsRectItem = QGraphicsRectItem(x*step + self.offset.x(), y*step + self.offset.y(), step, step)
+                if((x,y) in [position for position in position_dict.keys()]):
+                    color = QColor(position_dict.get((x,y)))
+                    color.setAlpha(100)
+                    rect.setBrush(color)
                 self.scene.addItem(rect)
                 
      # Manage the click event
@@ -114,16 +127,27 @@ class Grid(QGraphicsView):
         if event.angleDelta().y() < 0 and not self.locked:
             if(self.gridStep > 10):
                 event.ignore()
-                self.gridStep = self.gridStep - 0.25
+                self.gridStep = self.gridStep - 1
                 self.drawGrid()
+                time.sleep(0.01)
         # Increase the size of the grid
         elif event.angleDelta().y() > 0 and not self.locked:
             if(self.gridStep < 50):
                 event.ignore()
-                self.gridStep = self.gridStep + 0.25
+                self.gridStep = self.gridStep + 1
                 self.drawGrid()
+                time.sleep(0.01)
+    
+    def lockGrid(self):
+        if(not self.locked):
+            self.locked = True
+            self.sizeSignal.emit(self.width, self.height)
+            self.stepSignal.emit(self.gridStep)
+            self.offsetSignal.emit((self.offset.x(), self.offset.y()))
         
 class Case(QWidget):
+    
+    signalChangedCategory : pyqtSignal = pyqtSignal()
     
     def __init__(self):
         
@@ -176,7 +200,7 @@ class Case(QWidget):
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
         # signaux
-        #self.category_combo.currentIndexChanged.connect(self.signalChangedCategory.emit)
+        self.category_combo.currentIndexChanged.connect(self.signalChangedCategory.emit)
         
     # Set the display of the current case
     def setCase(self, position : QPoint):
@@ -224,9 +248,6 @@ class Contenu(QWidget):
       
     def setCase(self, case : QPoint):
         self.case = (case.x(), case.y()); 
-    
-    def getCase(self):
-        return self.case;
         
     # Permet d'ajouter un produit dans la liste si une catégorie est choisie
     def addProduct(self, product_list_import : list, current_category : str):
@@ -293,20 +314,33 @@ class MainWindow(QMainWindow):
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
         
-        
-        # Widget creation
+         # Widget creation
         self.case_widget = Case()
         self.contenu_widget = Contenu()
         self.grid = Grid()
+        
+        self.bouton = QPushButton("Verrouiller", self)
+        self.bouton.clicked.connect(self.grid.lockGrid)
+        
+       
+        
+        self.rightBottomLayout = QHBoxLayout()  
+        self.rightBottomLayout.addStretch()
+        self.rightBottomLayout.addWidget(self.bouton)
+        
+        self.rightLayout = QVBoxLayout()
+        self.rightLayout.addWidget(self.grid)
+        self.rightLayout.addLayout(self.rightBottomLayout)
+        self.mainLayout.addLayout(self.rightLayout)
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
         
-        self.mainLayout.addWidget(self.grid)
+        #self.mainLayout.addWidget(self.grid)
         
         # Signals definition
-        self.grid.positionSignal.connect(self.case_widget.setCase)
-        self.grid.positionSignal.connect(self.contenu_widget.setCase)
+        #self.grid.positionSignal.connect(self.case_widget.setCase)
+        #self.grid.positionSignal.connect(self.contenu_widget.setCase)
         
 
 if __name__ == "__main__":
