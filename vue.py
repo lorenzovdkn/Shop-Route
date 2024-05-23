@@ -5,7 +5,7 @@ from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
 class Grid(QGraphicsView):
     
-    positionSignal : pyqtSignal = pyqtSignal(QPoint)
+    positionSignal : pyqtSignal = pyqtSignal(tuple)
     lockedSignal : pyqtSignal = pyqtSignal(bool)
     sizeSignal : pyqtSignal = pyqtSignal(int,int)
     stepSignal : pyqtSignal = pyqtSignal(int)
@@ -68,9 +68,9 @@ class Grid(QGraphicsView):
         if(self.picture != None):
             pixmap = QPixmap(self.picture)
             self.image_item = QGraphicsPixmapItem(pixmap)
-            self.scene.addItem(self.image_item)    
+            self.scene.addItem(self.image_item)   
         
-        position_dict = {(1,3): "red", (2,5): "blue"}
+        position_dict = {(1,3): "red", (2,5): "blue", (6,9): "green"}
         
         for x in range(-1, width):
             for y in range(-1, height):
@@ -90,7 +90,7 @@ class Grid(QGraphicsView):
                 posX : int = (int) ((scenePos.x() - self.offset.x()) // self.gridStep + 1)
                 posY : int = (int) ((scenePos.y() - self.offset.y()) // self.gridStep + 1)
                 print(posX, posY)
-                self.positionSignal.emit(QPoint(posX, posY))
+                self.positionSignal.emit((posX, posY))
             else:
                 # Enable grid movement
                 self.lastPos = event.pos()
@@ -204,8 +204,8 @@ class Case(QWidget):
         self.category_combo.currentIndexChanged.connect(self.signalChangedCategory.emit)
         
     # Set the display of the current case
-    def setCase(self, position : QPoint):
-        self.case_number.setText(f"{position.x()}, {position.y()}")
+    def setCase(self, position : tuple):
+        self.case_number.setText(f"{position[0]}, {position[1]}")
     
     def updateProductCategory(self, list_article: list):
         self.category_combo.addItems(list_article)
@@ -247,8 +247,11 @@ class Contenu(QWidget):
         self.addButton.clicked.connect(self.signalAddProduct.emit)
         self.removeButton.clicked.connect(self.removeProductClicked)
       
-    def setCase(self, case : QPoint):
-        self.case = (case.x(), case.y()); 
+    def setCase(self, case : tuple):
+        self.case = case
+    
+    def getCase(self):
+        return self.case
         
     # Permet d'ajouter un produit dans la liste si une catégorie est choisie
     def addProduct(self, product_list_import : list, current_category : str):
@@ -323,15 +326,18 @@ class MainWindow(QMainWindow):
         self.bouton = QPushButton("Verrouiller", self)
         self.bouton.clicked.connect(self.grid.lockGrid)
         
+        self.statusLabel = QLabel("Veuillez positionner la grille - Status : Non verrouillée")
        
         
         self.rightBottomLayout = QHBoxLayout()  
+        self.rightBottomLayout.addWidget(self.statusLabel)
         self.rightBottomLayout.addStretch()
         self.rightBottomLayout.addWidget(self.bouton)
+        self.rightBottomLayout.addSpacing(15)
         
         self.rightLayout = QVBoxLayout()
-        self.rightLayout.addWidget(self.grid)
         self.rightLayout.addLayout(self.rightBottomLayout)
+        self.rightLayout.addWidget(self.grid)
         self.mainLayout.addLayout(self.rightLayout)
 
         self.leftLayout.addWidget(self.case_widget)
@@ -340,8 +346,8 @@ class MainWindow(QMainWindow):
         #self.mainLayout.addWidget(self.grid)
         
         # Signals definition
-        #self.grid.positionSignal.connect(self.case_widget.setCase)
-        #self.grid.positionSignal.connect(self.contenu_widget.setCase)
+        self.grid.positionSignal.connect(self.case_widget.setCase)
+        self.grid.positionSignal.connect(self.contenu_widget.setCase)
         
 
 if __name__ == "__main__":
