@@ -7,6 +7,8 @@ class Case:
         self.categorie : str = categorie
         self.couleur :str = couleur
         self.statut : bool = statut # False = public ; True = private
+        if(articles is not {}):
+            statut = False
         
     def getColor(self) -> str:
         return self.couleur
@@ -25,6 +27,9 @@ class Case:
         
     def setArticles(self, articles : dict) -> None:
         self.articles = articles
+    
+    def setCategory(self, category : str) -> None:
+        self.categorie = category
 
     
     def __str__(self):
@@ -69,7 +74,10 @@ class ModelMagasin:
         # if jsonFile: self.open(jsonFile)
     
     def setCategory(self, category : str) -> None:
-        self.selectedCategory = category
+        for case in self.__listCase[1]:
+            if case.getPosition() == self.currentCase:
+                case.setCategory(category)
+                break
     
     def setCurrentCase(self, position : tuple) -> None:
         self.currentCase = position
@@ -90,7 +98,7 @@ class ModelMagasin:
     def ajouterArticle(self, articles: dict):
         positionList = self.getAllPosition()
         if(self.currentCase not in positionList):
-            self.ajouterCase([self.currentCase, {}, None, "white", False])
+            self.ajouterCase([self.currentCase, {}, None, "blue", False])
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
@@ -147,6 +155,7 @@ class ModelMagasin:
         caseList : dict = {} 
         for case in self.__listCase[1]:
             caseList[case.getPosition()] = case.getColor()
+        return caseList
             
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
@@ -205,7 +214,7 @@ if __name__ == '__main__':
     position_hygiene = (0, 0)
     hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
     hygiene_category = 'Produits d\'hygiène'
-    hygiene_color = 'bleu'
+    hygiene_color = 'blue'
     hygiene_status = False
 
     ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)

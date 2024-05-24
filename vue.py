@@ -1,5 +1,5 @@
 import sys,time
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QSpinBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
@@ -18,15 +18,14 @@ class Grid(QGraphicsView):
         self.setScene(self.scene)
         
         self.gridStep : int = 20
-        self.width : int =  50
-        self.height : int = 50
+        self.width : int =  25
+        self.height : int = 25
         self.offset : QPoint = QPoint(0,0)
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
         self.locked : bool = False
         self.picture : str = "./plan11.jpg"
         self.grid : dict = {}
-
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -70,10 +69,10 @@ class Grid(QGraphicsView):
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)   
         
-        position_dict = {(1,3): "red", (2,5): "blue", (6,9): "green"}
+        #position_dict = {(1,3): "red", (2,5): "blue", (6,9): "green"}
         
-        for x in range(-1, width):
-            for y in range(-1, height):
+        for x in range(0, width):
+            for y in range(0, height):
                 rect : QGraphicsRectItem = QGraphicsRectItem(x*step + self.offset.x(), y*step + self.offset.y(), step, step)
                 if((x,y) in [position for position in position_dict.keys()]):
                     color = QColor(position_dict.get((x,y)))
@@ -148,7 +147,7 @@ class Grid(QGraphicsView):
         
 class Case(QWidget):
     
-    signalChangedCategory : pyqtSignal = pyqtSignal()
+    signalChangedCategory : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
         
@@ -201,7 +200,7 @@ class Case(QWidget):
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
         # signaux
-        self.category_combo.currentIndexChanged.connect(self.signalChangedCategory.emit)
+        self.category_combo.currentIndexChanged.connect(self.categoryChanged)
         
     # Set the display of the current case
     def setCase(self, position : tuple):
@@ -210,11 +209,12 @@ class Case(QWidget):
     def updateProductCategory(self, list_article: list):
         self.category_combo.addItems(list_article)
     
-    def currentCategory(self):
+    def getCategory(self):
         return self.category_combo.currentText()
     
-    def currentCase(self):
-        pass
+    # Send the new category
+    def categoryChanged(self):
+        self.signalChangedCategory.emit(self.category_combo.currentText())
 
 
 class Contenu(QWidget):
@@ -323,15 +323,29 @@ class MainWindow(QMainWindow):
         self.contenu_widget = Contenu()
         self.grid = Grid()
         
-        self.bouton = QPushButton("Verrouiller", self)
-        self.bouton.clicked.connect(self.grid.lockGrid)
-        
-        self.statusLabel = QLabel("Veuillez positionner la grille - Status : Non verrouillée")
-       
+        self.widthEdit : QSpinBox = QSpinBox()
+        self.widthEdit.setFixedWidth(50)
+        self.widthEdit.setMinimum(10)
+        self.widthEdit.setMaximum(60)
+        self.widthEdit.setValue(self.grid.width)
+        self.widthEdit.textChanged.connect(self.modifiedSize)
+        self.label : QLabel = QLabel("x")
+        self.heightEdit : QSpinBox = QSpinBox()
+        self.heightEdit.setFixedWidth(50)
+        self.heightEdit.setMinimum(10)
+        self.heightEdit.setMaximum(60)
+        self.heightEdit.setValue(self.grid.height)
+        self.heightEdit.textChanged.connect(self.modifiedSize)
+        self.statusLabel : QLabel = QLabel("Veuillez positionner la grille - Statut : Non verrouillée")
+        self.bouton : QPushButton = QPushButton("Verrouiller", self)
+        self.bouton.clicked.connect(self.lockGrid)       
         
         self.rightBottomLayout = QHBoxLayout()  
-        self.rightBottomLayout.addWidget(self.statusLabel)
         self.rightBottomLayout.addStretch()
+        self.rightBottomLayout.addWidget(self.widthEdit)
+        self.rightBottomLayout.addWidget(self.label)
+        self.rightBottomLayout.addWidget(self.heightEdit)
+        self.rightBottomLayout.addWidget(self.statusLabel)
         self.rightBottomLayout.addWidget(self.bouton)
         self.rightBottomLayout.addSpacing(15)
         
@@ -349,6 +363,18 @@ class MainWindow(QMainWindow):
         self.grid.positionSignal.connect(self.case_widget.setCase)
         self.grid.positionSignal.connect(self.contenu_widget.setCase)
         
+    def modifiedSize(self):
+        if(self.widthEdit.text() != self.grid.width and self.widthEdit.value() is not None):
+            self.grid.drawGrid(int(self.widthEdit.value()))
+        if(self.heightEdit.text() != self.grid.height and self.heightEdit.value() is not None):
+            self.grid.drawGrid(None,int(self.heightEdit.value()))
+        
+    def lockGrid(self):
+        self.bouton.setDisabled(True)
+        self.widthEdit.setDisabled(True)
+        self.heightEdit.setDisabled(True)
+        self.grid.lockGrid()
+        self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
