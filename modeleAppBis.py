@@ -109,7 +109,6 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
             for x in range(self.__largeur):
                 self.__cases[y][x].setContenu(None)
     
-    
     def afficheGrille(self) -> None:
         '''Cette méthode affiche la grille et le contenu des cases'''
         for ligne in range(self.__hauteur):
@@ -127,13 +126,13 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     #Fait le parcours min entre un point de depart et son arrivée
     def parcours_min(self, depart: tuple, arrivee: tuple) -> list:
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]       
-        f = File()
+        f = File(100)
         f.enfiler(depart)
         dico = {depart: None}
 
         while not f.est_vide():
             current = f.defiler()
-            if current == arrivee:
+            if current == (arrivee[0]+1,arrivee[1]) or current == (arrivee[0]-1,arrivee[1]) or current == (arrivee[0],arrivee[1]+1) or current == (arrivee[0],arrivee[1]-1):
                 chemin = []
                 # Revenir en arrière depuis la destination jusqu'à la position de départ
                 while current:
@@ -141,6 +140,7 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
                     self.setContenu(current,"X")
                     current = dico[current]
                 chemin.reverse() # Inverser le chemin pour l'avoir de la position de départ à la destination
+                print(f"Chemin trouvé : {chemin}")
                 return chemin
 
             for direction in directions:
@@ -156,11 +156,10 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     
 class Modele(object):
 
-
     def __init__(self,position,largeur,hauteur) -> None:
         self.position = position
         self.grille = Grille(largeur,hauteur)
-        self.liste_course = ["savon","fromage"]
+        self.liste_course = ["savon","fromage","pomme"]
         self.information = {}
         self.lireJson("InformationApp.json")
 
@@ -223,12 +222,13 @@ class Modele(object):
         return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
     
     #Liste des coordonées des produits du plus proche au plus loin de la position initial 
-    def chemin_priorite(self) -> list:
+    def article_priorite(self) -> list:
         cases = self.getCasesProducts()
         def distance_case(case):
             return self.distance(self.position, case["position"])
         sorted_cases = sorted(cases,key=distance_case)
         produits_tries = []
+        print(sorted_cases)
         for case in sorted_cases:
             for produit, (quantite, x) in case["articles"].items():
                 #Si le produit est dans la liste de course et que la quantite en stock est supérieur à 0 alors on peut ajouter dans le chemin
@@ -237,35 +237,30 @@ class Modele(object):
                     if tuple(case["position"]) not in produits_tries:
                         produits_tries.append(tuple(case["position"])) 
 
-        return produits_tries
+        return produits_tries 
 
-    #TEST
-    def definir_chemin(self): 
-        chemin = self.chemin_priorite()
-        for i in chemin:
-            position = self.position
-            self.grille.parcours_min(position,i)
-            position = i
-    
-    # Definir toutes les coordonnées du chemin pour faire les courses
+    # Retourne toutes les coordonnées du chemin pour faire les courses
     def coordonneeChemin(self) -> list:
-        chemin = self.chemin_priorite()
+        chemin = self.article_priorite()
+        self.casesLock()
         liste = []
-        for i in chemin:
-            position = self.position
-            liste.append(self.grille.parcours_min(position,i))
-            position = i
+        position = self.position
+        for destination in chemin:
+            final = self.grille.parcours_min(position, destination)
+            position = final[-1]
         return liste
-            
-
-        
+    
+    # Definir les cases que le client ne peut pas accéder
+    def casesLock(self) -> list:
+        cases = self.getCasesProducts()
+        for case in cases:
+            if case["statut"] == "True" or case["statut"] == "Produit":
+                self.grille.setLockGrid(tuple(case["position"]),True)
+            if case["statut"] == "Produit":
+                self.grille.getCases()[case["position"][1]][case["position"][0]].setContenu("Produit")
 
 ########### Exemple d'utilisation ######################################################################################
 if __name__ == '__main__' :
-    
     modele = Modele((0,0),8,8)
-    print(modele.getArticle())
     print(modele.coordonneeChemin())
     modele.grille.afficheGrille()
-    
-    

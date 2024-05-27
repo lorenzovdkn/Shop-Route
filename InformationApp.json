@@ -29,7 +29,7 @@
             },
             "categorie": "Légumes",
             "couleur": "vert",
-            "statut": "True"
+            "statut": "Produit"
         },
         {
             "position": [
@@ -48,7 +48,37 @@
             },
             "categorie": "Produits laitiers",
             "couleur": "blanc",
-            "statut": "False"
+            "statut": "Produit"
+        },
+        {
+            "position": [
+                6,
+                6
+            ],
+            "articles": {
+                "pomme": [
+                    6,
+                    "False"
+                ],
+                "banane": [
+                    15,
+                    "True"
+                ]
+            },
+            "categorie": "Fruit",
+            "couleur": "blanc",
+            "statut": "Produit"
+        }
+        ,
+        {
+            "position" : [
+                2,
+                2
+            ],
+            "articles" : {},
+            "categorie":"",
+            "couleur":"",
+            "statut": "True"
         }
     ]
 }
