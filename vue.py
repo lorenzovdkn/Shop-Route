@@ -1,120 +1,12 @@
-import sys
+import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QScrollArea, QDateEdit, QGridLayout, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate
 from PyQt6.QtGui import QPixmap, QFont
 
-class Grid(QGraphicsView):
-    
-    positionSignal : pyqtSignal = pyqtSignal(QPoint)
-    lockedSignal : pyqtSignal = pyqtSignal(bool)
-    sizeSignal : pyqtSignal = pyqtSignal(int,int)
-    stepSignal : pyqtSignal = pyqtSignal(int)
-    offsetSignal : pyqtSignal = pyqtSignal(tuple)
-    
-    def __init__(self, parent=None):
-        super(Grid, self).__init__(parent)
-        
-        self.scene : QGraphicsScene = QGraphicsScene(self)
-        self.setScene(self.scene)
-        
-        self.gridStep : int = 20
-        self.width : int =  50
-        self.height : int = 50
-        self.offset : QPoint = QPoint(0,0)
-        self.lastPos : QPoint = QPoint(0,0)
-        self.dragging : bool = False
-        self.locked : bool = False
-        self.picture : str = None
-        
-        self.drawGrid()
-        self.sceneWidth = self.scene.width()
-        self.sceneHeight = self.scene.height()
-
-    def getGridSize(self):
-        return (self.width,self.height)
-    
-    def getGridStep(self):
-        return self.gridStep
-        
-    def isLocked(self):
-        return self.locked
-
-    def setPicture(self, picture : str):
-        self.picture = picture
-    
-    def drawGrid(self, width: int = None, height: int = None):
-        if(width is None):
-            width = self.width
-        else:
-            self.width = width
-        if(height is None):
-            height = self.height
-        else:
-            self.height = height
-            
-        self.scene.clear()
-        
-        if(self.picture != None):
-            pixmap = QPixmap(self.picture)
-            self.image_item = QGraphicsPixmapItem(pixmap)
-            self.scene.addItem(self.image_item)
-        
-        self.offsetSignal.emit((self.offset.x(), self.offset.y()))
-        
-        for x in range(-1, width):
-            for y in range(-1, height):
-                rect : QGraphicsRectItem = QGraphicsRectItem(x*self.gridStep + self.offset.x(), y*self.gridStep + self.offset.y(), self.gridStep, self.gridStep)
-                self.scene.addItem(rect)
-
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            if self.locked:
-                scenePos : QPoint = self.mapToScene(event.pos())
-                posX : int = (int) ((scenePos.x() - self.offset.x()) // self.gridStep + 1)
-                posY : int = (int) ((scenePos.y() - self.offset.y()) // self.gridStep + 1)
-                self.positionSignal.emit(QPoint(posX, posY))
-            else:
-                self.lastPos = event.pos()
-                self.dragging = True
-
-    def mouseMoveEvent(self, event):
-        if self.dragging and not self.locked:
-            delta = event.pos() - self.lastPos
-            self.offset += delta
-            if self.offset.x() <= -self.sceneWidth//10:
-                self.offset.setX(0)
-                self.dragging = False
-            if self.offset.x() + (self.width * self.gridStep) > self.sceneWidth + self.sceneWidth//10:
-                self.offset.setX((int) (self.sceneWidth - (self.width * self.gridStep)))
-                self.dragging = False
-            if self.offset.y() <= -self.sceneHeight//10:
-                self.offset.setY(0)
-                self.dragging = False
-            if self.offset.y() + (self.height * self.gridStep) > self.sceneHeight + self.sceneHeight//10:
-                self.offset.setY((int) (self.sceneHeight - (self.height * self.gridStep)))
-                self.dragging = False
-            
-            self.lastPos = event.pos()
-            self.drawGrid()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.dragging = False
-    
-    def wheelEvent(self, event):
-        if event.angleDelta().y() < 0 and not self.locked:
-            if(self.gridStep > 10):
-                event.ignore()
-                self.gridStep = self.gridStep - 0.25
-                self.drawGrid()
-        elif event.angleDelta().y() > 0 and not self.locked:
-            if(self.gridStep < 50):
-                event.ignore()
-                self.gridStep = self.gridStep + 0.25
-                self.drawGrid()
-
 class Case(QWidget):
+    
+    signalChangedCategory : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
         super().__init__()
@@ -163,14 +55,23 @@ class Case(QWidget):
         
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
-    def setCase(self, position : QPoint):
-        self.case_number.setText(f"{position.x()}, {position.y()}")
+        # signaux
+        self.category_combo.currentIndexChanged.connect(self.categoryChanged)
+        
+    # Set the display of the current case
+    def setCase(self, position : tuple):
+        self.case_number.setText(f"{position[0]}, {position[1]}")
     
     def updateProductCategory(self, list_article: list):
         self.category_combo.addItems(list_article)
     
-    def currentCategory(self):
+    def getCategory(self):
         return self.category_combo.currentText()
+    
+    # Send the new category
+    def categoryChanged(self):
+        self.signalChangedCategory.emit(self.category_combo.currentText())
+
 
 class Contenu(QWidget):
     
@@ -202,8 +103,8 @@ class Contenu(QWidget):
         self.addButton.clicked.connect(self.signalAddProduct.emit)
         self.removeButton.clicked.connect(self.removeProductClicked)
       
-    def setCase(self, case : QPoint):
-        self.case = (case.x(), case.y())
+    def setCase(self, case : tuple):
+        self.case = case
     
     def getCase(self):
         return self.case
@@ -438,12 +339,12 @@ class MainWindow(QMainWindow):
         
         self.case_widget = Case()
         self.contenu_widget = Contenu()
-        self.grid = Grid()
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
         
-        self.mainLayout.addWidget(self.grid)
+        self.gridWidget = grid.GridWidget()
+        self.mainLayout.addWidget(self.gridWidget)
         
         self.grid.positionSignal.connect(self.case_widget.setCase)
         self.grid.positionSignal.connect(self.contenu_widget.setCase)
