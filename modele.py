@@ -1,4 +1,4 @@
-import json
+import json, os
 
 class Case:
     def __init__(self, position, articles, categorie, couleur, statut):
@@ -170,6 +170,7 @@ class ModelMagasin:
             self.__listCase[1].append(case)
 
     def save(self, filename: str):
+        
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -206,6 +207,23 @@ class ModelMagasin:
         for case in self.__listCase[1]:
             if case.getposition() == position:
                 case.setArticles({})
+                
+    def RemoveSave(filepath: str):
+        """
+        Removes the specified file if it exists.
+
+        Parameters:
+        filepath (str): The path to the file to be removed.
+
+        Returns:
+        str: A message indicating whether the file was successfully removed or if it didn't exist.
+        """
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return f"File '{filepath}' has been removed."
+        else:
+            return f"File '{filepath}' does not exist."
+        
 
     def __str__(self):
         if not self.__listCase[1]:
@@ -221,7 +239,7 @@ class ModelMagasin:
 
 
 if __name__ == '__main__':
-    # Exemple 1 : Case de légumes
+    # Example instances
     position_vegetable = (2, 5)
     vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
     vegetable_category = 'Légumes'
@@ -230,7 +248,6 @@ if __name__ == '__main__':
 
     vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
 
-    # Exemple 2 : Case de produits laitiers
     position_dairy = (1, 3)
     dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
     dairy_category = 'Produits laitiers'
@@ -239,7 +256,6 @@ if __name__ == '__main__':
 
     dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
 
-    # Exemple 3 : Case de produits d'hygiène
     position_hygiene = (0, 0)
     hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
     hygiene_category = 'Produits d\'hygiène'
@@ -265,7 +281,6 @@ if __name__ == '__main__':
     magasin.supprimerArticle(position_vegetable, 'dentifrice')
     print(magasin)
     
-    # Sauvegarder l'état du magasin dans un fichier JSON
-    magasin.save('/saves/etat_magasin.json')
-
+    # Save the state of the store to a JSON file
+    magasin.save('saves/etat_magasin.json')
     

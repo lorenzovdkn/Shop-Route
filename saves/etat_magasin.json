@@ -1,4 +1,10 @@
 {
+    "data_projet": {
+        "nom_projet": "Nom du projet",
+        "auteurs": "",
+        "nom_magasin": "Nom du magasin",
+        "date": "2024-05-23"
+    },
     "grille": {
         "image": "/media/lorenzo/Disque secondaire/BUT-IUT/BUT1/SAE/SAE_C12/sae_C12/plan11.jpg",
         "tailleGrille": [
@@ -6,7 +12,10 @@
             20
         ],
         "pas": 1.0,
-        "decalage": [],
+        "decalage": [
+            2,
+            5
+        ],
         "verrouiller": false
     },
     "cases": [
