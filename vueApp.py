@@ -10,6 +10,7 @@ class Grid(QGraphicsView):
     sizeSignal = pyqtSignal(int, int)
     stepSignal = pyqtSignal(int)
     offsetSignal = pyqtSignal(tuple)
+    
 
     def __init__(self, parent=None):
         super(Grid, self).__init__(parent)
@@ -147,6 +148,7 @@ class Grid(QGraphicsView):
             self.sizeSignal.emit(self.width, self.height)
             self.stepSignal.emit(self.gridStep)
             self.offsetSignal.emit((self.offset.x(), self.offset.y()))
+            
 
 
 class VueProjet(QMainWindow):
@@ -275,11 +277,13 @@ class VueProjet(QMainWindow):
             None
         """
         item = self.articles_listWidget.currentItem()
-        if item:
+        if item and item.parent() is not None:
             product_name = item.text(0)
-            self.dico_courses.append(product_name)
-            course_item = QTreeWidgetItem([product_name])
-            self.liste_course.addTopLevelItem(course_item)
+            self.ajoutClicked.emit(product_name)
+            if product_name not in self.dico_courses:
+                self.dico_courses.append(product_name)
+                course_item = QTreeWidgetItem([product_name])
+                self.liste_course.addTopLevelItem(course_item)
         
     def supprimer_article(self):
         """
