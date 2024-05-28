@@ -346,8 +346,8 @@ class MainWindow(QMainWindow):
         self.gridWidget = grid.GridWidget()
         self.mainLayout.addWidget(self.gridWidget)
         
-        self.grid.positionSignal.connect(self.case_widget.setCase)
-        self.grid.positionSignal.connect(self.contenu_widget.setCase)
+        self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
+        self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
 
         # Ajouter la barre de menu
         action_ouvrir = menu_fichier.addAction("Ouvrir")
