@@ -63,12 +63,11 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     afficheGrilleVide() : affiche la grille (sans contenu) avec tous les murs
     affichePlateau() : affiche le plateau (avec contenu et murs éventuels des cases)'''
     
-    def __init__(self, largeur: int, hauteur: int):
+    def __init__(self,largeur,hauteur):
         self.__largeur: int = largeur
         self.__hauteur: int = hauteur
         self.__cases: list = self.__creationGrille()
-        
-        
+    
     def __creationGrille(self) -> list:
         '''Méthode privée, crée et renvoie la liste des cases'''
         liste_cases: list = []
@@ -132,6 +131,7 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
 
         while not f.est_vide():
             current = f.defiler()
+            #On prend le produit si le client se situe en haut,à droite,à gauche,ou en bas
             if current == (arrivee[0]+1,arrivee[1]) or current == (arrivee[0]-1,arrivee[1]) or current == (arrivee[0],arrivee[1]+1) or current == (arrivee[0],arrivee[1]-1):
                 chemin = []
                 # Revenir en arrière depuis la destination jusqu'à la position de départ
@@ -156,12 +156,13 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     
 class Modele(object):
 
-    def __init__(self,position,largeur,hauteur) -> None:
-        self.position = position
-        self.grille = Grille(largeur,hauteur)
-        self.liste_course = ["savon","fromage","pomme"]
+    def __init__(self,position) -> None:
         self.information = {}
         self.lireJson("InformationApp.json")
+        self.position = position
+        self.grille = Grille(self.setLargeur(),self.setHauteur())
+        self.liste_course = []
+        
 
     #Méthode pour lire les données d'un fichier JSON et les stocker dans l'objet
     def lireJson(self,fichier : str ):
@@ -177,6 +178,12 @@ class Modele(object):
     def deleteProduct(self,produit):
         if produit in self.liste_course:
             self.liste_course.remove(produit)
+
+    def setLargeur(self):
+        return self.information["grille"]["tailleGrille"][0]
+    
+    def setHauteur(self):
+        return self.information["grille"]["tailleGrille"][1]
 
     #Retourne la liste de course
     def getListeCourse(self):
@@ -247,6 +254,8 @@ class Modele(object):
         position = self.position
         for destination in chemin:
             final = self.grille.parcours_min(position, destination)
+            for i in final:
+                liste.append(i)
             position = final[-1]
         return liste
     
@@ -261,6 +270,6 @@ class Modele(object):
 
 ########### Exemple d'utilisation ######################################################################################
 if __name__ == '__main__' :
-    modele = Modele((0,0),8,8)
+    modele = Modele((0,0))
     print(modele.coordonneeChemin())
     modele.grille.afficheGrille()
