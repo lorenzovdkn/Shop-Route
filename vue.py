@@ -2,7 +2,7 @@ import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QScrollArea, QDateEdit, QGridLayout, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate
-from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
 class Case(QWidget):
     

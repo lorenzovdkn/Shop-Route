@@ -38,7 +38,7 @@ class Case:
 
         
 class Grille:
-    def __init__(self, image : str, tailleGrille : tuple, pasFloat : float, decalage : tuple, verrouiller : bool):
+    def __init__(self, image : str, tailleGrille : tuple, verrouiller : bool):
         self.image : str = image
         self.tailleGrille : tuple = tailleGrille
         self.pas : float = pasFloat
@@ -62,7 +62,7 @@ class Grille:
         
     def setVerouiller(self, state : bool) -> None:
         self.verouiller = state
-
+        
 class ModelMagasin:
     def __init__(self, jsonFile: (str | None) = None) -> None:
         # Attributs de la grille et des cases
@@ -78,7 +78,6 @@ class ModelMagasin:
             "nom_magasin": "Nom du magasin",
             "date": "2024-05-23"  # Exemple de date
         }
-        
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
     
@@ -95,9 +94,6 @@ class ModelMagasin:
         return self.currentCase
     
     def ajouterCase(self, case : list):
-        self.__current: int = 0
-
-    def ajouterCase(self, case: list):
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
         
@@ -186,49 +182,6 @@ class ModelMagasin:
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.setArticles({})
-            
-    def load(self, filename: str):
-        # Lire le fichier JSON
-        with open(filename, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        # Charger la grille
-        grille_data = data["grille"]
-        self.grille = Grille(
-            grille_data["image"],
-            tuple(grille_data["tailleGrille"]),
-            grille_data["pas"],
-            tuple(grille_data["decalage"]),
-            grille_data["verrouiller"]
-        )
-
-        # Charger les cases
-        self.__listCase[1] = []
-        for case_data in data["cases"]:
-            case = Case(
-                tuple(case_data["position"]),
-                case_data["articles"],
-                case_data["categorie"],
-                case_data["couleur"],
-                case_data["statut"]
-            )
-            self.__listCase[1].append(case)
-
-    def save(self, filename: str):
-        # Convertir la grille en dictionnaire
-        grille_dict = {
-            "image": self.grille.getImage(),
-            "tailleGrille": self.grille.getTailleGrille(),
-            "pas": self.grille.pas,
-            "decalage": self.grille.decalage,
-            "verrouiller": self.grille.getVerouiller()
-        }
-        
-        # Convertir les cases en liste de dictionnaires
-        cases_dict = []
-        for case in self.__listCase[1]:
-            if case.getPosition() == self.currentCase:
-                case.setArticles({})
                 
     def RemoveSave(filepath: str):
         """
@@ -246,7 +199,6 @@ class ModelMagasin:
         else:
             return f"File '{filepath}' does not exist."
         
-
     def __str__(self):
         if not self.__listCase[1]:
             return "Aucune case dans le magasin."
@@ -258,51 +210,48 @@ class ModelMagasin:
             index += 1  
         
         return magasin_str.strip()
-
-
-if __name__ == '__main__':
-    # Example instances
-    position_vegetable = (2, 5)
-    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
-    vegetable_category = 'Légumes'
-    vegetable_color = 'vert'
-    vegetable_status = True
-
-    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-
-    position_dairy = (1, 3)
-    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
-    dairy_category = 'Produits laitiers'
-    dairy_color = 'blanc'
-    dairy_status = False
-
-    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-
-    position_hygiene = (0, 0)
-    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
-    hygiene_category = 'Produits d\'hygiène'
-    hygiene_color = 'bleu'
-    hygiene_status = False
-
-    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-    list_case = ma_case.getListe()
-    list_case2 = ma_case2.getListe()
-    print(list_case)
-    magasin = ModelMagasin()
-    
-    magasin.ajouterCase(list_case)
-    magasin.ajouterCase(list_case2)
-    magasin.ajouterArticle(position_vegetable, hygiene_articles)
-    
-    print("test des classes : \n")
-    print(ma_case)
-    print("\n\n")
-    print(magasin)
-    
-    magasin.supprimerArticle(position_vegetable, 'dentifrice')
-    print(magasin)
-    
-    # Save the state of the store to a JSON file
-    magasin.save('saves/etat_magasin.json')
-    
+            
+            
+#if __name__ == '__main__':
+#    # Exemple 1 : Case de légumes
+#    position_vegetable = (2, 5)
+#    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
+#    vegetable_category = 'Légumes'
+#    vegetable_color = 'vert'
+#    vegetable_status = True
+#
+#    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#
+#    # Exemple 2 : Case de produits laitiers
+#    position_dairy = (1, 3)
+#    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
+#    dairy_category = 'Produits laitiers'
+#    dairy_color = 'blanc'
+#    dairy_status = False
+#
+#    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#
+#    # Exemple 3 : Case de produits d'hygiène
+#    position_hygiene = (0, 0)
+#    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
+#    hygiene_category = 'Produits d\'hygiène'
+#    hygiene_color = 'blue'
+#    hygiene_status = False
+#
+#    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#    list_case = ma_case.getListe()
+#    list_case2 = ma_case2.getListe()
+#    magasin = ModelMagasin()
+#    
+#    magasin.ajouterCase(list_case)
+#    magasin.ajouterCase(list_case2)
+#    magasin.ajouterArticle(hygiene_articles)
+#    
+#    print("test des classes : \n")
+#    print(ma_case)
+#    print("\n\n")
+#    print(magasin)
+#    magasin.getUsedCase()
+#    #magasin.supprimerArticle(position_vegetable, 'dentifrice')
+#    print(magasin)
