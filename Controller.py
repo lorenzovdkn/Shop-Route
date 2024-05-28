@@ -28,10 +28,10 @@ class Controller:
         
         # Signals linked to the grid (view)
         #self.view.grid.lockedSignal.connect()
-        self.view.grid.sizeSignal.connect(self.setGridSize)
+        self.view.gridWidget.grid.sizeSignal.connect(self.setGridSize)
         #self.view.grid.stepSignal.connect(self.setStep)
         #self.view.grid.offsetSignal.connect(self.setOffset)
-        self.view.grid.positionSignal.connect(self.setClickedCase)
+        self.view.gridWidget.grid.positionSignal.connect(self.setClickedCase)
         
         # Signaux Case
         self.view.case_widget.signalChangedCategory.connect(self.changedCategory)
@@ -51,7 +51,7 @@ class Controller:
     # Define the picture
     def setPicture(self, picture : str):
         self.model.grille.setPicture(picture)
-        self.view.grid.setPicture(picture)
+        self.view.gridWidget.grid.setPicture(picture)
     
     # Define the selected case    
     def setClickedCase(self, position : tuple):
@@ -77,7 +77,7 @@ class Controller:
     def add_article_modele(self, article : dict) -> None :
         self.model.ajouterArticle(article)
         self.view.contenu_widget.updateArticle(article)
-        self.view.grid.drawGrid(None,None,None,self.model.getUsedCase())
+        self.view.gridWidget.grid.drawGrid(None,None,None,self.model.getUsedCase())
         
     def delete_article(self, articleName : str) -> None :
         self.model.supprimerArticle(articleName) # manque la case
@@ -91,7 +91,7 @@ class Controller:
         self.model.clearArticle()
         self.model.setCategory(category)
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
-        self.view.grid.drawGrid(None,None,None,self.model.getUsedCase())
+        self.view.gridWidget.grid.drawGrid(None,None,None,self.model.getUsedCase())
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
