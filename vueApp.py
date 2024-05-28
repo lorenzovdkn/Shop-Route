@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QListWidget, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QColor
 
@@ -134,18 +134,19 @@ class Grid(QGraphicsView):
             self.sizeSignal.emit(self.width, self.height)
             self.stepSignal.emit(self.gridStep)
             self.offsetSignal.emit((self.offset.x(), self.offset.y()))
-            
 
 
 class VueProjet(QMainWindow):
-    ajoutClicked = pyqtSignal(str) #Envoi le produit a ajouter à la liste de course
-    supprimerClicked = pyqtSignal() #Envoi le produit a delete
-    analyseClicked = pyqtSignal() #Lance l'affichage du parcours
+    ajoutClicked = pyqtSignal(str) # Envoi le produit a ajouter à la liste de course
+    supprimerClicked = pyqtSignal() # Envoi le produit a delete
+    analyseClicked = pyqtSignal(list) # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         
+        self.dico_courses = []
+
         self.setWindowTitle('Parcours de courses')
         self.setGeometry(100, 100, 800, 600)
         
@@ -187,13 +188,14 @@ class VueProjet(QMainWindow):
         self.dock = QDockWidget('Liste des articles')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.articles_listWidget = QTreeWidget()
-        self.articles_listWidget.setHeaderLabel("Sélectionner un article à ajouter à la liste de courses")
+        self.articles_listWidget.setHeaderLabel("Ajouter à la liste de courses")
         self.dock.setWidget(self.articles_listWidget)
         self.dock.setMaximumWidth(500)
         
         self.dock2 = QDockWidget('Liste de course')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock2)
         self.liste_course = QTreeWidget()
+        self.liste_course.setHeaderLabel("Votre liste de course")
         self.dock2.setWidget(self.liste_course)
         self.dock2.setMaximumWidth(500)
         
@@ -210,32 +212,48 @@ class VueProjet(QMainWindow):
         self.dock_container.addLayout(self.button_layout)
         
         # Connect signals
-        self.ajout.clicked.connect(self.ajoutClicked.emit)
-        self.supprimer.clicked.connect(self.supprimerClicked.emit)
-        self.analyse.clicked.connect(self.analyseClicked.emit)
-        
+        self.ajout.clicked.connect(self.ajouter_article)
+        self.supprimer.clicked.connect(self.supprimer_article)
+        self.analyse.clicked.connect(self.parcours)
 
     def ouvrir(self) -> str:
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(directory=sys.path[0])
         if validation:
             self.fnameOpen.emit(chemin)
-            
-    
-  
-    def afficherArticles(self, data):        
-            for category, products in data.items():
-                category_item = QTreeWidgetItem([category])
-                self.articles_listWidget.addTopLevelItem(category_item)
-                for product in products:
-                    product_item = QTreeWidgetItem([product])
-                    category_item.addChild(product_item)
-                    
-    def maj_vue(self):
-        pass
-            
-            
 
+    def afficherArticles(self, data):        
+        for category, products in data.items():
+            category_item = QTreeWidgetItem([category])
+            self.articles_listWidget.addTopLevelItem(category_item)
+            for product in products:
+                product_item = QTreeWidgetItem([product])
+                category_item.addChild(product_item)
+                
+
+    def ajouter_article(self):
+        item = self.articles_listWidget.currentItem()
+        if item:
+            product_name = item.text(0)
+            self.dico_courses.append(product_name)
+            course_item = QTreeWidgetItem([product_name])
+            self.liste_course.addTopLevelItem(course_item)
+        
+    def supprimer_article(self):
+        item = self.liste_course.currentItem()
+        if item:
+            product_name = item.text(0)
+            self.dico_courses.remove(product_name)
+            root = self.liste_course.invisibleRootItem()
+            for i in range(root.childCount()):
+                if root.child(i) == item:
+                    root.removeChild(item)
+                    return
+
+    def parcours(self):
+        print(self.dico_courses)
+        self.analyseClicked.emit(self.dico_courses)
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
