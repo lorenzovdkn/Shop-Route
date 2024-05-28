@@ -26,6 +26,7 @@ class Grid(QGraphicsView):
         self.locked = True
         self.picture = "./plan11.jpg"
         self.grid = {}
+        self.parcours = []
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -45,7 +46,11 @@ class Grid(QGraphicsView):
     
     def setGrid(self, grid):
         self.grid = grid
-        
+
+    def setParcours(self, parcours):
+        self.parcours = parcours
+        self.drawGrid()
+
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
         if width is None:
             width = self.width
@@ -67,12 +72,20 @@ class Grid(QGraphicsView):
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
         
-        position_dict = {(1, 3): "red", (2, 5): "blue"}
+        if self.parcours:
+            for pos in self.parcours:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
+                    color = QColor("purple")
+                    color.setAlpha(100)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
         
         for x in range(-1, width):
             for y in range(-1, height):
                 rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
-                if (x, y) in [position for position in position_dict.keys()]:
+                if (x, y) in position_dict:
                     color = QColor(position_dict.get((x, y)))
                     color.setAlpha(100)
                     rect.setBrush(color)
@@ -139,13 +152,14 @@ class Grid(QGraphicsView):
 class VueProjet(QMainWindow):
     ajoutClicked = pyqtSignal(str) # Envoi le produit a ajouter à la liste de course
     supprimerClicked = pyqtSignal() # Envoi le produit a delete
-    analyseClicked = pyqtSignal(list) # Lance l'affichage du parcours
+    analyseClicked = pyqtSignal() # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         
         self.dico_courses = []
+        self.parcours = []
 
         self.setWindowTitle('Parcours de courses')
         self.setGeometry(100, 100, 800, 600)
@@ -214,15 +228,30 @@ class VueProjet(QMainWindow):
         # Connect signals
         self.ajout.clicked.connect(self.ajouter_article)
         self.supprimer.clicked.connect(self.supprimer_article)
-        self.analyse.clicked.connect(self.parcours)
+        self.analyse.clicked.connect(self.analyseParcours)  # Corrected signal connection
 
     def ouvrir(self) -> str:
+        """
+        Opens a file dialog and emits the selected file path if a file is chosen.
+
+        Returns:
+            str: The selected file path if a file is chosen, otherwise None.
+        """
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(directory=sys.path[0])
         if validation:
             self.fnameOpen.emit(chemin)
 
     def afficherArticles(self, data):        
+        """
+        Display the articles in a QTreeWidget.
+
+        Parameters:
+            data (dict): A dictionary containing categories as keys and a list of products as values.
+
+        Returns:
+            None
+        """
         for category, products in data.items():
             category_item = QTreeWidgetItem([category])
             self.articles_listWidget.addTopLevelItem(category_item)
@@ -232,6 +261,19 @@ class VueProjet(QMainWindow):
                 
 
     def ajouter_article(self):
+        """
+        Add the currently selected article to the list of courses.
+
+        This function retrieves the currently selected item from the `articles_listWidget` and checks if it is not `None`.
+        If an item is selected, it retrieves the text of the first column of the item and appends it to the `dico_courses` list. 
+        Then, it creates a new `QTreeWidgetItem` with the product name and adds it to the `liste_course`.
+
+        Parameters:
+            self (object): The instance of the class.
+        
+        Returns:
+            None
+        """
         item = self.articles_listWidget.currentItem()
         if item:
             product_name = item.text(0)
@@ -240,6 +282,19 @@ class VueProjet(QMainWindow):
             self.liste_course.addTopLevelItem(course_item)
         
     def supprimer_article(self):
+        """
+        Remove the currently selected article from the list of courses.
+
+        This function retrieves the currently selected item from the `liste_course` QTreeWidget and checks if it is not `None`.
+        If an item is selected, it retrieves the text of the first column of the item and removes it from the `dico_courses` list.
+        Then, it searches for the item in the `liste_course` and removes it if found.
+
+        Parameters:
+            self (object): The instance of the class.
+
+        Returns:
+            None
+        """
         item = self.liste_course.currentItem()
         if item:
             product_name = item.text(0)
@@ -250,17 +305,31 @@ class VueProjet(QMainWindow):
                     root.removeChild(item)
                     return
 
-    def parcours(self):
-        print(self.dico_courses)
-        self.analyseClicked.emit(self.dico_courses)
+    def analyseParcours(self):
+        self.analyseClicked.emit()
+        self.grid.setParcours(self.parcours)
         
+    def set_parcours(self, liste_cases):
+        self.parcours = liste_cases
+        
+    def get_parcours(self):
+        return self.parcours
+            
+    def set_dico_articles(self, dico_articles):
+        self.dico_articles = dico_articles
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     dico_articles = {'Légumes': ['carotte', 'tomate', 'savon'], 'Produits laitiers': ['lait', 'fromage']}  
-
+    parcours = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9),
+                (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9),
+                (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9),
+                (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8), (3, 9),
+                (4, 0), (4, 1), (4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (4, 7), (4, 8), (4, 9),
+                (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (5, 8), (5, 9),]
     fenetre = VueProjet()
     fenetre.afficherArticles(dico_articles)
-
+    fenetre.set_parcours(parcours)
+    fenetre.grid.setParcours(parcours)
     fenetre.show()
     sys.exit(app.exec())
