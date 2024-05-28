@@ -1,7 +1,7 @@
 import sys,time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QScrollArea, QDateEdit, QGridLayout, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate
+from PyQt6.QtWidgets import QApplication, QWidget, QLayout, QDialog, QScrollArea, QDateEdit, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate, QRect, QSize
 from PyQt6.QtGui import QPixmap, QFont
 
 class Case(QWidget):
@@ -194,7 +194,142 @@ class ProjectDetailsDialog(QDialog):
                 f"Magasin: {store_name}\n"
                 f"Date: {creation_date}")
 
-        
+
+
+class FlowLayout(QLayout):
+    def __init__(self, parent=None, margin=0, hspacing=5, vspacing=5):
+        super().__init__(parent)
+        self.itemList = []
+        self.hSpace = hspacing
+        self.vSpace = vspacing
+        self.setContentsMargins(margin, margin, margin, margin)
+
+    def addItem(self, item):
+        self.itemList.append(item)
+
+    def count(self):
+        return len(self.itemList)
+
+    def itemAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList[index]
+        return None
+
+    def takeAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList.pop(index)
+        return None
+
+    def expandingDirections(self):
+        return Qt.Orientation(0)
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        return self.doLayout(QRect(0, 0, width, 0), True)
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        self.doLayout(rect, False)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        size = QSize()
+        for item in self.itemList:
+            size = size.expandedTo(item.minimumSize())
+        size += QSize(2 * self.contentsMargins().top(), 2 * self.contentsMargins().top())
+        return size
+
+    def doLayout(self, rect, testOnly):
+        x = rect.x()
+        y = rect.y()
+        lineHeight = 0
+        spaceX = self.hSpace
+        spaceY = self.vSpace
+
+        for item in self.itemList:
+            wid = item.widget()
+            nextX = x + wid.sizeHint().width() + spaceX
+            if nextX - spaceX > rect.right() and lineHeight > 0:
+                x = rect.x()
+                y = y + lineHeight + spaceY
+                nextX = x + wid.sizeHint().width() + spaceX
+                lineHeight = 0
+
+            if not testOnly:
+                item.setGeometry(QRect(QPoint(x, y), wid.sizeHint()))
+
+            x = nextX
+            lineHeight = max(lineHeight, wid.sizeHint().height())
+
+        return y + lineHeight - rect.y()
+
+    def addItem(self, item):
+        self.itemList.append(item)
+
+    def count(self):
+        return len(self.itemList)
+
+    def itemAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList[index]
+        return None
+
+    def takeAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList.pop(index)
+        return None
+
+    def expandingDirections(self):
+        return Qt.Orientation(0)
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        return self.doLayout(QRect(0, 0, width, 0), True)
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        self.doLayout(rect, False)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        size = QSize()
+        for item in self.itemList:
+            size = size.expandedTo(item.minimumSize())
+        size += QSize(2 * self.contentsMargins().top(), 2 * self.contentsMargins().top())
+        return size
+
+    def doLayout(self, rect, testOnly):
+        x = rect.x()
+        y = rect.y()
+        lineHeight = 100
+        spaceX = self.hSpace
+        spaceY = self.vSpace
+
+        for item in self.itemList:
+            wid = item.widget()
+            nextX = x + wid.sizeHint().width() + spaceX
+            if nextX - spaceX > rect.right() and lineHeight > 0:
+                x = rect.x()
+                y = y + lineHeight + spaceY
+                nextX = x + wid.sizeHint().width() + spaceX
+                lineHeight = 0
+
+            if not testOnly:
+                item.setGeometry(QRect(QPoint(x, y), wid.sizeHint()))
+
+            x = nextX
+            lineHeight = max(lineHeight, wid.sizeHint().height())
+
+        return y + lineHeight - rect.y()
+
             
 class LoadProjectWindow(QWidget):
     signalOpenProject = pyqtSignal(str)
@@ -214,37 +349,32 @@ class LoadProjectWindow(QWidget):
         self.layout.addWidget(self.scroll_area)
 
         self.scroll_widget = QWidget()
-        self.project_grid = QGridLayout(self.scroll_widget)
+        self.project_layout = FlowLayout(self.scroll_widget)
         self.scroll_area.setWidget(self.scroll_widget)
         
         self.load_projects()
         
     def load_projects(self):
-        for i in reversed(range(self.project_grid.count())): 
-            widget_to_remove = self.project_grid.itemAt(i).widget()
-            self.project_grid.removeWidget(widget_to_remove)
+        for i in reversed(range(self.project_layout.count())): 
+            widget_to_remove = self.project_layout.itemAt(i).widget()
+            self.project_layout.removeWidget(widget_to_remove)
             widget_to_remove.setParent(None)
 
         saves_folder = "saves"
         if not os.path.exists(saves_folder):
             os.makedirs(saves_folder)
         
-        row, col = 0, 0
         for file_name in os.listdir(saves_folder):
             if file_name.endswith(".json"):
                 project_button = QPushButton(file_name)
                 project_button.setFixedSize(100, 100)
                 project_button.clicked.connect(self.create_project_selected_callback(file_name))
-                self.project_grid.addWidget(project_button, row, col)
-                col += 1
-                if col > 4:
-                    col = 0
-                    row += 1
+                self.project_layout.addWidget(project_button)
 
         create_button = QPushButton('+')
         create_button.setFixedSize(100, 100)
         create_button.clicked.connect(self.create_project)
-        self.project_grid.addWidget(create_button, row, col)
+        self.project_layout.addWidget(create_button)
         
     def create_project_selected_callback(self, file_name):
         def callback():
@@ -253,7 +383,7 @@ class LoadProjectWindow(QWidget):
     
     def create_project(self):
         dialog = CreateProjectDialog(self)
-        if dialog.exec() == QDialog.accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             name, authors, store_name, store_address, creation_date = dialog.get_project_details()
             self.signalCreateProject.emit(name, authors, store_name, store_address, creation_date)
             self.load_projects()
@@ -327,7 +457,7 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        
+        self.resize(1200, 600)
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
         

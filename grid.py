@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QSpinBox, QLabel, QPushButton
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QTimer
 from PyQt6.QtGui import QPixmap, QColor
 import time,sys
 
@@ -26,6 +26,10 @@ class Grid(QGraphicsView):
         self.locked : bool = False
         self.picture : str = ""
         self.grid : dict = {}
+        
+        self.update_timer = QTimer()
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.drawGrid)
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -131,14 +135,14 @@ class Grid(QGraphicsView):
                 event.ignore()
                 self.gridStep = self.gridStep - 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
         # Increase the size of the grid
         elif event.angleDelta().y() > 0 and not self.locked:
             if(self.gridStep < 50):
                 event.ignore()
                 self.gridStep = self.gridStep + 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
     
     def lockGrid(self):
         if(not self.locked):

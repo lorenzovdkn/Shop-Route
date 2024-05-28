@@ -65,7 +65,6 @@ class Controller:
     '''Define the selecting project functions'''
     # Open the project and load the main window
     def open_project(self):
-        print("hey got there [controller]")
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
     
