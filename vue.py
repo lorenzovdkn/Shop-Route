@@ -73,8 +73,10 @@ class Grid(QGraphicsView):
         
         for x in range(0, width):
             for y in range(0, height):
-                rect : QGraphicsRectItem = QGraphicsRectItem(x*step + self.offset.x(), y*step + self.offset.y(), step, step)
+                rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*step + self.offset.x(), (y-1)*step + self.offset.y(), step, step)
                 if((x,y) in [position for position in position_dict.keys()]):
+                    print(x,y)
+                    print(position_dict.get((x,y)))
                     color = QColor(position_dict.get((x,y)))
                     color.setAlpha(100)
                     rect.setBrush(color)
@@ -88,8 +90,8 @@ class Grid(QGraphicsView):
                 scenePos : QPoint = self.mapToScene(event.pos())
                 posX : int = (int) ((scenePos.x() - self.offset.x()) // self.gridStep + 1)
                 posY : int = (int) ((scenePos.y() - self.offset.y()) // self.gridStep + 1)
-                print(posX, posY)
-                self.positionSignal.emit((posX, posY))
+                if(posX >= 0 and posY >= 0 and posX <= self.width and posY <= self.height):
+                    self.positionSignal.emit((posX, posY))
             else:
                 # Enable grid movement
                 self.lastPos = event.pos()
@@ -284,7 +286,6 @@ class Contenu(QWidget):
             nameSelection = item.text()
             parts = nameSelection.split(' - ')
             nameArticle = parts[0]
-            print(nameArticle)
             self.signalDeleteProduct.emit(nameArticle)
 
     def productClicked(self, item):

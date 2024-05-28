@@ -98,7 +98,7 @@ class ModelMagasin:
     def ajouterArticle(self, articles: dict):
         positionList = self.getAllPosition()
         if(self.currentCase not in positionList):
-            self.ajouterCase([self.currentCase, {}, None, "blue", False])
+            self.ajouterCase([self.currentCase, {}, None, "red", False])
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
@@ -159,16 +159,16 @@ class ModelMagasin:
             
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
-        for case in self.__listCase[1]: 
+                    
+        for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 if (case.getArticles()[nomArticle][1] == True ):
                     return ("Quantité verrouillée")
                 elif (quantite > 0):
                     case.getArticles()[nomArticle][0] = quantite
-                else : 
+                else :
                     return ("Quantité invalide")
-            else:
-                return ("Article non trouvé")
+        return ("Case non définie")
             
     def clearArticle(self) -> None:
         for case in self.__listCase[1]:
@@ -191,48 +191,47 @@ class ModelMagasin:
 
             
             
-if __name__ == '__main__':
-    # Exemple 1 : Case de légumes
-    position_vegetable = (2, 5)
-    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
-    vegetable_category = 'Légumes'
-    vegetable_color = 'vert'
-    vegetable_status = True
-
-    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-
-    # Exemple 2 : Case de produits laitiers
-    position_dairy = (1, 3)
-    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
-    dairy_category = 'Produits laitiers'
-    dairy_color = 'blanc'
-    dairy_status = False
-
-    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-
-    # Exemple 3 : Case de produits d'hygiène
-    position_hygiene = (0, 0)
-    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
-    hygiene_category = 'Produits d\'hygiène'
-    hygiene_color = 'blue'
-    hygiene_status = False
-
-    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-    list_case = ma_case.getListe()
-    list_case2 = ma_case2.getListe()
-    print(list_case)
-    magasin = ModelMagasin()
-    
-    magasin.ajouterCase(list_case)
-    magasin.ajouterCase(list_case2)
-    magasin.ajouterArticle(hygiene_articles)
-    
-    print("test des classes : \n")
-    print(ma_case)
-    print("\n\n")
-    print(magasin)
-    magasin.getUsedCase()
-    #magasin.supprimerArticle(position_vegetable, 'dentifrice')
-    print(magasin)
-    
+#if __name__ == '__main__':
+#    # Exemple 1 : Case de légumes
+#    position_vegetable = (2, 5)
+#    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
+#    vegetable_category = 'Légumes'
+#    vegetable_color = 'vert'
+#    vegetable_status = True
+#
+#    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#
+#    # Exemple 2 : Case de produits laitiers
+#    position_dairy = (1, 3)
+#    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
+#    dairy_category = 'Produits laitiers'
+#    dairy_color = 'blanc'
+#    dairy_status = False
+#
+#    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#
+#    # Exemple 3 : Case de produits d'hygiène
+#    position_hygiene = (0, 0)
+#    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
+#    hygiene_category = 'Produits d\'hygiène'
+#    hygiene_color = 'blue'
+#    hygiene_status = False
+#
+#    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#    list_case = ma_case.getListe()
+#    list_case2 = ma_case2.getListe()
+#    magasin = ModelMagasin()
+#    
+#    magasin.ajouterCase(list_case)
+#    magasin.ajouterCase(list_case2)
+#    magasin.ajouterArticle(hygiene_articles)
+#    
+#    print("test des classes : \n")
+#    print(ma_case)
+#    print("\n\n")
+#    print(magasin)
+#    magasin.getUsedCase()
+#    #magasin.supprimerArticle(position_vegetable, 'dentifrice')
+#    print(magasin)
+#    
