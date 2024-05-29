@@ -70,7 +70,18 @@ class ModelMagasin:
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
         self.category : str = None
-        
+        self.categoryColors: dict = {
+            'Légumes': 'green',
+            'Poissons': 'blue',
+            'Viandes': 'red',
+            'Épicerie': 'yellow',
+            'Épicerie sucrée': 'pink',
+            'Petit déjeuner': 'brown',
+            'Fruits': 'orange',
+            'Rayon frais': 'white',
+            'Crèmerie': 'white',
+            'Conserves': 'black'
+        }
         # Informations sur le projet
         self.data_projet = {
             "nom_projet": "Nom du projet",
@@ -83,6 +94,7 @@ class ModelMagasin:
         # if jsonFile: self.open(jsonFile)
     
     def setCategory(self, category : str) -> None:
+        self.category = category
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.setCategory(category)
@@ -110,7 +122,13 @@ class ModelMagasin:
     def ajouterArticle(self, articles: dict):
         positionList = self.getAllPosition()
         if(self.currentCase not in positionList):
-            self.ajouterCase([self.currentCase, {}, None, "red", False])
+            color : str 
+            if self.category in self.categoryColors:
+                color = self.categoryColors[self.category]
+            else:
+                color = "purple"
+            self.ajouterCase([self.currentCase, {}, None,color , False])
+                
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
