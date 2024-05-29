@@ -24,7 +24,7 @@ class Grid(QGraphicsView):
         self.lastPos : QPoint = QPoint(0,0)
         self.dragging : bool = False
         self.locked : bool = False
-        self.picture : str = ""
+        self.picture : str = "plan5.jpeg"
         self.grid : dict = {}
         
         self.update_timer = QTimer()

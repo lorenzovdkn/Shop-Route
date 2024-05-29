@@ -28,6 +28,7 @@ class Controller:
         
         # signals linked to the selecting projet
         self.view.load_window.signalOpenProject.connect(self.open_project)
+        self.view.load_window.signalCreateProject.connect(self.open_new_project)
         
         # Signals linked to the grid (view)
         #self.view.grid.lockedSignal.connect()
@@ -64,7 +65,12 @@ class Controller:
     
     '''Define the selecting project functions'''
     # Open the project and load the main window
-    def open_project(self):
+    def open_project(self, filename):
+        self.model.load(filename)
+        self.view.load_window.hide()
+        self.view.setCentralWidget(self.view.central_widget)
+        
+    def open_new_project(self, project):
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
     
