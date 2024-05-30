@@ -60,6 +60,12 @@ class Grille:
     def setTailleGrille(self, taille : tuple) -> None:
         self.tailleGrille = taille
         
+    def setPas(self, pas : float) -> None:
+        self.pas = pas
+        
+    def setDecalage(self, decalage : tuple) -> None:
+        self.decalage = decalage
+        
     def setVerouiller(self, state : bool) -> None:
         self.verouiller = state
 
@@ -76,7 +82,9 @@ class ModelMagasin:
             "nom_projet": "Nom du projet",
             "auteurs": "",
             "nom_magasin": "Nom du magasin",
+            "adresse_du_magasin": "",
             "date": "2024-05-23"  # Exemple de date
+            
         }
         
         # si un fichier est fourni : on charge 
@@ -94,6 +102,13 @@ class ModelMagasin:
     def getCurrentCase(self) -> tuple:
         return self.currentCase
     
+    def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
+        self.data_projet["nom_project"] = projectName
+        self.data_projet["auteurs"] = authors
+        self.data_projet["nom_du_magasin"] = marketName
+        self.data_projet["adresse_du_magasin"] = addressMarket
+        self.data_projet["date"] = dateCreation
+        
     def ajouterCase(self, case : list):
         self.__current: int = 0
 
@@ -214,7 +229,19 @@ class ModelMagasin:
             )
             self.__listCase[1].append(case)
 
+        # Charger les données du projet
+        self.data_projet = data["data_projet"]
+
+
     def save(self, filename: str):
+        # Vérifier si le dossier 'saves' existe, sinon le créer
+        save_dir = 'saves'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # Construire le chemin complet du fichier
+        full_path = os.path.join(save_dir, filename)
+
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -223,12 +250,30 @@ class ModelMagasin:
             "decalage": self.grille.decalage,
             "verrouiller": self.grille.getVerouiller()
         }
-        
+
         # Convertir les cases en liste de dictionnaires
         cases_dict = []
         for case in self.__listCase[1]:
-            if case.getPosition() == self.currentCase:
-                case.setArticles({})
+            case_dict = {
+                "position": case.getPosition(),
+                "articles": case.getArticles(),
+                "categorie": case.categorie,
+                "couleur": case.getColor(),
+                "statut": case.statut
+            }
+            cases_dict.append(case_dict)
+
+        # Construire le dictionnaire final
+        data = {
+            "grille": grille_dict,
+            "cases": cases_dict,
+            "data_projet": self.data_projet
+        }
+
+        # Sauvegarder dans un fichier JSON
+        with open(full_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
                 
     def RemoveSave(filepath: str):
         """

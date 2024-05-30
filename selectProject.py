@@ -103,21 +103,20 @@ class LoadProjectWindow(QWidget):
         button_spacing = 10  # Espacement entre les boutons
 
         for file_name in os.listdir(saves_folder):
-            if file_name.endswith(".json"):
-                project_button = QPushButton(file_name.split()[0])
-                project_button.setFixedSize(button_size)
-                project_button.clicked.connect(self.create_project_selected_callback(file_name))
-                self.project_layout.addWidget(project_button, row, col * 2)
+            project_button = QPushButton(file_name.split()[0])
+            project_button.setFixedSize(button_size)
+            project_button.clicked.connect(self.create_project_selected_callback(file_name))
+            self.project_layout.addWidget(project_button, row, col * 2)
 
-                col += 1
-                if col >= max_columns:
-                    col = 0
-                    row += 1
+            col += 1
+            if col >= max_columns:
+                col = 0
+                row += 1
 
-                # Ajouter un espacement horizontal entre les boutons
-                if col < max_columns:
-                    hspacer = QSpacerItem(button_spacing, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-                    self.project_layout.addItem(hspacer, row, col * 2 + 1)
+            # Ajouter un espacement horizontal entre les boutons
+            if col < max_columns:
+                hspacer = QSpacerItem(button_spacing, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+                self.project_layout.addItem(hspacer, row, col * 2 + 1)
 
         # Bouton pour créer un nouveau projet
         create_button = QPushButton('+')
@@ -138,7 +137,8 @@ class LoadProjectWindow(QWidget):
     def create_project(self):
         dialog = CreateProjectDialog(self)
         if dialog.exec() == QDialog.DialogCode.Accepted:
-            self.signalCreateProject.emit(dialog.get_project_details())
+            name, authors, store_name, store_address, creation_date, file_name = dialog.get_project_details()
+            self.signalCreateProject.emit(name, authors, store_name, store_address, creation_date, file_name)
 
     def project_selected(self, project_name):
         saves_folder = "saves"
@@ -161,6 +161,7 @@ class LoadProjectWindow(QWidget):
 
 class CreateProjectDialog(QDialog):
     signalCreateProject = pyqtSignal(str, str, str, str, str, str) # name, authors, store_name, store_address, creation_date, file_name
+    signalOpenImage = pyqtSignal(str)
     
     def __init__(self, parent=None):
         super().__init__(parent)

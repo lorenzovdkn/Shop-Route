@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QSpinBox, QLabel, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QSpinBox, QLabel, QPushButton
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QTimer
 from PyQt6.QtGui import QPixmap, QColor
-import time,sys
+import time,sys, os
 
 class Grid(QGraphicsView):
     
@@ -202,6 +202,37 @@ class GridWidget(QWidget):
         self.heightEdit.setDisabled(True)
         self.grid.lockGrid()
         self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
+        
+    # use to copy the selected image of the user to put it in the app saves (return the copy image path)
+    def copyFileToAppDir(self, source_file: str) -> str:
+        # Vérifier si le dossier 'images' existe, sinon le créer
+        dest_dir = 'images'
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+
+        # Nom de l'image
+        image_name = os.path.basename(source_file)
+
+        # Destination du fichier
+        dest_file = os.path.join(dest_dir, image_name)
+
+        try:
+            # Lire le fichier source
+            with open(source_file, 'rb') as src:
+                content = src.read()
+            
+            # Écrire dans le fichier de destination
+            with open(dest_file, 'wb') as dst:
+                dst.write(content)
+            
+            QMessageBox.information(self, "Succès", f"Le fichier a été copié dans {dest_file}")
+
+            # Retourner le chemin relatif du fichier copié
+            relative_dest_file = os.path.relpath(dest_file, start=os.getcwd())
+            return relative_dest_file
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")
+            return None
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
