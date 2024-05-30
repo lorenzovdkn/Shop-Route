@@ -10,11 +10,17 @@ class Case:
         if(articles is not {}):
             statut = False
         
+    def setColor(self,color :str):
+        self.couleur = color 
+        
     def getColor(self) -> str:
         return self.couleur
     
     def getPosition(self):
         return self.position
+    
+    def getCategory(self):
+        return self.categorie
     
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
@@ -95,11 +101,26 @@ class ModelMagasin:
     
     def setCategory(self, category : str) -> None:
         self.category = category
-        for case in self.__listCase[1]:
-            if case.getPosition() == self.currentCase:
-                case.setCategory(category)
-                break
-    
+        positionList = self.getAllPosition()
+
+        if(self.currentCase not in positionList):
+            color : str 
+            if self.category in self.categoryColors:
+                color = self.categoryColors[self.category]
+            elif self.category != "Aucune":
+                color = "purple"
+            self.ajouterCase([self.currentCase, {}, self.category ,color , False])
+                
+        else:
+            for case in self.__listCase[1]:
+                if case.getPosition() == self.currentCase:
+                    if self.category == "Aucune":
+                        self.__listCase[1].remove(case)
+                    else:
+                        case.setCategory(category)
+                        case.setColor(self.categoryColors[category])
+                    break
+            
     def setCurrentCase(self, position : tuple) -> None:
         self.currentCase = position
     
@@ -119,16 +140,7 @@ class ModelMagasin:
             positionList.append(case.getPosition())
         return positionList
         
-    def ajouterArticle(self, articles: dict):
-        positionList = self.getAllPosition()
-        if(self.currentCase not in positionList):
-            color : str 
-            if self.category in self.categoryColors:
-                color = self.categoryColors[self.category]
-            else:
-                color = "purple"
-            self.ajouterCase([self.currentCase, {}, None,color , False])
-                
+    def ajouterArticle(self, articles: dict):        
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.ajouterArticle(articles)
@@ -184,7 +196,7 @@ class ModelMagasin:
     def getUsedCase(self) -> dict:
         caseList : dict = {} 
         for case in self.__listCase[1]:
-            caseList[case.getPosition()] = case.getColor()
+            caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
         return caseList
             
     
@@ -278,49 +290,49 @@ class ModelMagasin:
         return magasin_str.strip()
 
 
-if __name__ == '__main__':
-    # Example instances
-    position_vegetable = (2, 5)
-    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
-    vegetable_category = 'Légumes'
-    vegetable_color = 'vert'
-    vegetable_status = True
-
-    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-
-    position_dairy = (1, 3)
-    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
-    dairy_category = 'Produits laitiers'
-    dairy_color = 'blanc'
-    dairy_status = False
-
-    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-
-    position_hygiene = (0, 0)
-    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
-    hygiene_category = 'Produits d\'hygiène'
-    hygiene_color = 'bleu'
-    hygiene_status = False
-
-    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-    list_case = ma_case.getListe()
-    list_case2 = ma_case2.getListe()
-    print(list_case)
-    magasin = ModelMagasin()
-    
-    magasin.ajouterCase(list_case)
-    magasin.ajouterCase(list_case2)
-    magasin.ajouterArticle(position_vegetable, hygiene_articles)
-    
-    print("test des classes : \n")
-    print(ma_case)
-    print("\n\n")
-    print(magasin)
-    
-    magasin.supprimerArticle(position_vegetable, 'dentifrice')
-    print(magasin)
-    
-    # Save the state of the store to a JSON file
-    magasin.save('saves/etat_magasin.json')
-    
+#if __name__ == '__main__':
+#    # Example instances
+#    position_vegetable = (2, 5)
+#    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
+#    vegetable_category = 'Légumes'
+#    vegetable_color = 'vert'
+#    vegetable_status = True
+#
+#    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#
+#    position_dairy = (1, 3)
+#    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
+#    dairy_category = 'Produits laitiers'
+#    dairy_color = 'blanc'
+#    dairy_status = False
+#
+#    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#
+#    position_hygiene = (0, 0)
+#    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
+#    hygiene_category = 'Produits d\'hygiène'
+#    hygiene_color = 'bleu'
+#    hygiene_status = False
+#
+#    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
+#    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
+#    list_case = ma_case.getListe()
+#    list_case2 = ma_case2.getListe()
+#    print(list_case)
+#    magasin = ModelMagasin()
+#    
+#    magasin.ajouterCase(list_case)
+#    magasin.ajouterCase(list_case2)
+#    magasin.ajouterArticle(position_vegetable, hygiene_articles)
+#    
+#    print("test des classes : \n")
+#    print(ma_case)
+#    print("\n\n")
+#    print(magasin)
+#    
+#    magasin.supprimerArticle(position_vegetable, 'dentifrice')
+#    print(magasin)
+#    
+#    # Save the state of the store to a JSON file
+#    magasin.save('saves/etat_magasin.json')
+#    

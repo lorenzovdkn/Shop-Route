@@ -261,7 +261,7 @@ class LoadProjectWindow(QWidget):
     def project_selected(self, project_name):
         saves_folder = "saves"
         file_path = os.path.join(saves_folder, project_name)
-        print("chemin du fichier : ", file_path) # temp
+        ("chemin du fichier : ", file_path) # temp
 
         with open(file_path, 'r', encoding='utf-8') as file:
             project_data = json.load(file)
