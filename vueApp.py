@@ -1,6 +1,6 @@
 import sys
-import time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
+import time, json, random
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem,QLabel, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QColor
 
@@ -78,10 +78,16 @@ class Grid(QGraphicsView):
                 x, y = pos
                 if 0 <= x < width and 0 <= y < height:
                     rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
-                    color = QColor("purple")
-                    color.setAlpha(100)
-                    rect.setBrush(color)
-                    self.scene.addItem(rect)
+                    if rect.brush is not None:
+                        color = QColor(None)
+                        color.setAlpha(100)
+                        rect.setBrush(color)
+                        self.scene.addItem(rect)
+                    else:
+                        color = QColor("purple")
+                        color.setAlpha(100)
+                        rect.setBrush(color)
+                        self.scene.addItem(rect)
         
         for x in range(-1, width):
             for y in range(-1, height):
@@ -156,11 +162,12 @@ class VueProjet(QMainWindow):
     supprimerClicked = pyqtSignal() # Envoi le produit a delete
     analyseClicked = pyqtSignal() # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
+    dicoAleatoireClicked = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         
-        self.dico_courses = []
+        self.dico_courses = {}
         self.parcours = []
 
         self.setWindowTitle('Parcours de courses')
@@ -177,9 +184,11 @@ class VueProjet(QMainWindow):
         
         # Widgets
         self.analyse = QPushButton('Analyser')
+        self.info = QLabel('Cliquez pour définir le point de départ')
         self.analyse.setMaximumWidth(400)
         self.ajout = QPushButton('Ajouter à la liste de courses')
         self.supprimer = QPushButton('Supprimer de la liste de courses')
+        self.dico_create = QPushButton('Génerer une liste de courses aléatoire')
         
         # Grid Widget
         self.grid = Grid()
@@ -187,6 +196,8 @@ class VueProjet(QMainWindow):
         # Right Layout
         self.rightLayout = QVBoxLayout()
         self.rightLayout.addWidget(self.grid)
+        self.bottomRight_layout.addWidget(self.dico_create)
+        self.bottomRight_layout.addWidget(self.info)
         self.bottomRight_layout.addWidget(self.analyse)
         self.rightLayout.addLayout(self.bottomRight_layout)
 
@@ -230,7 +241,8 @@ class VueProjet(QMainWindow):
         # Connect signals
         self.ajout.clicked.connect(self.ajouter_article)
         self.supprimer.clicked.connect(self.supprimer_article)
-        self.analyse.clicked.connect(self.analyseParcours)  # Corrected signal connection
+        self.analyse.clicked.connect(self.analyseParcours)
+        self.dico_create.clicked.connect(self.creer_dico_articles)
 
     def ouvrir(self) -> str:
         """
@@ -243,6 +255,23 @@ class VueProjet(QMainWindow):
         chemin, validation = boite.getOpenFileName(directory=sys.path[0])
         if validation:
             self.fnameOpen.emit(chemin)
+
+
+
+    def creer_dico_articles(fichier_json):
+        # Lire le fichier JSON
+        with open(fichier_json, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+
+        # Sélectionner quelques éléments de chaque catégorie
+        for categorie, articles in data.items():
+            # Exemple : sélectionner 2 articles au hasard de chaque catégorie
+            selectionnes = random.sample(articles, min(2, len(articles)))
+            self.dico_courses[categorie] = selectionnes
+
+        return self.dico_courses
+        
 
     def afficherArticles(self, data):        
         """
@@ -282,6 +311,7 @@ class VueProjet(QMainWindow):
             self.ajoutClicked.emit(product_name)
             if product_name not in self.dico_courses:
                 self.dico_courses.append(product_name)
+                print(product_name)
                 course_item = QTreeWidgetItem([product_name])
                 self.liste_course.addTopLevelItem(course_item)
         
@@ -324,7 +354,6 @@ class VueProjet(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    dico_articles = {'Légumes': ['carotte', 'tomate', 'savon'], 'Produits laitiers': ['lait', 'fromage']}  
     parcours = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9),
                 (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9),
                 (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9),
