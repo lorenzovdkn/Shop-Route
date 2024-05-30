@@ -174,6 +174,7 @@ class Modele(object):
         if produit not in self.liste_course:
             self.liste_course.append(produit)
 
+
     #Supprime un produit dans la liste de course
     def deleteProduct(self,produit):
         if produit in self.liste_course:

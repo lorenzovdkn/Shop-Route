@@ -28,6 +28,7 @@ class Grid(QGraphicsView):
         self.picture = "./plan11.jpg"
         self.grid = {}
         self.parcours = []
+        self.produit = []
         
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -50,6 +51,10 @@ class Grid(QGraphicsView):
 
     def setParcours(self, parcours):
         self.parcours = parcours
+        self.drawGrid()
+
+    def setProduit(self, produit):
+        self.produit = produit
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -79,6 +84,16 @@ class Grid(QGraphicsView):
                 if 0 <= x < width and 0 <= y < height:
                     rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
                     color = QColor("purple")
+                    color.setAlpha(100)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+
+        if self.produit:
+            for pos in self.produit:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
+                    color = QColor("black")
                     color.setAlpha(100)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
@@ -153,7 +168,7 @@ class Grid(QGraphicsView):
 
 class VueProjet(QMainWindow):
     ajoutClicked = pyqtSignal(str) # Envoi le produit a ajouter à la liste de course
-    supprimerClicked = pyqtSignal() # Envoi le produit a delete
+    supprimerClicked = pyqtSignal(str) # Envoi le produit a delete
     analyseClicked = pyqtSignal() # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
 
@@ -280,10 +295,6 @@ class VueProjet(QMainWindow):
         if item and item.parent() is not None:
             product_name = item.text(0)
             self.ajoutClicked.emit(product_name)
-            if product_name not in self.dico_courses:
-                self.dico_courses.append(product_name)
-                course_item = QTreeWidgetItem([product_name])
-                self.liste_course.addTopLevelItem(course_item)
         
     def supprimer_article(self):
         """
@@ -302,20 +313,37 @@ class VueProjet(QMainWindow):
         item = self.liste_course.currentItem()
         if item:
             product_name = item.text(0)
-            self.dico_courses.remove(product_name)
-            root = self.liste_course.invisibleRootItem()
-            for i in range(root.childCount()):
-                if root.child(i) == item:
-                    root.removeChild(item)
-                    return
+            self.supprimerClicked.emit(product_name)
+            
+                
+    def afficher_liste_course(self,liste):
+        """
+        Display the current list of courses in the `liste_course` QTreeWidget.
+
+        This function clears the existing items in the `liste_course` QTreeWidget and then iterates over the `dico_courses` list,
+        creating a new `QTreeWidgetItem` for each product and adding it to the `liste_course`.
+
+        Parameters:
+            self (object): The instance of the class.
+
+        Returns:
+            None
+        """
+        self.liste_course.clear()
+        for product in liste:
+            course_item = QTreeWidgetItem([product])
+            print("deddd")
+            self.liste_course.addTopLevelItem(course_item)
 
     def analyseParcours(self):
         self.analyseClicked.emit()
-        self.grid.setParcours(self.parcours)
         
     def set_parcours(self, liste_cases):
         self.parcours = liste_cases
         
+    def set_produit(self, liste_cases):
+        self.produit = liste_cases
+
     def get_parcours(self):
         return self.parcours
             
