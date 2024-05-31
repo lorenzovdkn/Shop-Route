@@ -228,8 +228,9 @@ class GridWidget(QWidget):
             QMessageBox.information(self, "Succès", f"Le fichier a été copié dans {dest_file}")
 
             # Retourner le chemin relatif du fichier copié
-            relative_dest_file = os.path.relpath(dest_file, start=os.getcwd())
-            return relative_dest_file
+            print(dest_file)
+            file_path = "images/" + str(dest_file.split('/')[-1])
+            return file_path
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")
             return None

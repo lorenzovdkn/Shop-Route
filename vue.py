@@ -73,6 +73,33 @@ class Case(QWidget):
     # Send the new category
     def categoryChanged(self):
         self.signalChangedCategory.emit(self.category_combo.currentText())
+        
+    def updateCase(self, position: tuple, type_case: str, categories: list, current_category: str):
+        """
+        Actualise tous les widgets de cette classe avec les paramètres fournis.
+        
+        :param position: Position actuelle de la case sous forme de tuple (x, y).
+        :param type_case: Type de la case sélectionné dans le combo box ("publique" ou "privé").
+        :param categories: Liste des catégories disponibles.
+        :param current_category: Catégorie actuelle sélectionnée.
+        """
+        # Mise à jour de la position de la case
+        self.setCase(position)
+        
+        # Mise à jour du type de case
+        index = type_case
+        if index == False:
+            self.type_case_combo.setCurrentIndex(0)
+        elif index == True:
+            self.type_case_combo.setCurrentIndex(1)
+        
+        # Mise à jour des catégories disponibles
+        self.updateProductCategory(categories)
+        
+        # Mise à jour de la catégorie actuelle
+        index = self.category_combo.findText(current_category)
+        if index != -1:
+            self.category_combo.setCurrentIndex(index)
 
 
 class Contenu(QWidget):
@@ -201,17 +228,9 @@ class MainWindow(QMainWindow):
         self.signalOpenProject.emit(project_name)
         
 
-    def create_new_project(self, name, authors, store_name, store_address, creation_date):
-        self.load_window.hide()
-        # Code pour créer un nouveau projet dans MainWindow
-        # Ici vous pouvez créer le nouveau projet
-        
-        # Exemple :
-        # creer_nouveau_projet(name, authors, store_name, store_address, creation_date)
-        # self.grid.setPicture(...)
-        # self.grid.drawGrid(...)
-        
-        self.show()
+    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str):
+        self.contenu_widget.updateArticle(articles)
+        self.case_widget.updateCase(position, status, categories, current_category)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

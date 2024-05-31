@@ -29,6 +29,7 @@ class Controller:
         # signals linked to the selecting projet
         self.view.load_window.signalOpenProject.connect(self.open_project)
         self.view.load_window.signalCreateProject.connect(self.open_new_project)
+        self.view.load_window.signalCreateProject.connect(self.create_new_project)
         
         # Signals linked to the grid (view)
         #self.view.grid.lockedSignal.connect()
@@ -36,7 +37,6 @@ class Controller:
         #self.view.grid.stepSignal.connect(self.setStep)
         #self.view.grid.offsetSignal.connect(self.setOffset)
         self.view.gridWidget.grid.positionSignal.connect(self.setClickedCase)
-        self.view.load_window.signalCreateProject.connect(self.create_new_project)
         
         # Signaux Case
         self.view.case_widget.signalChangedCategory.connect(self.changedCategory)
@@ -66,7 +66,9 @@ class Controller:
     '''Define the grid methods'''
     # Load in the model the creating project and update the view
     def create_new_project(self, name, authors, store_name, store_address, creation_date, file_name) :  # name, authors, store_name, store_address, creation_date, file_name
-        self.model.grille.setImage(file_name)
+        self.image_path = self.view.gridWidget.copyFileToAppDir(file_name)
+        
+        self.model.grille.setImage(self.image_path)
         self.model.setDataProject(name, authors, store_name, store_address, creation_date)
         self.model.save(str(name) + str(creation_date))
         
@@ -83,6 +85,7 @@ class Controller:
         self.model.load(filename)
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
+        self.view.gridWidget.grid.setPicture(self.model.grille.getImage())
         
     def open_new_project(self, project):
         self.view.load_window.hide()
