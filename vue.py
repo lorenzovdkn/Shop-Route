@@ -2,13 +2,14 @@ import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QScrollArea, QDateEdit, QGridLayout, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate
-from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 
 class Case(QWidget):
     
     signalChangedCategory : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
+        
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
@@ -341,6 +342,8 @@ class MainWindow(QMainWindow):
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
         
+        
+        # Widget creation
         self.case_widget = Case()
         self.contenu_widget = Contenu()
 

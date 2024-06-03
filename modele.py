@@ -88,7 +88,7 @@ class Case:
 
         
 class Grille:
-    def __init__(self, image : str, tailleGrille : tuple, pasFloat : float, decalage : tuple, verrouiller : bool):
+    def __init__(self, image : str, tailleGrille : tuple, pasFloat : float , decalage : tuple, verrouiller : bool):
         self.image : str = image
         self.tailleGrille : tuple = tailleGrille
         self.pas : float = pasFloat
@@ -143,8 +143,6 @@ class Grille:
         - False = Déverrouiller
         '''
         return self.verrouiller
-      
-    
 
 class ModelMagasin:
     def __init__(self, jsonFile: (str | None) = None) -> None:
@@ -178,7 +176,6 @@ class ModelMagasin:
             "nom_magasin": "Nom du magasin",
             "date": "2024-05-23"  # Exemple de date
         }
-        
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
     
@@ -289,18 +286,6 @@ class ModelMagasin:
                     del case.articles[nom_article]
                     break
     
-    # def nextArticle(self) -> int:
-    #     self.__current = (self.__current + 1) % len(self.__listeCase[1])
-    #     
-    # def PreviousArticle(self) -> int:
-    #     self.__current = (self.__current - 1) % len(self.__listeCase[1])
-    #     
-    # def setArticleIndex(self, index: int) -> None:
-    #     self.__current = index
-    #    
-    #def changerImage(self, image : str) -> None:
-    #    self.grille.setImage(image)
-    
     def getProductsJson(self) -> dict:
         ''' 
         Permet de récupérer le dictionnaire des produits existants dans le fichier liste_produits.json
@@ -380,7 +365,7 @@ class ModelMagasin:
         for case in self.__listCase[1]:
             if case.getPosition() == self.currentCase:
                 case.setArticles({})
-    
+                
     def load(self, filename: str):
         ''' 
             Permet de charger un fichier de sauvegarde.
@@ -451,7 +436,6 @@ class ModelMagasin:
         else:
             return f"File '{filepath}' does not exist."
         
-
     def __str__(self):
         if not self.__listCase[1]:
             return "Aucune case dans le magasin."
@@ -463,51 +447,3 @@ class ModelMagasin:
             index += 1  
         
         return magasin_str.strip()
-
-
-#if __name__ == '__main__':
-#    # Example instances
-#    position_vegetable = (2, 5)
-#    vegetable_articles = {'carotte': [8, False], 'tomate': [12, True]}
-#    vegetable_category = 'Légumes'
-#    vegetable_color = 'vert'
-#    vegetable_status = True
-#
-#    vegetable_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-#
-#    position_dairy = (1, 3)
-#    dairy_articles = {'lait': [6, False], 'fromage': [15, True]}
-#    dairy_category = 'Produits laitiers'
-#    dairy_color = 'blanc'
-#    dairy_status = False
-#
-#    dairy_case = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-#
-#    position_hygiene = (0, 0)
-#    hygiene_articles = {'savon': [10, True], 'dentifrice': [8, True]}
-#    hygiene_category = 'Produits d\'hygiène'
-#    hygiene_color = 'bleu'
-#    hygiene_status = False
-#
-#    ma_case = Case(position_vegetable, vegetable_articles, vegetable_category, vegetable_color, vegetable_status)
-#    ma_case2 = Case(position_dairy, dairy_articles, dairy_category, dairy_color, dairy_status)
-#    list_case = ma_case.getListe()
-#    list_case2 = ma_case2.getListe()
-#    print(list_case)
-#    magasin = ModelMagasin()
-#    
-#    magasin.ajouterCase(list_case)
-#    magasin.ajouterCase(list_case2)
-#    magasin.ajouterArticle(position_vegetable, hygiene_articles)
-#    
-#    print("test des classes : \n")
-#    print(ma_case)
-#    print("\n\n")
-#    print(magasin)
-#    
-#    magasin.supprimerArticle(position_vegetable, 'dentifrice')
-#    print(magasin)
-#    
-#    # Save the state of the store to a JSON file
-#    magasin.save('saves/etat_magasin.json')
-#    
