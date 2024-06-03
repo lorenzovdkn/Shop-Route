@@ -50,6 +50,7 @@ class Controller:
     # Define the selected case    
     def setClickedCase(self, position : tuple):
         self.model.setCurrentCase(position)
+        self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
         
     

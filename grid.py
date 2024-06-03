@@ -62,7 +62,7 @@ class Grid(QGraphicsView):
                 rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), self.step, self.step)
                 if((x,y) in [position for position in position_dict.keys()]):
                     color = QColor(position_dict.get((x,y)))
-                    color.setAlpha(100)
+                    color.setAlpha(150)
                     rect.setBrush(color)
                 self.scene.addItem(rect)
                 

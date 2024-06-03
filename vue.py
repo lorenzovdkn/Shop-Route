@@ -23,10 +23,10 @@ class Case(QWidget):
         self.titre_font.setPointSize(30)
         self.titre.setFont(self.titre_font)
 
-        self.case = QLabel("Case")
-        self.case_font = QFont()
-        self.case_font.setPointSize(20)
-        self.case.setFont(self.case_font)
+        #self.case = QLabel("Case")
+        #self.case_font = QFont()
+        #self.case_font.setPointSize(20)
+        #self.case.setFont(self.case_font)
 
         self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
@@ -41,7 +41,7 @@ class Case(QWidget):
         self.case_number.setReadOnly(True)
         
         self.layout1.addWidget(self.titre)
-        self.layout1.addWidget(self.case)
+        #self.layout1.addWidget(self.case)
         self.layout1.addLayout(self.layout2)
         self.layout1.addLayout(self.layout3)
         self.layout1.addLayout(self.layout4)
@@ -67,6 +67,10 @@ class Case(QWidget):
     
     def getCategory(self):
         return self.category_combo.currentText()
+    
+    def setCategory(self, category : str):
+        if category != None:
+            self.category_combo.setCurrentText(category)
     
     # Send the new category
     def categoryChanged(self):
