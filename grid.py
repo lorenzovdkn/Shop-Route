@@ -26,7 +26,7 @@ class Grid(QGraphicsView):
         self.dragging : bool = False
         self.locked : bool = False
         self.picture : str = ""
-        self.grid : dict = {}
+        self.gridContent : dict = {}
         
         self.drawGrid({})
         self.sceneWidth = self.scene.width()
@@ -64,12 +64,15 @@ class Grid(QGraphicsView):
     def setPicture(self, picture : str):
         self.picture = picture
     
-    def setGrid(self, grid: dict):
-        self.grid = grid
+    def setGridContent(self, gridContent: dict):
+        self.gridContent = gridContent
         
     # Draw the grid
-    def drawGrid(self, position_dict : dict):
+    def drawGrid(self, position_dict : dict = None):
         
+        if(position_dict is not None):
+            self.gridContent = position_dict
+
         self.scene.clear()
         
         if(self.picture != None):
@@ -77,12 +80,11 @@ class Grid(QGraphicsView):
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)   
         
-        #position_dict = {(1,3): "red", (2,5): "blue", (6,9): "green"}
         for x in range(0, self.width):
             for y in range(0, self.height):
                 rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), self.step, self.step)
-                if((x,y) in [position for position in position_dict.keys()]):
-                    color = QColor(position_dict.get((x,y)))
+                if((x,y) in [position for position in self.gridContent.keys()]):
+                    color = QColor(self.gridContent.get((x,y)))
                     color.setAlpha(150)
                     rect.setBrush(color)
                 self.scene.addItem(rect)
@@ -160,7 +162,7 @@ class Grid(QGraphicsView):
         if(height is not None):
             self.height = height
         if(step is not None):
-            step = self.step
+            self.gridStep = step
         if(offset is not None):
             self.offset = QPoint(offset[0],offset[1])
         if(locked is not None):
