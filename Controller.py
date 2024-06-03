@@ -8,15 +8,6 @@ class Controller:
         self.model = modele.ModelMagasin()
         self.view = vue.MainWindow()
 
-        # Exemple 3 : Case de produits d'hygiène
-        position_hygiene = (0, 0)
-        hygiene_articles = {'savon': [10, True], 'dentifrice': [8, False]}
-        hygiene_category = 'Produits d\'hygiène'
-        hygiene_color = 'blue'
-        hygiene_status = False
-        
-        self.model.ajouterCase([position_hygiene, hygiene_articles, hygiene_category, hygiene_color, hygiene_status])
-        
         self.addCategory()
         
         # Signaux contenu
@@ -58,23 +49,23 @@ class Controller:
     # Define the selected case    
     def setClickedCase(self, position : tuple):
         self.model.setCurrentCase(position)
+        self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
         
     
     '''Define the selecting project functions'''
     # Open the project and load the main window
     def open_project(self):
-        print("hey got there [controller]")
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
     
     def addCategory(self):
-        list_category = ['aucune'] + list(self.model.getCategoryJson())
+        list_category = ['Aucune'] + list(self.model.getCategoryJson())
         self.view.case_widget.updateProductCategory(list_category)
         
     def add_article_selection(self) -> None :
         category : str = self.view.case_widget.getCategory()
-        if category != 'aucune' :
+        if category != 'Aucune' :
             list_article = self.model.getArticlesJson(category)
         else:
             list_article = [] 
@@ -85,7 +76,7 @@ class Controller:
     def add_article_modele(self, article : dict) -> None :
         self.model.ajouterArticle(article)
         self.view.contenu_widget.updateArticle(article)
-        self.view.gridWidget.grid.drawGrid(None,None,None,self.model.getUsedCase())
+        self.view.gridWidget.grid.drawGrid(None,None,None,None,None,self.model.getUsedCase())
         
     def delete_article(self, articleName : str) -> None :
         self.model.supprimerArticle(articleName) # manque la case
@@ -99,7 +90,8 @@ class Controller:
         self.model.clearArticle()
         self.model.setCategory(category)
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
-        self.view.gridWidget.grid.drawGrid(None,None,None,self.model.getUsedCase())
+        usedCase = self.model.getUsedCase()
+        self.view.gridWidget.grid.setGrid(None,None,None,None,None,self.model.getUsedCase())
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
