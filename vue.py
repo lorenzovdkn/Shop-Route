@@ -2,8 +2,7 @@ import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QLayout, QDialog, QScrollArea, QDateEdit, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate, QRect, QSize
-from PyQt6.QtGui import QPixmap, QFont
-
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
 from selectProject import LoadProjectWindow
 
 class Case(QWidget):
@@ -11,6 +10,7 @@ class Case(QWidget):
     signalChangedCategory : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
+        
         super().__init__()
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
@@ -25,10 +25,10 @@ class Case(QWidget):
         self.titre_font.setPointSize(30)
         self.titre.setFont(self.titre_font)
 
-        self.case = QLabel("Case")
-        self.case_font = QFont()
-        self.case_font.setPointSize(20)
-        self.case.setFont(self.case_font)
+        #self.case = QLabel("Case")
+        #self.case_font = QFont()
+        #self.case_font.setPointSize(20)
+        #self.case.setFont(self.case_font)
 
         self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
@@ -43,7 +43,7 @@ class Case(QWidget):
         self.case_number.setReadOnly(True)
         
         self.layout1.addWidget(self.titre)
-        self.layout1.addWidget(self.case)
+        #self.layout1.addWidget(self.case)
         self.layout1.addLayout(self.layout2)
         self.layout1.addLayout(self.layout3)
         self.layout1.addLayout(self.layout4)
@@ -69,6 +69,10 @@ class Case(QWidget):
     
     def getCategory(self):
         return self.category_combo.currentText()
+    
+    def setCategory(self, category : str):
+        if category != None:
+            self.category_combo.setCurrentText(category)
     
     # Send the new category
     def categoryChanged(self):
@@ -182,7 +186,7 @@ class Contenu(QWidget):
 
         if ok:
             self.signalEditProduct.emit([product, new_quantity])
-    
+
 class MainWindow(QMainWindow):
     signalOpenProject = pyqtSignal(str)
     signalCreateProject = pyqtSignal()
@@ -199,6 +203,8 @@ class MainWindow(QMainWindow):
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
         
+        
+        # Widget creation
         self.case_widget = Case()
         self.contenu_widget = Contenu()
 
