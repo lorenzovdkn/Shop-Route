@@ -19,6 +19,12 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
+    def getStatut(self) -> bool:
+        return self.statut
+    
+    def getCategory(self) -> str:
+        return self.categorie
+    
     def getArticles(self) -> dict:
         return self.articles
     
@@ -53,6 +59,12 @@ class Grille:
     
     def getVerouiller(self) -> bool:
         return self.verouiller
+    
+    def getDecalage(self) -> tuple:
+        return self.decalage
+    
+    def getPas(self) -> float:
+        return self.pas
     
     def setImage(self, image : str) -> None:
         self.image = image
@@ -183,6 +195,14 @@ class ModelMagasin:
         for case in self.__listCase[1]:
             caseList[case.getPosition()] = case.getColor()
         return caseList
+    
+    def getCase(self, position : tuple) -> Case :
+        for case in self.__listCase[1]:
+            if case.getPosition() == position:
+                return case
+            
+    def getData(self) -> dict:
+        return self.data_projet
             
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
