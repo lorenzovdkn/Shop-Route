@@ -5,6 +5,7 @@ import time,sys
 
 class Grid(QGraphicsView):
     
+    # Signaux émits
     positionSignal : pyqtSignal = pyqtSignal(tuple)
     lockedSignal : pyqtSignal = pyqtSignal(bool)
     sizeSignal : pyqtSignal = pyqtSignal(int,int)
@@ -31,15 +32,35 @@ class Grid(QGraphicsView):
         self.sceneWidth = self.scene.width()
         self.sceneHeight = self.scene.height()
 
-    def getGridSize(self):
+    '''
+    Permet de récupérer la taille de la grille
+    Return
+    tuple : (longueur, hauteur) de la grille
+    '''
+    def getGridSize(self) -> tuple:
         return (self.width,self.height)
     
-    def getStep(self):
+    '''
+    Permet de récupérer la taille d'une case
+    Return:
+    float: Taille longueur/hauteur d'une case
+    '''
+    def getStep(self) -> float:
         return self.step
-        
-    def isLocked(self):
+    
+    '''
+    Permet de récupérer l'état de la grille.
+    Return:
+    boolean : True, la grille est verrouillé / False , la grille n'est pas verrouillé
+    '''
+    def isLocked(self) -> bool:
         return self.locked
 
+    '''
+    Permet de définir l'image en fond de la grille
+    Paramètre:
+    picture (str): chemin vers l'image
+    '''
     def setPicture(self, picture : str):
         self.picture = picture
     
@@ -132,7 +153,7 @@ class Grid(QGraphicsView):
             self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
-    def setGrid(self, width : int, height : int, step : float, offset : tuple, position_dict : dict):
+    def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
         
         if(width is not None):
             self.width = width
@@ -142,6 +163,8 @@ class Grid(QGraphicsView):
             step = self.step
         if(offset is not None):
             self.offset = QPoint(offset[0],offset[1])
+        if(locked is not None):
+            self.locked = locked
         self.drawGrid(position_dict)
             
 
