@@ -158,6 +158,7 @@ class VueProjet(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        self.app = app
         self.dico_courses = {}
         self.parcours = []
 
@@ -200,7 +201,25 @@ class VueProjet(QMainWindow):
         # Menu bar
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
+        menu_theme = menu_bar.addMenu("Theme")
+        menu_outils = menu_bar.addMenu("Outils")
+        
+        # Actions
         menu_fichier.addAction('Ouvrir', self.ouvrir)
+        menu_outils.addAction('Génerer liste Aléatoire   (Ctrl+R)', self.coursesAleatoires)
+        
+        
+        
+        """ Les lambdas sont utilisées pour connecter les actions des menus déroulants à des méthodes de la classe de manière à ce que ces méthode
+        s puissent recevoir des arguments spécifiques lorsque les actions sont déclenchées 
+        (plus simplement en gros ils me permettent d'utiliser les méthodes de la classe avec le thème) """
+        menu_theme.addAction('Light', lambda: self.setTheme('Light'))
+        menu_theme.addAction('Dark', lambda: self.setTheme('Dark'))
+        menu_theme.addAction('Adaptic', lambda: self.setTheme('Adaptic'))
+        menu_theme.addAction('Combinear', lambda: self.setTheme('Combinear'))
+        menu_theme.addAction('Diffnes', lambda: self.setTheme('Diffnes'))
+        menu_theme.addAction('Takezo', lambda: self.setTheme('Takezo'))
+        
         
         # Docks
         self.dock = QDockWidget('Liste des articles')
@@ -267,8 +286,31 @@ class VueProjet(QMainWindow):
                 product_item = QTreeWidgetItem([product])
                 category_item.addChild(product_item)
                 
+                
+    # Utiliser pour définir un thème
+    def setTheme(self, theme_name: str) -> None:
+        print("Set Theme called with theme_name:", theme_name)
+        if theme_name == "Dark":
+            dark_theme_stylesheet = sys.path[0] + "/../fichiers_qss/Dark.qss"
+            self.app.setStyleSheet(open(dark_theme_stylesheet).read())
+        elif theme_name == "Light":
+            light_theme_stylesheet = sys.path[0] +  "/../fichiers_qss/Light.qss"
+            self.app.setStyleSheet(open(light_theme_stylesheet).read())
+        elif theme_name == "Adaptic":
+            light_theme_stylesheet = sys.path[0] +  "/../fichiers_qss/Adaptic.qss"
+            self.app.setStyleSheet(open(light_theme_stylesheet).read())
+        elif theme_name == "Combinear":
+            light_theme_stylesheet = sys.path[0] +  "/../fichiers_qss/Combinear.qss"
+            self.app.setStyleSheet(open(light_theme_stylesheet).read())
+        elif theme_name == "Diffnes":
+            light_theme_stylesheet = sys.path[0] +  "/../fichiers_qss/Diffnes.qss"
+            self.app.setStyleSheet(open(light_theme_stylesheet).read())
+        elif theme_name == "Takezo":
+            light_theme_stylesheet = sys.path[0] +  "/../fichiers_qss/Takezo.qss"
+            self.app.setStyleSheet(open(light_theme_stylesheet).read())                
 
 
+    # Envoi signaux
     def analyseParcours(self):
         self.analyseClicked.emit()
         self.grid.setParcours(self.parcours)
@@ -293,14 +335,7 @@ class VueProjet(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    parcours = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9),
-                (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9),
-                (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9),
-                (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8), (3, 9),
-                (4, 0), (4, 1), (4, 2), (4, 3), (4, 4), (4, 5), (4, 6), (4, 7), (4, 8), (4, 9),
-                (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (5, 7), (5, 8), (5, 9),]
+
     fenetre = VueProjet()
-    fenetre.set_parcours(parcours)
-    fenetre.grid.setParcours(parcours)
     fenetre.show()
     sys.exit(app.exec())
