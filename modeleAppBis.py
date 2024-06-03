@@ -6,6 +6,7 @@
 '''
 from filepile import File
 import json
+import random
 
 class Case(object) :
     '''Classe définissant une case à partir de sa position : x, y.
@@ -225,6 +226,19 @@ class Modele(object):
     
         return dico_categorie
     
+    def getArticlesList(self) -> list:
+        cases = self.getCasesProducts()
+        articles_list = []
+
+        for case in cases:
+            articles = case['articles']
+
+            for article, (quantite, x) in articles.items():
+                if quantite > 0:
+                    articles_list.append(article)
+
+        return articles_list
+    
     #Calcule la distance entre 2 points
     def distance(self, pos1, pos2):
         return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
@@ -268,6 +282,13 @@ class Modele(object):
                 self.grille.setLockGrid(tuple(case["position"]),True)
             if case["statut"] == "Produit":
                 self.grille.getCases()[case["position"][1]][case["position"][0]].setContenu("Produit")
+
+    def random_course(self):
+        self.liste_course = []
+        article_list = self.getArticlesList()
+        if article_list:
+            self.liste_course = random.choices(article_list, k=20)
+    
 
 ########### Exemple d'utilisation ######################################################################################
 if __name__ == '__main__' :

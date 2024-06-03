@@ -16,6 +16,7 @@ class Controller:
         self.vue.analyseClicked.connect(self.analyser_parcours)
         self.vue.fnameOpen.connect(self.ouvrir_fichier)
         self.vue.grid.positionSignal.connect(self.update_position)
+        self.vue.dicoAleatoireClicked.connect(self.creation_liste_random)
 
         # Charger les articles depuis le modèle
         self.vue.afficherArticles(self.modele.getArticle())
@@ -43,6 +44,8 @@ class Controller:
         # Supprime un produit de la liste de course dans le modèle
         self.modele.deleteProduct(produit)
         liste = self.modele.getListeCourse()
+        produit = self.modele.article_priorite()
+        self.vue.grid.setProduit(produit)
         self.vue.afficher_liste_course(liste)
         #self.vue.liste_course.takeTopLevelItem(self.vue.liste_course.indexOfTopLevelItem(item))
 
@@ -53,6 +56,12 @@ class Controller:
         print(self.modele.getListeCourse())
         self.vue.grid.setParcours(chemin)
 
+    def creation_liste_random(self):
+        self.modele.random_course()
+        produit = self.modele.article_priorite()
+        self.vue.grid.setProduit(produit)
+        liste = self.modele.getListeCourse()
+        self.vue.afficher_liste_course(liste)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

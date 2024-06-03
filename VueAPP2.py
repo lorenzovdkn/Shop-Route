@@ -171,6 +171,7 @@ class VueProjet(QMainWindow):
     supprimerClicked = pyqtSignal(str) # Envoi le produit a delete
     analyseClicked = pyqtSignal() # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
+    dicoAleatoireClicked = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -195,7 +196,8 @@ class VueProjet(QMainWindow):
         self.analyse.setMaximumWidth(400)
         self.ajout = QPushButton('Ajouter à la liste de courses')
         self.supprimer = QPushButton('Supprimer de la liste de courses')
-        
+        self.dico_create = QPushButton('Génerer une liste de courses aléatoire')
+
         # Grid Widget
         self.grid = Grid()
         
@@ -204,7 +206,7 @@ class VueProjet(QMainWindow):
         self.rightLayout.addWidget(self.grid)
         self.bottomRight_layout.addWidget(self.analyse)
         self.rightLayout.addLayout(self.bottomRight_layout)
-
+        self.bottomRight_layout.addWidget(self.dico_create)
         
         # Add right layout to main layout
         self.layout_principal.addLayout(self.dock_container)
@@ -246,6 +248,7 @@ class VueProjet(QMainWindow):
         self.ajout.clicked.connect(self.ajouter_article)
         self.supprimer.clicked.connect(self.supprimer_article)
         self.analyse.clicked.connect(self.analyseParcours)  # Corrected signal connection
+        self.dico_create.clicked.connect(self.course_aleatoire)
 
     def ouvrir(self) -> str:
         """
@@ -332,7 +335,6 @@ class VueProjet(QMainWindow):
         self.liste_course.clear()
         for product in liste:
             course_item = QTreeWidgetItem([product])
-            print("deddd")
             self.liste_course.addTopLevelItem(course_item)
 
     def analyseParcours(self):
@@ -349,6 +351,9 @@ class VueProjet(QMainWindow):
             
     def set_dico_articles(self, dico_articles):
         self.dico_articles = dico_articles
+
+    def course_aleatoire(self):
+        self.dicoAleatoireClicked.emit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
