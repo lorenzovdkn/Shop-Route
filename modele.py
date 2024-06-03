@@ -54,6 +54,9 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
+    def getStatut(self) -> bool:
+        return self.statut
+      
     # Méthode à revoir
     def ajouterArticle(self, article):
         ''' 
@@ -135,6 +138,18 @@ class Grille:
         '''
         self.verrouiller = state
     
+    def getDecalage(self) -> tuple:
+        return self.decalage
+    
+    def getPas(self) -> float:
+        return self.pas
+        
+    def setPas(self, pas : float) -> None:
+        self.pas = pas
+        
+    def setDecalage(self, decalage : tuple) -> None:
+        self.decalage = decalage
+        
     def getVerrouiller(self) -> bool:
         ''' 
         Récupérer le statut de la grille. 
@@ -174,7 +189,9 @@ class ModelMagasin:
             "nom_projet": "Nom du projet",
             "auteurs": "",
             "nom_magasin": "Nom du magasin",
+            "adresse_du_magasin": "",
             "date": "2024-05-23"  # Exemple de date
+            
         }
         # si un fichier est fourni : on charge 
         # if jsonFile: self.open(jsonFile)
@@ -232,6 +249,16 @@ class ModelMagasin:
                 return case.getCategory()
         return "Aucune"
     
+    def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
+        self.data_projet["nom_project"] = projectName
+        self.data_projet["auteurs"] = authors
+        self.data_projet["nom_du_magasin"] = marketName
+        self.data_projet["adresse_du_magasin"] = addressMarket
+        self.data_projet["date"] = dateCreation
+        
+    def ajouterCase(self, case : list):
+        self.__current: int = 0
+
     # Méthode à revoir
     def ajouterCase(self, case: list):
         ''' 
@@ -336,6 +363,14 @@ class ModelMagasin:
             if(case.getCategory() != "Aucune"):
                 caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
         return caseList
+    
+    def getCase(self, position : tuple) -> Case :
+        for case in self.__listCase[1]:
+            if case.getPosition() == position:
+                return case
+            
+    def getData(self) -> dict:
+        return self.data_projet
             
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
@@ -398,13 +433,26 @@ class ModelMagasin:
             )
             self.__listCase[1].append(case)
 
+        # Charger les données du projet
+        self.data_projet = data["data_projet"]
+
+
     def save(self, filename: str):
+      
         ''' 
-            Permet de sauvegarder le projet courant. 
-            Paramètre: 
-            filename (str): Chemin du fichier de sauvegarde
+        Permet de sauvegarder le projet courant. 
+        Paramètre: 
+        filename (str): Chemin du fichier de sauvegarde
              
         '''
+        # Vérifier si le dossier 'saves' existe, sinon le créer
+        save_dir = 'saves'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # Construire le chemin complet du fichier
+        full_path = os.path.join(save_dir, filename)
+
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -413,12 +461,30 @@ class ModelMagasin:
             "decalage": self.grille.decalage,
             "verrouiller": self.grille.getVerouiller()
         }
-        
+
         # Convertir les cases en liste de dictionnaires
         cases_dict = []
         for case in self.__listCase[1]:
-            if case.getPosition() == self.currentCase:
-                case.setArticles({})
+            case_dict = {
+                "position": case.getPosition(),
+                "articles": case.getArticles(),
+                "categorie": case.categorie,
+                "couleur": case.getColor(),
+                "statut": case.statut
+            }
+            cases_dict.append(case_dict)
+
+        # Construire le dictionnaire final
+        data = {
+            "grille": grille_dict,
+            "cases": cases_dict,
+            "data_projet": self.data_projet
+        }
+
+        # Sauvegarder dans un fichier JSON
+        with open(full_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
                 
     def RemoveSave(filepath: str):
         """
