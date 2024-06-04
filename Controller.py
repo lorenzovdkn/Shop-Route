@@ -77,7 +77,7 @@ class Controller:
     def add_article_modele(self, article : dict) -> None :
         self.model.ajouterArticle(article)
         self.view.contenu_widget.updateArticle(article)
-        self.view.gridWidget.grid.drawGrid(None,None,None,None,None,self.model.getUsedCase())
+        self.view.gridWidget.grid.drawGrid(self.model.getUsedCase())
         
     def delete_article(self, articleName : str) -> None :
         self.model.supprimerArticle(articleName) # manque la case
@@ -88,7 +88,7 @@ class Controller:
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
 
     def changedCategory(self, category : str) -> None :
-        self.model.clearArticle()
+        #self.model.clearArticle()
         self.model.setCategory(category)
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
         usedCase = self.model.getUsedCase()
