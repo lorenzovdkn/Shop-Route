@@ -31,6 +31,10 @@ class Grid(QGraphicsView):
         self.drawGrid({})
         self.sceneWidth = self.scene.width()
         self.sceneHeight = self.scene.height()
+        
+        self.update_timer = QTimer()
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.drawGrid)
 
     '''
     Permet de récupérer la taille de la grille
@@ -63,7 +67,13 @@ class Grid(QGraphicsView):
     '''
     def setPicture(self, picture : str):
         self.picture = picture
-    
+        pixmap = QPixmap(self.picture)
+        self.image_item = QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(self.image_item) 
+        
+        self.sceneWidth = self.scene.width()
+        self.sceneHeight = self.scene.height()
+
     def setGridContent(self, gridContent: dict):
         self.gridContent = gridContent
         
@@ -137,14 +147,14 @@ class Grid(QGraphicsView):
                 event.ignore()
                 self.step = self.step - 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
         # Increase the size of the grid
         elif event.angleDelta().y() > 0 and not self.locked:
             if(self.step < 50):
                 event.ignore()
                 self.step = self.step + 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
     
     def lockGrid(self):
         if(not self.locked):
@@ -178,14 +188,14 @@ class GridWidget(QWidget):
         self.widthEdit : QSpinBox = QSpinBox()
         self.widthEdit.setFixedWidth(50)
         self.widthEdit.setMinimum(10)
-        self.widthEdit.setMaximum(60)
+        self.widthEdit.setMaximum(160)
         self.widthEdit.setValue(self.grid.width)
         self.widthEdit.textChanged.connect(self.modifiedSize)
         self.label : QLabel = QLabel("x")
         self.heightEdit : QSpinBox = QSpinBox()
         self.heightEdit.setFixedWidth(50)
         self.heightEdit.setMinimum(10)
-        self.heightEdit.setMaximum(60)
+        self.heightEdit.setMaximum(160)
         self.heightEdit.setValue(self.grid.height)
         self.heightEdit.textChanged.connect(self.modifiedSize)
         self.statusLabel : QLabel = QLabel("Veuillez positionner la grille - Statut : Non verrouillée")
@@ -209,9 +219,11 @@ class GridWidget(QWidget):
             
     def modifiedSize(self):
         if(self.widthEdit.text() != self.grid.width and self.widthEdit.value() is not None):
-            self.grid.drawGrid(int(self.widthEdit.value()))
+            self.grid.width = int(self.widthEdit.value())
         if(self.heightEdit.text() != self.grid.height and self.heightEdit.value() is not None):
-            self.grid.drawGrid(None,int(self.heightEdit.value()))
+            self.grid.height = int(self.heightEdit.value())
+
+        self.grid.drawGrid()
         
     def lockGrid(self):
         self.bouton.setDisabled(True)
