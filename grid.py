@@ -68,8 +68,7 @@ class Grid(QGraphicsView):
         self.gridContent = gridContent
         
     # Draw the grid
-    def drawGrid(self, position_dict : dict | None):
-        print("Drawing grid ", position_dict, "type ", type(position_dict))
+    def drawGrid(self, position_dict : dict = None):
         if(position_dict is not None):
             self.gridContent = position_dict
 

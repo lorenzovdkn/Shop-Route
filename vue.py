@@ -143,7 +143,7 @@ class Contenu(QWidget):
         return self.case
         
     def addProduct(self, product_list_import : list, current_category : str):
-        if current_category == 'aucune':
+        if current_category == 'Aucune':
             QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
             return 
         
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
         self.leftLayout.addWidget(self.contenu_widget)
         
         self.gridWidget = grid.GridWidget()
-        self.mainLayout.addWidget(self.gridWidget)
+        self.mainLayout.addWidget(self.gridWidget,2)
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
