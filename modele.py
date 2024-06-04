@@ -459,7 +459,7 @@ class ModelMagasin:
             "tailleGrille": self.grille.getTailleGrille(),
             "pas": self.grille.pas,
             "decalage": self.grille.decalage,
-            "verrouiller": self.grille.getVerouiller()
+            "verrouiller": self.grille.getVerrouiller()
         }
 
         # Convertir les cases en liste de dictionnaires
