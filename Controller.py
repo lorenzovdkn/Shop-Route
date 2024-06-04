@@ -18,6 +18,8 @@ class Controller:
         
         # signals linked to the selecting projet
         self.view.load_window.signalOpenProject.connect(self.open_project)
+        self.view.load_window.signalCreateProject.connect(self.open_new_project)
+        self.view.load_window.signalCreateProject.connect(self.create_new_project)
         
         # Signals linked to the grid (view)
         #self.view.grid.lockedSignal.connect()
@@ -52,12 +54,46 @@ class Controller:
         self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
         
+    '''Define the grid methods'''
+    # Load in the model the creating project and update the view
+    def create_new_project(self, name, authors, store_name, store_address, creation_date, file_name) :  # name, authors, store_name, store_address, creation_date, file_name
+        self.image_path = self.view.gridWidget.copyFileToAppDir(file_name)
+        
+        self.model.grille.setImage(self.image_path)
+        self.model.setDataProject(name, authors, store_name, store_address, creation_date)
+        self.model.save(str(name) + str(creation_date))
+        
+        self.view.load_window.hide()
+        self.view.setCentralWidget(self.view.central_widget)
+        
+        imagePath = self.view.gridWidget.copyFileToAppDir(file_name)
+        self.view.gridWidget.grid.setPicture(imagePath)
+        
     
     '''Define the selecting project functions'''
     # Open the project and load the main window
-    def open_project(self):
+    def open_project(self, filename):
+        self.model.load(filename)
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
+        
+        width = self.model.grille.getTailleGrille()[0]
+        print(width)
+        height = self.model.grille.getTailleGrille()[1]
+        step = self.model.grille.getPas()
+        offset = self.model.grille.getDecalage()
+        lock = self.model.grille.getVerouiller()
+        positions : dict = self.model.getUsedCase()        
+        
+        self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)
+        self.view.updateAllView(self.model.getArticlesCase(), self.model.currentCase, self.model.getCategoryJson, self.model.getCase(self.model.currentCase).getStatut(), self.model.getCase(self.model.currentCase).getCategory(),
+                                width, height, step, offset, lock, positions)
+        
+    def open_new_project(self, project):
+        self.view.load_window.hide()
+        self.view.setCentralWidget(self.view.central_widget)
+        
+        # manque la mise à jour de la vue
     
     def addCategory(self):
         list_category = ['Aucune'] + list(self.model.getCategoryJson())
