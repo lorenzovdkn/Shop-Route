@@ -78,7 +78,6 @@ class Controller:
         self.view.setCentralWidget(self.view.central_widget)
         
         width = self.model.grille.getTailleGrille()[0]
-        print(width)
         height = self.model.grille.getTailleGrille()[1]
         step = self.model.grille.getPas()
         offset = self.model.grille.getDecalage()
