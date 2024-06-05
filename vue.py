@@ -205,13 +205,14 @@ class MainWindow(QMainWindow):
         
         
         # Widget creation
+        self.gridWidget = grid.GridWidget()
         self.case_widget = Case()
         self.contenu_widget = Contenu()
+        
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
         
-        self.gridWidget = grid.GridWidget()
         self.mainLayout.addWidget(self.gridWidget,2)
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
@@ -225,7 +226,7 @@ class MainWindow(QMainWindow):
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
         self.setCentralWidget(self.load_window)
-
+            
     def open_project(self):
         self.load_window.show()
 
@@ -233,7 +234,7 @@ class MainWindow(QMainWindow):
         self.signalOpenProject.emit(project_name)
         
 
-    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int, height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
+    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int , height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
         self.contenu_widget.updateArticle(articles)
         # self.case_widget.updateCase(position, status, categories, current_category)

@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QSpinBox, QLabel, QPushButton
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QTimer
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QSpinBox, QLabel, QPushButton, QGraphicsLineItem
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QTimer, QSize
 from PyQt6.QtGui import QPixmap, QColor
 import time,sys, os
 
@@ -27,10 +27,15 @@ class Grid(QGraphicsView):
         self.locked : bool = False
         self.picture : str = ""
         self.gridContent : dict = {}
-        
+        self.sizeWidth = self.size().width()
+        self.sceneWidth = self.size().width()
+        self.sceneHeight = self.size().height()
         self.drawGrid({})
-        self.sceneWidth = self.scene.width()
-        self.sceneHeight = self.scene.height()
+        
+        
+        self.update_timer = QTimer()
+        self.update_timer.setSingleShot(True)
+        self.update_timer.timeout.connect(self.drawGrid)
 
     '''
     Permet de récupérer la taille de la grille
@@ -63,6 +68,10 @@ class Grid(QGraphicsView):
     '''
     def setPicture(self, picture : str):
         self.picture = picture
+        pixmap = QPixmap(self.picture)
+        pixmap = pixmap.scaledToWidth(int(self.size().width()), Qt.TransformationMode.SmoothTransformation)
+        self.image_item = QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(self.image_item)
     
     def setGridContent(self, gridContent: dict):
         self.gridContent = gridContent
@@ -74,19 +83,31 @@ class Grid(QGraphicsView):
 
         self.scene.clear()
         
-        if(self.picture != None):
+        if(self.picture != None and self.sizeWidth != None):
             pixmap = QPixmap(self.picture)
+            pixmap = pixmap.scaledToWidth(self.sizeWidth, Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
-            self.scene.addItem(self.image_item)   
+            self.scene.addItem(self.image_item)
         
-        for x in range(0, self.width):
-            for y in range(0, self.height):
-                rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), self.step, self.step)
-                if((x,y) in [position for position in self.gridContent.keys()]):
-                    color = QColor(self.gridContent.get((x,y)))
-                    color.setAlpha(150)
-                    rect.setBrush(color)
-                self.scene.addItem(rect)
+        if(self.locked):
+            for x in range(0, self.width):
+                for y in range(0, self.height):
+                    rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), self.step, self.step)
+                    if((x,y) in [position for position in self.gridContent.keys()]):
+                        color = QColor(self.gridContent.get((x,y)))
+                        color.setAlpha(150)
+                        rect.setBrush(color)
+                    self.scene.addItem(rect)
+        else:
+            long = self.width * self.step + self.offset.x()
+            haut = self.height * self.step + self.offset.y()
+            for x in range(0,self.width+2):
+                for y in range(0,self.height+2):
+                                        
+                    lineX = QGraphicsLineItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), long ,(y-1)*self.step + self.offset.y())
+                    lineY = QGraphicsLineItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), (x-1)*self.step + self.offset.x() , haut)
+                    self.scene.addItem(lineX)
+                    self.scene.addItem(lineY)
                 
      # Manage the click event
     def mousePressEvent(self, event):
@@ -110,16 +131,16 @@ class Grid(QGraphicsView):
             self.offset += delta
             if self.offset.x() <= -self.sceneWidth//10:
                 self.offset.setX(0)
-                self.dragging = False
+                #self.dragging = False
             if self.offset.x() + (self.width * self.step) > self.sceneWidth + self.sceneWidth//10:
                 self.offset.setX((int) (self.sceneWidth - (self.width * self.step)))
-                self.dragging = False
+                #self.dragging = False
             if self.offset.y() <= -self.sceneHeight//10:
                 self.offset.setY(0)
-                self.dragging = False
+                #self.dragging = False
             if self.offset.y() + (self.height * self.step) > self.sceneHeight + self.sceneHeight//10:
                 self.offset.setY((int) (self.sceneHeight - (self.height * self.step)))
-                self.dragging = False
+                #self.dragging = False
             
             self.lastPos = event.pos()
             self.drawGrid()
@@ -137,14 +158,14 @@ class Grid(QGraphicsView):
                 event.ignore()
                 self.step = self.step - 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
         # Increase the size of the grid
         elif event.angleDelta().y() > 0 and not self.locked:
             if(self.step < 50):
                 event.ignore()
                 self.step = self.step + 1
                 self.drawGrid()
-                time.sleep(0.01)
+                self.update_timer.start(10)
     
     def lockGrid(self):
         if(not self.locked):
@@ -178,14 +199,14 @@ class GridWidget(QWidget):
         self.widthEdit : QSpinBox = QSpinBox()
         self.widthEdit.setFixedWidth(50)
         self.widthEdit.setMinimum(10)
-        self.widthEdit.setMaximum(60)
+        self.widthEdit.setMaximum(100)
         self.widthEdit.setValue(self.grid.width)
         self.widthEdit.textChanged.connect(self.modifiedSize)
         self.label : QLabel = QLabel("x")
         self.heightEdit : QSpinBox = QSpinBox()
         self.heightEdit.setFixedWidth(50)
         self.heightEdit.setMinimum(10)
-        self.heightEdit.setMaximum(60)
+        self.heightEdit.setMaximum(100)
         self.heightEdit.setValue(self.grid.height)
         self.heightEdit.textChanged.connect(self.modifiedSize)
         self.statusLabel : QLabel = QLabel("Veuillez positionner la grille - Statut : Non verrouillée")
@@ -209,9 +230,11 @@ class GridWidget(QWidget):
             
     def modifiedSize(self):
         if(self.widthEdit.text() != self.grid.width and self.widthEdit.value() is not None):
-            self.grid.drawGrid(int(self.widthEdit.value()))
+            self.grid.width = int(self.widthEdit.value())
         if(self.heightEdit.text() != self.grid.height and self.heightEdit.value() is not None):
-            self.grid.drawGrid(None,int(self.heightEdit.value()))
+            self.grid.height = int(self.heightEdit.value())
+
+        self.grid.drawGrid()
         
     def lockGrid(self):
         self.bouton.setDisabled(True)

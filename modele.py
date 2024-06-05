@@ -134,7 +134,7 @@ class Grille:
         ''' 
         Définir le statut de la grille. 
         Paramètre:
-        state(bool) : pour verrouiller/déverouiller la grille
+        state(bool) : pour verrouiller/déverrouiller la grille
         '''
         self.verrouiller = state
     
@@ -459,7 +459,7 @@ class ModelMagasin:
             "tailleGrille": self.grille.getTailleGrille(),
             "pas": self.grille.pas,
             "decalage": self.grille.decalage,
-            "verrouiller": self.grille.getVerouiller()
+            "verrouiller": self.grille.getVerrouiller()
         }
 
         # Convertir les cases en liste de dictionnaires
