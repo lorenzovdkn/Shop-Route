@@ -120,6 +120,8 @@ class LoadProjectWindow(QWidget):
 
         # Bouton pour créer un nouveau projet
         create_button = QPushButton('+')
+        create_button.setStyleSheet('font-size: 30px; font-weight: bold')
+
         create_button.setFixedSize(button_size)
         create_button.clicked.connect(self.create_project)
 
@@ -165,6 +167,7 @@ class CreateProjectDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.file_name = None
         self.setWindowTitle('Créer un Projet')
         self.layout = QVBoxLayout(self)
         

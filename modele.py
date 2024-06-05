@@ -182,15 +182,15 @@ class ModelMagasin:
         'Articles Maison': '#B0E0E6',  
         'Hygiène': '#FFB6C1',          
         'Bureau': '#4682B4',           
-        'Animaux': '#8A2BE2'           
+        'Animaux': '#8A2BE2'            
     }
         # Informations sur le projet
         self.data_projet = {
-            "nom_projet": "Nom du projet",
+            "nom_projet": "",
             "auteurs": "",
-            "nom_magasin": "Nom du magasin",
+            "nom_magasin": "",
             "adresse_du_magasin": "",
-            "date": "2024-05-23"  # Exemple de date
+            "date": ""  # Exemple de date
             
         }
         # si un fichier est fourni : on charge 
@@ -250,9 +250,10 @@ class ModelMagasin:
         return "Aucune"
     
     def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
-        self.data_projet["nom_project"] = projectName
+        print("setdataproject :", projectName, authors, marketName, addressMarket, dateCreation)
+        self.data_projet["nom_projet"] = projectName
         self.data_projet["auteurs"] = authors
-        self.data_projet["nom_du_magasin"] = marketName
+        self.data_projet["nom_magasin"] = marketName
         self.data_projet["adresse_du_magasin"] = addressMarket
         self.data_projet["date"] = dateCreation
         
@@ -438,12 +439,10 @@ class ModelMagasin:
 
 
     def save(self, filename: str):
-      
         ''' 
         Permet de sauvegarder le projet courant. 
         Paramètre: 
         filename (str): Chemin du fichier de sauvegarde
-             
         '''
         # Vérifier si le dossier 'saves' existe, sinon le créer
         save_dir = 'saves'
@@ -484,6 +483,7 @@ class ModelMagasin:
         # Sauvegarder dans un fichier JSON
         with open(full_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
 
                 
     def RemoveSave(filepath: str):

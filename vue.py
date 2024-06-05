@@ -191,11 +191,16 @@ class MainWindow(QMainWindow):
     signalOpenProject = pyqtSignal(str)
     signalCreateProject = pyqtSignal()
     
+    '''signals for the menu'''
+    signalNew = pyqtSignal()
+    signalSave = pyqtSignal()
+    signalExport = pyqtSignal()
+    signalOpen = pyqtSignal()
+    
     def __init__(self):
         super().__init__()
         self.resize(1200, 600)
-        menu_bar = self.menuBar()
-        menu_fichier = menu_bar.addMenu("Fichier")
+        
         
         self.central_widget = QWidget()
         # self.setCentralWidget(self.central_widget)
@@ -207,6 +212,7 @@ class MainWindow(QMainWindow):
         # Widget creation
         self.case_widget = Case()
         self.contenu_widget = Contenu()
+        self.load_window = LoadProjectWindow()
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
@@ -218,19 +224,36 @@ class MainWindow(QMainWindow):
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
 
         # Ajouter la barre de menu
-        action_ouvrir = menu_fichier.addAction("Ouvrir")
-        action_ouvrir.triggered.connect(self.open_project)
 
-        self.load_window = LoadProjectWindow()
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
         self.setCentralWidget(self.load_window)
+        
+        menu_bar = self.menuBar()
+        menu_fichier = menu_bar.addMenu("Fichier")
+        menu_fichier.addAction('Nouveau', self.new)        
+        menu_fichier.addAction('Ouvrir', self.signalOpen)
+        menu_fichier.addSeparator()
+        menu_fichier.addAction('Enregistrer', self.save)
+        menu_fichier.addSeparator()
+        menu_fichier.addAction('Exporter...', self.export) 
 
     def open_project(self):
         self.load_window.show()
 
     def open_existing_project(self, project_name):
         self.signalOpenProject.emit(project_name)
+        
+    '''methods for the menu'''
+        
+    def new(self):
+        ...
+        
+    def save(self):
+        ...
+        
+    def export(self):
+        ...
         
 
     def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int, height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
