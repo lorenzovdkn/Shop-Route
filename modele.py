@@ -138,6 +138,12 @@ class Grille:
         '''
         self.verrouiller = state
     
+    def setOffset(self, offset : int) -> None:
+        self.offset = offset
+        
+    def setStep(self, step : int) -> None:
+        self.pas = step
+    
     def getDecalage(self) -> tuple:
         return self.decalage
     
@@ -146,9 +152,6 @@ class Grille:
         
     def setPas(self, pas : float) -> None:
         self.pas = pas
-        
-    def setDecalage(self, decalage : tuple) -> None:
-        self.decalage = decalage
         
     def getVerrouiller(self) -> bool:
         ''' 
@@ -166,6 +169,7 @@ class ModelMagasin:
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
         self.category : str = None
+        self.filepath : str = None
         self.categoryColors: dict = {
         'Légumes': '#228B22',           
         'Poissons': '#1E90FF',          
@@ -190,11 +194,9 @@ class ModelMagasin:
             "auteurs": "",
             "nom_magasin": "",
             "adresse_du_magasin": "",
-            "date": ""  # Exemple de date
+            "date": ""  
             
         }
-        # si un fichier est fourni : on charge 
-        # if jsonFile: self.open(jsonFile)
     
     
     def setCategory(self, category : str):
@@ -372,7 +374,9 @@ class ModelMagasin:
             
     def getData(self) -> dict:
         return self.data_projet
-            
+           
+    def getFilePath(self) -> str:
+        return self.filepath
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
         ''' 
@@ -408,6 +412,9 @@ class ModelMagasin:
             Paramètre: 
             filename (str): Chemin du fichier de sauvegarde
         '''
+        self.filepath = filename
+        print("load", filename)
+        
         # Lire le fichier JSON
         with open(filename, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -450,8 +457,9 @@ class ModelMagasin:
             os.makedirs(save_dir)
 
         # Construire le chemin complet du fichier
-        full_path = os.path.join(save_dir, filename)
-
+        full_path = os.path.join(filename)
+        self.filepath = full_path
+        print("save : ", full_path)
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -486,7 +494,7 @@ class ModelMagasin:
 
 
                 
-    def RemoveSave(filepath: str):
+    def RemoveSave(self, filepath: str):
         """
         Removes the specified file if it exists.
 

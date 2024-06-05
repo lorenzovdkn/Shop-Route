@@ -9,10 +9,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPixmap
 
 class ProjectDetailsDialog(QDialog):
+    signalDeleteSave = pyqtSignal()
     def __init__(self, project_data, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Projet")
-
         self.layout = QVBoxLayout(self)
 
         self.details_label = QLabel(self.format_project_details(project_data), self)
@@ -28,7 +28,7 @@ class ProjectDetailsDialog(QDialog):
         self.buttons_layout.addWidget(self.open_button)
 
         self.delete_button = QPushButton("Supprimer", self)
-        self.delete_button.clicked.connect(self.reject)
+        self.delete_button.clicked.connect(self.removeSave)
         self.buttons_layout.addWidget(self.delete_button)
 
         self.cancel_button = QPushButton("Annuler", self)
@@ -39,6 +39,10 @@ class ProjectDetailsDialog(QDialog):
         
         spacer = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         self.buttons_layout.addItem(spacer)
+        
+    def removeSave(self):
+        self.signalDeleteSave.emit()
+        self.reject()
 
     def format_project_details(self, project_data):
         data_projet = project_data.get('data_projet', {}) # Extrait le sous-dictionnaire data_projet de project_data.
@@ -91,14 +95,16 @@ class LoadProjectWindow(QWidget):
         # Nettoyer la grille avant de recharger les projets
         for i in reversed(range(self.project_layout.count())): 
             widget_to_remove = self.project_layout.itemAt(i).widget()
-            self.project_layout.removeWidget(widget_to_remove)
+            if widget_to_remove:
+                self.project_layout.removeWidget(widget_to_remove)
+                widget_to_remove.deleteLater()
 
         saves_folder = "saves"
         if not os.path.exists(saves_folder):
             os.makedirs(saves_folder)
         
         row, col = 0, 0
-        max_columns = 5 # Nombre maximal de colonnes
+        max_columns = 5  # Nombre maximal de colonnes
         button_size = QSize(200, 200)  # Taille des boutons
         button_spacing = 10  # Espacement entre les boutons
 
@@ -131,6 +137,9 @@ class LoadProjectWindow(QWidget):
         else:
             self.project_layout.addWidget(create_button, row, col * 2)
 
+        # Mettre à jour la géométrie du widget de défilement
+        self.scroll_widget.setGeometry(self.project_layout.geometry())
+
     def create_project_selected_callback(self, file_name):
         def callback():
             self.project_selected(file_name)
@@ -145,12 +154,13 @@ class LoadProjectWindow(QWidget):
     def project_selected(self, project_name):
         saves_folder = "saves"
         file_path = os.path.join(saves_folder, project_name)
-        print("Chemin du fichier : ", file_path)
 
         with open(file_path, 'r', encoding='utf-8') as file:
             project_data = json.load(file)
 
         dialog = ProjectDetailsDialog(project_data, self)
+        dialog.signalDeleteSave.connect(lambda: self.deleteSave(file_path))
+        
         ret = dialog.exec()
 
         if ret == QDialog.DialogCode.Accepted:
@@ -158,8 +168,12 @@ class LoadProjectWindow(QWidget):
             self.signalOpenProject.emit(file_path)
         elif ret == QDialog.DialogCode.Rejected:
             print("Rejeté")
+
+    def deleteSave(self, file_path):
+        if file_path:
+            print("Suppression de la sauvegarde :", file_path)
             self.signalDeleteProject.emit(file_path)
-            self.load_projects()
+            self.load_projects()          
 
 class CreateProjectDialog(QDialog):
     signalCreateProject = pyqtSignal(str, str, str, str, str, str) # name, authors, store_name, store_address, creation_date, file_name

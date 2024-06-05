@@ -199,10 +199,12 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.resize(1200, 600)
+        self.setGeometry(100, 100, 800, 600)
+        self.showMaximized()
         
         
         self.central_widget = QWidget()
+        self.temp_widget = QWidget()
         # self.setCentralWidget(self.central_widget)
         self.mainLayout = QHBoxLayout(self.central_widget)
         self.leftLayout = QVBoxLayout()
@@ -229,6 +231,8 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.load_window)
         
+        
+        
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
         menu_fichier.addAction('Nouveau', self.new)        
@@ -247,10 +251,12 @@ class MainWindow(QMainWindow):
     '''methods for the menu'''
         
     def new(self):
-        ...
+        self.load_window.create_project()
+        self.load_window.signalCreateProject.connect(self.open_existing_project)
+
         
     def save(self):
-        ...
+        self.signalSave.emit()
         
     def export(self):
         ...
@@ -259,7 +265,7 @@ class MainWindow(QMainWindow):
     def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int, height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
         self.contenu_widget.updateArticle(articles)
-        # self.case_widget.updateCase(position, status, categories, current_category)
+        self.case_widget.updateCase(position, status, categories, current_category)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
