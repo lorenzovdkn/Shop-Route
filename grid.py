@@ -161,11 +161,12 @@ class Grid(QGraphicsView):
             self.locked = True
             self.sizeSignal.emit(self.width, self.height)
             self.stepSignal.emit(self.step)
+            print((self.offset.x(), self.offset.y()))
             self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
     def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
-        
+        print("grid offset: ", offset)
         if(width is not None):
             self.width = width
         if(height is not None):
@@ -263,6 +264,11 @@ class GridWidget(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")
             return None
+        
+    # use to update the Qspinboxs
+    def updateSpinbox(self, width, height):
+        self.heightEdit.setValue(height)
+        self.widthEdit.setValue(width)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

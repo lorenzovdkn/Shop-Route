@@ -138,8 +138,9 @@ class Grille:
         '''
         self.verrouiller = state
     
-    def setOffset(self, offset : int) -> None:
-        self.offset = offset
+    def setOffset(self, offset : tuple) -> None:
+        print("setOffset function : ", offset)
+        self.decalage = offset
         
     def setStep(self, step : int) -> None:
         self.pas = step
@@ -428,6 +429,7 @@ class ModelMagasin:
             tuple(grille_data["decalage"]),
             grille_data["verrouiller"]
         )
+        print("load function : ", tuple(grille_data["decalage"]))
 
         # Charger les cases
         self.__listCase[1] = []
@@ -468,6 +470,8 @@ class ModelMagasin:
             "decalage": self.grille.decalage,
             "verrouiller": self.grille.getVerrouiller()
         }
+        
+        print("saving... offset :", self.grille.decalage)
 
         # Convertir les cases en liste de dictionnaires
         cases_dict = []

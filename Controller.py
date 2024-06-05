@@ -49,6 +49,7 @@ class Controller:
     
     # Define the offset of the grid
     def setOffset(self, offset : tuple):
+        print("new offset : ", offset)
         self.model.grille.setOffset(offset)
         self.model.grille.setVerrouiller(True)
     
@@ -92,7 +93,7 @@ class Controller:
         step = self.model.grille.getPas()
         offset = self.model.grille.getDecalage()
         lock = self.model.grille.getVerrouiller()
-        print("lock status : ", lock)
+        print("offset : ", offset)
         positions : dict = self.model.getUsedCase()        
         
         self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)

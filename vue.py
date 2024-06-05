@@ -266,6 +266,7 @@ class MainWindow(QMainWindow):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
         self.contenu_widget.updateArticle(articles)
         self.case_widget.updateCase(position, status, categories, current_category)
+        self.gridWidget.updateSpinbox(width, height)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
