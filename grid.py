@@ -67,10 +67,8 @@ class Grid(QGraphicsView):
     '''
     def setPicture(self, picture : str):
         self.picture = picture
-        pixmap = QPixmap(self.picture)
-        pixmap = pixmap.scaledToWidth(int(self.size().width()), Qt.TransformationMode.SmoothTransformation)
-        self.image_item = QGraphicsPixmapItem(pixmap)
-        self.scene.addItem(self.image_item)
+        print(picture)
+        self.drawGrid()
     
     def setGridContent(self, gridContent: dict):
         self.gridContent = gridContent
@@ -83,8 +81,10 @@ class Grid(QGraphicsView):
         self.scene.clear()
         
         if(self.picture != None):
+            print("test")
             pixmap = QPixmap(self.picture)
-            pixmap = pixmap.scaledToWidth(self.sceneWidth, Qt.TransformationMode.SmoothTransformation)
+            print("R",self.sceneWidth)
+            pixmap = pixmap.scaledToWidth(self.size().width(), Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
         
@@ -128,17 +128,17 @@ class Grid(QGraphicsView):
         if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
-            if self.offset.x() <= -self.sceneWidth//10:
+            if self.offset.x() <= -self.size().width()//10:
                 self.offset.setX(0)
                 #self.dragging = False
-            if self.offset.x() + (self.width * self.step) > self.sceneWidth + self.sceneWidth//10:
-                self.offset.setX((int) (self.sceneWidth - (self.width * self.step)))
+            if self.offset.x() + (self.width * self.step) > self.size().width() + self.size().width()//10:
+                self.offset.setX((int) (self.size().width() - (self.width * self.step)))
                 #self.dragging = False
-            if self.offset.y() <= -self.sceneHeight//10:
+            if self.offset.y() <= -self.size().height()//10:
                 self.offset.setY(0)
                 #self.dragging = False
-            if self.offset.y() + (self.height * self.step) > self.sceneHeight + self.sceneHeight//10:
-                self.offset.setY((int) (self.sceneHeight - (self.height * self.step)))
+            if self.offset.y() + (self.height * self.step) > self.size().height() + self.size().height()//10:
+                self.offset.setY((int) (self.size().height() - (self.height * self.step)))
                 #self.dragging = False
             
             self.lastPos = event.pos()
@@ -181,7 +181,7 @@ class Grid(QGraphicsView):
         if(height is not None):
             self.height = height
         if(step is not None):
-            self.gridStep = step
+            self.step = step
         if(offset is not None):
             self.offset = QPoint(offset[0],offset[1])
         if(locked is not None):

@@ -41,7 +41,6 @@ class Controller:
     # Define the size of the grid    
     def setGridSize(self, width : int , height : int):
         size = (width, height)
-        print(size)
         self.model.grille.setTailleGrille(size)
     
     # Define the size of each case
@@ -62,8 +61,9 @@ class Controller:
     # Define the selected case    
     def setClickedCase(self, position : tuple):
         self.model.setCurrentCase(position)
-        self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
+        print(self.model.getCurrentCaseCategory())
         self.view.case_widget.setType(self.model.getCurrentCaseStatut())
+        self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
     
         
@@ -81,7 +81,7 @@ class Controller:
         
         imagePath = self.view.gridWidget.copyFileToAppDir(file_name)
         self.view.gridWidget.grid.setPicture(imagePath)
-        
+        self.updateAllView()
         
     
     '''Define the selecting project functions'''
@@ -110,7 +110,6 @@ class Controller:
         step = self.model.grille.getPas()
         offset = self.model.grille.getDecalage()
         lock = self.model.grille.getVerrouiller()
-        print("lock : ", lock)
         positions : dict = self.model.getUsedCase()        
         
         self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)
@@ -120,6 +119,7 @@ class Controller:
     def open_new_project(self, project):
         self.view.load_window.hide()
         self.view.setCentralWidget(self.view.central_widget)
+        self.updateAllView()
         
         # manque la mise à jour de la vue
         

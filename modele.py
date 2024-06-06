@@ -215,7 +215,7 @@ class ModelMagasin:
         '''
         self.category = category
         positionList = self.getAllPosition()
-
+        print(category)
         # Si la case n'existe pas
         if(self.currentCase not in positionList):
             color : str = ""
@@ -229,10 +229,11 @@ class ModelMagasin:
         else:
             for case in self.__listCase[1]:
                 if case.getPosition() == self.currentCase:
-                    if self.category == "Aucune":
-                        if(case.statut != "Privé"):
+                    if case.getCategory() == "Aucune":
+                        if(case.getStatut() != "Privé"):
                             self.supprimerCase()
                     else:
+                        
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
                     break
@@ -266,9 +267,10 @@ class ModelMagasin:
     def lockCase(self, statut):
         if(self.currentCase in self.getAllPosition()):
             case : Case = self.getCase(self.currentCase)
-            case.setCategory("Aucune")
             case.setStatut(statut)
+            print(case.getCategory())
             if(statut == "Privé"):
+                case.setCategory("Aucune")
                 case.setColor(self.categoryColors["Privé"])
         else :
             color = ""
