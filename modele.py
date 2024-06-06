@@ -6,7 +6,7 @@ class Case:
         self.articles : dict = articles
         self.categorie : str = categorie
         self.couleur :str = couleur
-        self.statut : bool = statut # False = public ; True = private
+        self.statut : str = statut
         if(articles is not {}):
             statut = False
         
@@ -54,8 +54,11 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
-    def getStatut(self) -> bool:
+    def getStatut(self) -> str:
         return self.statut
+    
+    def setStatut(self, type : str) -> None: 
+        self.statut = type
       
     # Méthode à revoir
     def ajouterArticle(self, article):
@@ -134,7 +137,7 @@ class Grille:
         ''' 
         Définir le statut de la grille. 
         Paramètre:
-        state(bool) : pour verrouiller/déverouiller la grille
+        state(bool) : pour verrouiller/déverrouiller la grille
         '''
         self.verrouiller = state
     
@@ -187,7 +190,8 @@ class ModelMagasin:
         'Articles Maison': '#B0E0E6',  
         'Hygiène': '#FFB6C1',          
         'Bureau': '#4682B4',           
-        'Animaux': '#8A2BE2'            
+        'Animaux': '#8A2BE2',
+        'Privé': "#808080"            
     }
         # Informations sur le projet
         self.data_projet = {
@@ -219,14 +223,15 @@ class ModelMagasin:
                 color = self.categoryColors[self.category]
             elif self.category != "Aucune":
                 color = "purple"
-            self.ajouterCase([self.currentCase, {}, self.category ,color , False])
+            self.ajouterCase([self.currentCase, {}, self.category ,color , "Publique"])
         
         # Si la case existe
         else:
             for case in self.__listCase[1]:
                 if case.getPosition() == self.currentCase:
                     if self.category == "Aucune":
-                        self.supprimerCase()
+                        if(case.statut != "Privé"):
+                            self.supprimerCase()
                     else:
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
@@ -251,6 +256,26 @@ class ModelMagasin:
             if case.getPosition() == self.currentCase:
                 return case.getCategory()
         return "Aucune"
+
+    def getCurrentCaseStatut(self) -> str:
+        for case in self.__listCase[1]:
+            if case.getPosition() == self.currentCase:
+                return case.getStatut()
+        return "Publique"
+    
+    def lockCase(self, statut):
+        if(self.currentCase in self.getAllPosition()):
+            case : Case = self.getCase(self.currentCase)
+            case.setCategory("Aucune")
+            case.setStatut(statut)
+            if(statut == "Privé"):
+                case.setColor(self.categoryColors["Privé"])
+        else :
+            color = ""
+            if(statut == "Privé"):
+                color = self.categoryColors["Privé"]
+                self.ajouterCase([self.currentCase,{},"Aucune",color,statut])
+    
     
     def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
         print("setdataproject :", projectName, authors, marketName, addressMarket, dateCreation)
@@ -364,8 +389,11 @@ class ModelMagasin:
         '''
         caseList : dict = {} 
         for case in self.__listCase[1]:
-            if(case.getCategory() != "Aucune"):
-                caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
+            if(case.getCategory() != "Aucune" or case.getStatut() == "Privé"):
+                if(case.getStatut() == "Privé"):
+                    caseList[case.getPosition()] = self.categoryColors["Privé"]
+                else:
+                    caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
         return caseList
     
     def getCase(self, position : tuple) -> Case :

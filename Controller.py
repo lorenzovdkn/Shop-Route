@@ -24,7 +24,6 @@ class Controller:
         self.view.load_window.signalDeleteProject.connect(self.delete_project)
         
         # Signals linked to the grid (view)
-        #self.view.grid.lockedSignal.connect()
         self.view.gridWidget.grid.sizeSignal.connect(self.setGridSize)
         self.view.gridWidget.grid.stepSignal.connect(self.setStep)
         self.view.gridWidget.grid.offsetSignal.connect(self.setOffset)
@@ -32,6 +31,7 @@ class Controller:
         
         # Signaux Case
         self.view.case_widget.signalChangedCategory.connect(self.changedCategory)
+        self.view.case_widget.signalChangedType.connect(self.changedType)
         
         # signaux menu
         self.view.signalOpen.connect(self.openMenu)
@@ -63,7 +63,9 @@ class Controller:
     def setClickedCase(self, position : tuple):
         self.model.setCurrentCase(position)
         self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
+        self.view.case_widget.setType(self.model.getCurrentCaseStatut())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
+    
         
     '''Define the grid methods'''
     # Load in the model the creating project and update the view
@@ -80,6 +82,7 @@ class Controller:
         imagePath = self.view.gridWidget.copyFileToAppDir(file_name)
         self.view.gridWidget.grid.setPicture(imagePath)
         
+        
     
     '''Define the selecting project functions'''
     # Open the project and load the main window
@@ -95,7 +98,6 @@ class Controller:
         step = self.model.grille.getPas()
         offset = self.model.grille.getDecalage()
         lock = self.model.grille.getVerrouiller()
-        print("offset : ", offset)
         positions : dict = self.model.getUsedCase()        
         
         self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)
@@ -150,7 +152,7 @@ class Controller:
             list_article = self.model.getArticlesJson(category)
         else:
             list_article = [] 
-        self.view.contenu_widget.addProduct(list_article, category)
+        self.view.contenu_widget.addProduct(list_article, category, self.model.getCurrentCaseStatut())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
 
         
@@ -171,8 +173,12 @@ class Controller:
         #self.model.clearArticle()
         self.model.setCategory(category)
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())
-        usedCase = self.model.getUsedCase()
-        self.view.gridWidget.grid.setGrid(None,None,None,None,None,self.model.getUsedCase())
+        self.view.gridWidget.grid.drawGrid(self.model.getUsedCase())
+    
+    def changedType(self, statut : bool) -> None :
+        self.model.lockCase(statut)
+        self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
+        self.view.gridWidget.grid.drawGrid(self.model.getUsedCase())
         
     
 

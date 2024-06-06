@@ -8,6 +8,7 @@ from selectProject import LoadProjectWindow
 class Case(QWidget):
     
     signalChangedCategory : pyqtSignal = pyqtSignal(str)
+    signalChangedType : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
         
@@ -32,7 +33,7 @@ class Case(QWidget):
 
         self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
-        self.type_case_combo.addItems(["publique", "privé"])
+        self.type_case_combo.addItems(["Publique", "Privé"])
         
         self.category_label = QLabel("Catégorie de la case:")
         self.category_combo = QComboBox()
@@ -59,6 +60,7 @@ class Case(QWidget):
         
         # signaux
         self.category_combo.currentIndexChanged.connect(self.categoryChanged)
+        self.type_case_combo.currentIndexChanged.connect(self.typeChanged)
         
     # Set the display of the current case
     def setCase(self, position : tuple):
@@ -78,6 +80,17 @@ class Case(QWidget):
     def categoryChanged(self):
         self.signalChangedCategory.emit(self.category_combo.currentText())
         
+    def setType(self, type : str):
+        if(type == "Privé" or type == "Publique"):
+            self.type_case_combo.setCurrentText(type)
+    
+    def typeChanged(self):
+        self.signalChangedType.emit(self.type_case_combo.currentText())
+        if(self.type_case_combo.currentText() == "Privé"):
+            self.category_combo.setEnabled(False)
+        else:
+            self.category_combo.setEnabled(True)
+            
     def updateCase(self, position: tuple, type_case: str, categories: list, current_category: str):
         """
         Actualise tous les widgets de cette classe avec les paramètres fournis.
@@ -142,8 +155,11 @@ class Contenu(QWidget):
     def getCase(self):
         return self.case
         
-    def addProduct(self, product_list_import : list, current_category : str):
-        if current_category == 'Aucune':
+    def addProduct(self, product_list_import : list, current_category : str, current_state :str):
+        if  current_state == 'Privé':
+            QMessageBox.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            return 
+        elif current_category == 'Aucune':
             QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
             return 
         
@@ -213,6 +229,7 @@ class MainWindow(QMainWindow):
         
         
         # Widget creation
+        self.gridWidget = grid.GridWidget()
         self.case_widget = Case()
         self.contenu_widget = Contenu()
         self.load_window = LoadProjectWindow()
@@ -220,7 +237,6 @@ class MainWindow(QMainWindow):
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
         
-        self.gridWidget = grid.GridWidget()
         self.mainLayout.addWidget(self.gridWidget,2)
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
@@ -269,7 +285,7 @@ class MainWindow(QMainWindow):
         self.signalUnlock.emit()
         
 
-    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int, height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
+    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int , height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
         self.contenu_widget.updateArticle(articles)
         self.case_widget.updateCase(position, status, categories, current_category)
