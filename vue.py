@@ -196,11 +196,12 @@ class MainWindow(QMainWindow):
     signalSave = pyqtSignal()
     signalExport = pyqtSignal()
     signalOpen = pyqtSignal()
+    signalUnlock = pyqtSignal()
     
     def __init__(self):
         super().__init__()
         self.setGeometry(100, 100, 800, 600)
-        self.showMaximized()
+        
         
         
         self.central_widget = QWidget()
@@ -241,7 +242,10 @@ class MainWindow(QMainWindow):
         menu_fichier.addAction('Enregistrer', self.save)
         menu_fichier.addSeparator()
         menu_fichier.addAction('Exporter...', self.export) 
-
+        
+        menu_edition = menu_bar.addMenu("Edition")
+        menu_edition.addAction('déverrouiller', self.unlock)
+                
     def open_project(self):
         self.load_window.show()
 
@@ -260,6 +264,9 @@ class MainWindow(QMainWindow):
         
     def export(self):
         ...
+        
+    def unlock(self):
+        self.signalUnlock.emit()
         
 
     def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int, height : int, step : float, offset : tuple, lock : bool, position_dict : dict):

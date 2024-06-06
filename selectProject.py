@@ -109,7 +109,8 @@ class LoadProjectWindow(QWidget):
         button_spacing = 10  # Espacement entre les boutons
 
         for file_name in os.listdir(saves_folder):
-            project_button = QPushButton(file_name.split()[0])
+            project_button = QPushButton(file_name.split("-")[0][:-4])
+            project_button.setStyleSheet("font-family: Roboto; font-size: 18px;")
             project_button.setFixedSize(button_size)
             project_button.clicked.connect(self.create_project_selected_callback(file_name))
             self.project_layout.addWidget(project_button, row, col * 2)
@@ -126,9 +127,9 @@ class LoadProjectWindow(QWidget):
 
         # Bouton pour créer un nouveau projet
         create_button = QPushButton('+')
-        create_button.setStyleSheet('font-size: 30px; font-weight: bold')
+        create_button.setStyleSheet('font-size: 30px; font-weight: bold; border-radius: 60;')
 
-        create_button.setFixedSize(button_size)
+        create_button.setFixedSize(QSize(160, 160) )
         create_button.clicked.connect(self.create_project)
 
         # Ajouter le bouton de création en bas à droite de la grille

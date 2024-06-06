@@ -36,6 +36,7 @@ class Controller:
         # signaux menu
         self.view.signalOpen.connect(self.openMenu)
         self.view.signalSave.connect(self.saveMenu)
+        self.view.signalUnlock.connect(self.unlockMenu)
     
     # Define the size of the grid    
     def setGridSize(self, width : int , height : int):
@@ -87,6 +88,7 @@ class Controller:
         self.model.load(filename)
         self.view.load_window.setParent(None)  # Détacher load_window de la MainWindow
         self.view.setCentralWidget(self.view.central_widget)
+        self.view.showMaximized()
         
         width = self.model.grille.getTailleGrille()[0]
         height = self.model.grille.getTailleGrille()[1]
@@ -94,6 +96,19 @@ class Controller:
         offset = self.model.grille.getDecalage()
         lock = self.model.grille.getVerrouiller()
         print("offset : ", offset)
+        positions : dict = self.model.getUsedCase()        
+        
+        self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)
+        self.view.updateAllView(self.model.getArticlesCase(), self.model.currentCase, self.model.getCategoryJson(), None, None,
+                               width, height, step, offset, lock, positions)
+        
+    def updateAllView(self):
+        width = self.model.grille.getTailleGrille()[0]
+        height = self.model.grille.getTailleGrille()[1]
+        step = self.model.grille.getPas()
+        offset = self.model.grille.getDecalage()
+        lock = self.model.grille.getVerrouiller()
+        print("lock : ", lock)
         positions : dict = self.model.getUsedCase()        
         
         self.view.gridWidget.grid.setPicture(self.model.grille.getImage()) # temporaire (il manque la mise à jour de la vue)
@@ -112,6 +127,7 @@ class Controller:
         
     # Use for the action "ouvrir" in the menu to put back the select project window
     def openMenu(self):
+        self.view.showNormal()
         self.view.central_widget.setParent(None)
         self.view.load_window.setParent(self.view.central_widget)
         self.view.setCentralWidget(self.view.load_window)
@@ -119,6 +135,10 @@ class Controller:
     def saveMenu(self):
         file_path = self.model.getFilePath()
         self.model.save(file_path)
+        
+    def unlockMenu(self):
+        self.model.grille.setVerrouiller(False)
+        self.updateAllView()
     
     def addCategory(self):
         list_category = ['Aucune'] + list(self.model.getCategoryJson())
