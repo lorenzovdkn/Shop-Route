@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow,QMessageBox, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QColor
 
@@ -29,7 +29,10 @@ class Grid(QGraphicsView):
         self.grid = {}
         self.parcours = []
         self.produit = []
-        
+        self.position = ()
+        self.caseprive = []
+        self.couleur = "brown"
+
         self.drawGrid()
         self.sceneWidth = self.scene.width()
         self.sceneHeight = self.scene.height()
@@ -55,6 +58,15 @@ class Grid(QGraphicsView):
 
     def setProduit(self, produit):
         self.produit = produit
+        self.drawGrid()
+    
+    def setPosition(self,position):
+        self.position = position
+        self.drawGrid()
+
+    def setCasePrive(self,prive):
+        self.caseprive.append(prive)
+        print(self.caseprive)
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -82,18 +94,38 @@ class Grid(QGraphicsView):
             for pos in self.parcours:
                 x, y = pos
                 if 0 <= x < width and 0 <= y < height:
-                    rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
+                    rect = QGraphicsRectItem(x * step - step + self.offset.x(), y * step + self.offset.y() -step, step, step)
                     color = QColor("purple")
                     color.setAlpha(100)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
 
         if self.produit:
-            for pos in self.produit:
+            for pos,couleur in self.produit:
                 x, y = pos
                 if 0 <= x < width and 0 <= y < height:
-                    rect = QGraphicsRectItem(x * step + self.offset.x(), y * step + self.offset.y(), step, step)
-                    color = QColor("black")
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step - step+ self.offset.y(), step, step)
+                    color = QColor(couleur)
+                    color.setAlpha(100)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+        
+        if self.position:
+            for pos in self.position:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
+                    color = QColor("orange")
+                    color.setAlpha(100)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+        
+        if self.caseprive:
+            for pos in self.caseprive:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
+                    color = QColor("red")
                     color.setAlpha(100)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
@@ -111,9 +143,8 @@ class Grid(QGraphicsView):
         if event.buttons() == Qt.MouseButton.LeftButton:
             if self.locked:
                 scenePos = self.mapToScene(event.pos())
-                posX = int((scenePos.x() - self.offset.x()) // self.gridStep + 1)
+                posX = int((scenePos.x() - self.offset.x()) // self.gridStep+ 1)
                 posY = int((scenePos.y() - self.offset.y()) // self.gridStep + 1)
-                print(posX, posY)
                 self.positionSignal.emit(QPoint(posX, posY))
             else:
                 self.lastPos = event.pos()
@@ -197,12 +228,14 @@ class VueProjet(QMainWindow):
         self.ajout = QPushButton('Ajouter à la liste de courses')
         self.supprimer = QPushButton('Supprimer de la liste de courses')
         self.dico_create = QPushButton('Génerer une liste de courses aléatoire')
+        self.setpos = QPushButton('Definir un point de départ')
 
         # Grid Widget
         self.grid = Grid()
         
         # Right Layout
         self.rightLayout = QVBoxLayout()
+        self.rightLayout.addWidget(self.setpos)
         self.rightLayout.addWidget(self.grid)
         self.bottomRight_layout.addWidget(self.analyse)
         self.rightLayout.addLayout(self.bottomRight_layout)
@@ -249,6 +282,7 @@ class VueProjet(QMainWindow):
         self.supprimer.clicked.connect(self.supprimer_article)
         self.analyse.clicked.connect(self.analyseParcours)  # Corrected signal connection
         self.dico_create.clicked.connect(self.course_aleatoire)
+        self.setpos.clicked.connect(self.definirPosition)
 
     def ouvrir(self) -> str:
         """
@@ -336,6 +370,11 @@ class VueProjet(QMainWindow):
         for product in liste:
             course_item = QTreeWidgetItem([product])
             self.liste_course.addTopLevelItem(course_item)
+
+    def definirPosition(self):
+        msg = QMessageBox()
+        msg.setText("Choissisez une Position avant de commencer")
+        msg.exec()
 
     def analyseParcours(self):
         self.analyseClicked.emit()

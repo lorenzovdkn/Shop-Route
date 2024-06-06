@@ -129,7 +129,6 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
         f = File(100)
         f.enfiler(depart)
         dico = {depart: None}
-
         while not f.est_vide():
             current = f.defiler()
             #On prend le produit si le client se situe en haut,à droite,à gauche,ou en bas
@@ -143,7 +142,6 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
                 chemin.reverse() # Inverser le chemin pour l'avoir de la position de départ à la destination
                 print(f"Chemin trouvé : {chemin}")
                 return chemin
-
             for direction in directions:
                 next_case = (current[0] + direction[0], current[1] + direction[1])
                 if 0 <= next_case[0] < self.__largeur and 0 <= next_case[1] < self.__hauteur:
@@ -157,10 +155,10 @@ Un objet, instance de cette classe, possède plusieurs méthodes :
     
 class Modele(object):
 
-    def __init__(self,position) -> None:
+    def __init__(self) -> None:
         self.information = {}
-        self.lireJson("InformationApp.json")
-        self.position = position
+        self.lireJson("message.json")
+        self.position = (0,0)
         self.grille = Grille(self.setLargeur(),self.setHauteur())
         self.liste_course = []
         
@@ -174,7 +172,6 @@ class Modele(object):
     def setListeCourse(self,produit):
         if produit not in self.liste_course:
             self.liste_course.append(produit)
-
 
     #Supprime un produit dans la liste de course
     def deleteProduct(self,produit):
@@ -258,7 +255,7 @@ class Modele(object):
                     #On regroupe les produits si ils sont au même endroit
                     if tuple(case["position"]) not in produits_tries:
                         produits_tries.append(tuple(case["position"])) 
-
+        print(produits_tries)
         return produits_tries 
 
     # Retourne toutes les coordonnées du chemin pour faire les courses
@@ -283,15 +280,38 @@ class Modele(object):
             if case["statut"] == "Produit":
                 self.grille.getCases()[case["position"][1]][case["position"][0]].setContenu("Produit")
 
+    def getCasesLock(self):
+        cases = self.getCasesProducts()
+        for case in cases:
+            if case["statut"] == "True" and case["statut"] != "Produit":
+                return case["position"]
+            
+    def getAllCasesLock(self):
+        liste = []
+        cases = self.getCasesProducts()
+        for case in cases:
+            if case["statut"] == "True" or case["statut"] == "Produit":
+                liste.append(case["position"])
+        return liste
+
     def random_course(self):
         self.liste_course = []
         article_list = self.getArticlesList()
-        if article_list:
-            self.liste_course = random.choices(article_list, k=20)
-    
+        print(article_list)
+        if len(article_list) < 20:
+            self.liste_course = article_list
+        else:
+            self.liste_course = random.sample(article_list, 20)
+
+    def colorAttribution(self, coordonnee):
+        article_list = self.getCasesProducts()
+        for case in article_list:
+            if list(coordonnee) == case["position"]:
+                return case["couleur"]
+        return None
 
 ########### Exemple d'utilisation ######################################################################################
 if __name__ == '__main__' :
-    modele = Modele((0,0))
+    modele = Modele()
     print(modele.coordonneeChemin())
     modele.grille.afficheGrille()

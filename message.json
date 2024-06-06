@@ -1,0 +1,188 @@
+{
+    "grille": {
+        "image": "images/plan10.gif",
+        "tailleGrille": [
+            37,
+            27
+        ],
+        "pas": 20,
+        "decalage": [
+            18,
+            14
+        ],
+        "verrouiller": false
+    },
+    "cases": [
+        {
+            "position": [0, 0],
+            "articles": {
+                "Ail": [10, false],
+                "Artichaut": [5, false],
+                "Asperges": [8, false]
+            },
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Produit"
+        },
+        {
+            "position": [1, 0],
+            "articles": {
+                "Agneau": [15, false],
+                "Bacon": [20, false]
+            },
+            "categorie": "Viandes",
+            "couleur": "#FF4500",
+            "statut": "Produit"
+        },
+        {
+            "position": [0, 1],
+            "articles": {
+                "Blé dur": [25, false],
+                "Bouillon cube": [30, false],
+                "Boulgour": [20, false]
+            },
+            "categorie": "Épicerie",
+            "couleur": "#FFD700",
+            "statut": "Produit"
+        },
+        {
+            "position": [1, 1],
+            "articles": {
+                "Abricots secs": [12, false],
+                "Amandes": [18, false],
+                "Beurre de cacahuète": [10, false]
+            },
+            "categorie": "Épicerie sucrée",
+            "couleur": "#FF6347",
+            "statut": "Produit"
+        },
+        {
+            "position": [2, 0],
+            "articles": {
+                "Bigorneaux": [8, false],
+                "Cabillaud": [15, false],
+                "Colin": [12, false]
+            },
+            "categorie": "Poissons",
+            "couleur": "#1E90FF",
+            "statut": "Produit"
+        },
+        {
+            "position": [3, 0],
+            "articles": {
+                "Croque monsieur": [10, false],
+                "Crudités": [20, false],
+                "Feuilles de brick": [15, false]
+            },
+            "categorie": "Rayon frais",
+            "couleur": "#8A2BE2",
+            "statut": "Produit"
+        },
+        {
+            "position": [2, 1],
+            "articles": {
+                "Beurre": [30, false],
+                "Boisson lactée": [25, false],
+                "Crème dessert": [20, false]
+            },
+            "categorie": "Crèmerie",
+            "couleur": "#DAA520",
+            "statut": "Produit"
+        },
+        {
+            "position": [3, 1],
+            "articles": {
+                "Anchois": [10, false],
+                "Bolognaise": [15, false],
+                "Compote": [20, false]
+            },
+            "categorie": "Conserves",
+            "couleur": "#CD5C5C",
+            "statut": "Produit"
+        },
+        {
+            "position": [4, 0],
+            "articles": {
+                "Biscuits salés": [15, false],
+                "Blinis mini": [10, false],
+                "Bretzel": [12, false]
+            },
+            "categorie": "Apéritifs",
+            "couleur": "#D2691E",
+            "statut": "Produit"
+        },
+        {
+            "position": [4, 1],
+            "articles": {
+                "Alcools fort": [20, false],
+                "Bière": [25, false],
+                "Eau gazeuse": [30, false]
+            },
+            "categorie": "Boissons",
+            "couleur": "#8B4513",
+            "statut": "Produit"
+        },
+        {
+            "position": [5, 0],
+            "articles": {
+                "Allume barbecue": [10, false],
+                "Allumettes": [15, false],
+                "Anticalcaire": [20, false]
+            },
+            "categorie": "Articles Maison",
+            "couleur": "#2E8B57",
+            "statut": "Produit"
+        },
+        {
+            "position": [5, 1],
+            "articles": {
+                "Après rasage": [12, false],
+                "Brosse à dents": [18, false],
+                "Cire épilation": [10, false]
+            },
+            "categorie": "Hygiène",
+            "couleur": "#FF69B4",
+            "statut": "Produit"
+        },
+        {
+            "position": [6, 0],
+            "articles": {
+                "Bloc note": [15, false],
+                "Calculatrice": [5, false],
+                "Chemises carton": [20, false]
+            },
+            "categorie": "Bureau",
+            "couleur": "#4682B4",
+            "statut": "Produit"
+        },
+        {
+            "position": [6, 1],
+            "articles": {
+                "Boites": [10, false],
+                "Croquettes": [25, false],
+                "Foins": [20, false]
+            },
+            "categorie": "Animaux",
+            "couleur": "#A52A2A",
+            "statut": "Produit"
+        }
+        ,
+        {
+            "position" : [
+                2,
+                2
+            ],
+            "articles" : {},
+            "categorie":"",
+            "couleur":"rouge",
+            "statut": "True"
+        }
+    ],
+    "data_projet": {
+        "nom_projet": "magasin de test complet",
+        "auteurs": "lorenzo",
+        "nom_magasin": "test complet",
+        "adresse_du_magasin": "123 rue du test",
+        "date": "2025-06-05"
+    }
+}
