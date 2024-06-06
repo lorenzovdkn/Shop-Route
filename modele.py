@@ -8,7 +8,7 @@ class Case:
         self.couleur :str = couleur
         self.statut : str = statut
         if(articles is not {}):
-            statut = False
+            statut = "Publique"
         
     def setColor(self,color :str):
         ''' 
