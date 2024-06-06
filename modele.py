@@ -6,7 +6,7 @@ class Case:
         self.articles : dict = articles
         self.categorie : str = categorie
         self.couleur :str = couleur
-        self.statut : bool = statut # False = public ; True = private
+        self.statut : str = statut
         if(articles is not {}):
             statut = False
         
@@ -54,8 +54,11 @@ class Case:
     def getListe(self) -> list:
         return [self.position, self.articles, self.categorie, self.couleur, self.statut]
     
-    def getStatut(self) -> bool:
+    def getStatut(self) -> str:
         return self.statut
+    
+    def setStatut(self, type : str) -> None: 
+        self.statut = type
       
     # Méthode à revoir
     def ajouterArticle(self, article):
@@ -138,6 +141,13 @@ class Grille:
         '''
         self.verrouiller = state
     
+    def setOffset(self, offset : tuple) -> None:
+        print("setOffset function : ", offset)
+        self.decalage = offset
+        
+    def setStep(self, step : int) -> None:
+        self.pas = step
+    
     def getDecalage(self) -> tuple:
         return self.decalage
     
@@ -146,9 +156,6 @@ class Grille:
         
     def setPas(self, pas : float) -> None:
         self.pas = pas
-        
-    def setDecalage(self, decalage : tuple) -> None:
-        self.decalage = decalage
         
     def getVerrouiller(self) -> bool:
         ''' 
@@ -166,6 +173,7 @@ class ModelMagasin:
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
         self.category : str = None
+        self.filepath : str = None
         self.categoryColors: dict = {
         'Légumes': '#228B22',           
         'Poissons': '#1E90FF',          
@@ -182,19 +190,18 @@ class ModelMagasin:
         'Articles Maison': '#B0E0E6',  
         'Hygiène': '#FFB6C1',          
         'Bureau': '#4682B4',           
-        'Animaux': '#8A2BE2'           
+        'Animaux': '#8A2BE2',
+        'Privé': "#808080"            
     }
         # Informations sur le projet
         self.data_projet = {
-            "nom_projet": "Nom du projet",
+            "nom_projet": "",
             "auteurs": "",
-            "nom_magasin": "Nom du magasin",
+            "nom_magasin": "",
             "adresse_du_magasin": "",
-            "date": "2024-05-23"  # Exemple de date
+            "date": ""  
             
         }
-        # si un fichier est fourni : on charge 
-        # if jsonFile: self.open(jsonFile)
     
     
     def setCategory(self, category : str):
@@ -216,14 +223,15 @@ class ModelMagasin:
                 color = self.categoryColors[self.category]
             elif self.category != "Aucune":
                 color = "purple"
-            self.ajouterCase([self.currentCase, {}, self.category ,color , False])
+            self.ajouterCase([self.currentCase, {}, self.category ,color , "Publique"])
         
         # Si la case existe
         else:
             for case in self.__listCase[1]:
                 if case.getPosition() == self.currentCase:
                     if self.category == "Aucune":
-                        self.supprimerCase()
+                        if(case.statut != "Privé"):
+                            self.supprimerCase()
                     else:
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
@@ -248,11 +256,32 @@ class ModelMagasin:
             if case.getPosition() == self.currentCase:
                 return case.getCategory()
         return "Aucune"
+
+    def getCurrentCaseStatut(self) -> str:
+        for case in self.__listCase[1]:
+            if case.getPosition() == self.currentCase:
+                return case.getStatut()
+        return "Publique"
+    
+    def lockCase(self, statut):
+        if(self.currentCase in self.getAllPosition()):
+            case : Case = self.getCase(self.currentCase)
+            case.setCategory("Aucune")
+            case.setStatut(statut)
+            if(statut == "Privé"):
+                case.setColor(self.categoryColors["Privé"])
+        else :
+            color = ""
+            if(statut == "Privé"):
+                color = self.categoryColors["Privé"]
+                self.ajouterCase([self.currentCase,{},"Aucune",color,statut])
+    
     
     def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
-        self.data_projet["nom_project"] = projectName
+        print("setdataproject :", projectName, authors, marketName, addressMarket, dateCreation)
+        self.data_projet["nom_projet"] = projectName
         self.data_projet["auteurs"] = authors
-        self.data_projet["nom_du_magasin"] = marketName
+        self.data_projet["nom_magasin"] = marketName
         self.data_projet["adresse_du_magasin"] = addressMarket
         self.data_projet["date"] = dateCreation
         
@@ -360,8 +389,11 @@ class ModelMagasin:
         '''
         caseList : dict = {} 
         for case in self.__listCase[1]:
-            if(case.getCategory() != "Aucune"):
-                caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
+            if(case.getCategory() != "Aucune" or case.getStatut() == "Privé"):
+                if(case.getStatut() == "Privé"):
+                    caseList[case.getPosition()] = self.categoryColors["Privé"]
+                else:
+                    caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
         return caseList
     
     def getCase(self, position : tuple) -> Case :
@@ -371,7 +403,9 @@ class ModelMagasin:
             
     def getData(self) -> dict:
         return self.data_projet
-            
+           
+    def getFilePath(self) -> str:
+        return self.filepath
     
     def changerQuant(self, nomArticle : str, quantite: int) -> str | None:
         ''' 
@@ -407,6 +441,9 @@ class ModelMagasin:
             Paramètre: 
             filename (str): Chemin du fichier de sauvegarde
         '''
+        self.filepath = filename
+        print("load", filename)
+        
         # Lire le fichier JSON
         with open(filename, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -420,6 +457,7 @@ class ModelMagasin:
             tuple(grille_data["decalage"]),
             grille_data["verrouiller"]
         )
+        print("load function : ", tuple(grille_data["decalage"]))
 
         # Charger les cases
         self.__listCase[1] = []
@@ -438,12 +476,10 @@ class ModelMagasin:
 
 
     def save(self, filename: str):
-      
         ''' 
         Permet de sauvegarder le projet courant. 
         Paramètre: 
         filename (str): Chemin du fichier de sauvegarde
-             
         '''
         # Vérifier si le dossier 'saves' existe, sinon le créer
         save_dir = 'saves'
@@ -451,8 +487,9 @@ class ModelMagasin:
             os.makedirs(save_dir)
 
         # Construire le chemin complet du fichier
-        full_path = os.path.join(save_dir, filename)
-
+        full_path = os.path.join(filename)
+        self.filepath = full_path
+        print("save : ", full_path)
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -461,6 +498,8 @@ class ModelMagasin:
             "decalage": self.grille.decalage,
             "verrouiller": self.grille.getVerrouiller()
         }
+        
+        print("saving... offset :", self.grille.decalage)
 
         # Convertir les cases en liste de dictionnaires
         cases_dict = []
@@ -485,8 +524,9 @@ class ModelMagasin:
         with open(full_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
+
                 
-    def RemoveSave(filepath: str):
+    def RemoveSave(self, filepath: str):
         """
         Removes the specified file if it exists.
 

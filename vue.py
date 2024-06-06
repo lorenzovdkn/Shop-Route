@@ -8,6 +8,7 @@ from selectProject import LoadProjectWindow
 class Case(QWidget):
     
     signalChangedCategory : pyqtSignal = pyqtSignal(str)
+    signalChangedType : pyqtSignal = pyqtSignal(str)
     
     def __init__(self):
         
@@ -32,7 +33,7 @@ class Case(QWidget):
 
         self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
-        self.type_case_combo.addItems(["publique", "privé"])
+        self.type_case_combo.addItems(["Publique", "Privé"])
         
         self.category_label = QLabel("Catégorie de la case:")
         self.category_combo = QComboBox()
@@ -59,6 +60,7 @@ class Case(QWidget):
         
         # signaux
         self.category_combo.currentIndexChanged.connect(self.categoryChanged)
+        self.type_case_combo.currentIndexChanged.connect(self.typeChanged)
         
     # Set the display of the current case
     def setCase(self, position : tuple):
@@ -78,6 +80,17 @@ class Case(QWidget):
     def categoryChanged(self):
         self.signalChangedCategory.emit(self.category_combo.currentText())
         
+    def setType(self, type : str):
+        if(type == "Privé" or type == "Publique"):
+            self.type_case_combo.setCurrentText(type)
+    
+    def typeChanged(self):
+        self.signalChangedType.emit(self.type_case_combo.currentText())
+        if(self.type_case_combo.currentText() == "Privé"):
+            self.category_combo.setEnabled(False)
+        else:
+            self.category_combo.setEnabled(True)
+            
     def updateCase(self, position: tuple, type_case: str, categories: list, current_category: str):
         """
         Actualise tous les widgets de cette classe avec les paramètres fournis.
@@ -142,8 +155,11 @@ class Contenu(QWidget):
     def getCase(self):
         return self.case
         
-    def addProduct(self, product_list_import : list, current_category : str):
-        if current_category == 'Aucune':
+    def addProduct(self, product_list_import : list, current_category : str, current_state :str):
+        if  current_state == 'Privé':
+            QMessageBox.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            return 
+        elif current_category == 'Aucune':
             QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
             return 
         
@@ -191,13 +207,20 @@ class MainWindow(QMainWindow):
     signalOpenProject = pyqtSignal(str)
     signalCreateProject = pyqtSignal()
     
+    '''signals for the menu'''
+    signalNew = pyqtSignal()
+    signalSave = pyqtSignal()
+    signalExport = pyqtSignal()
+    signalOpen = pyqtSignal()
+    
     def __init__(self):
         super().__init__()
-        self.resize(1200, 600)
-        menu_bar = self.menuBar()
-        menu_fichier = menu_bar.addMenu("Fichier")
+        self.setGeometry(100, 100, 800, 600)
+        self.showMaximized()
+        
         
         self.central_widget = QWidget()
+        self.temp_widget = QWidget()
         # self.setCentralWidget(self.central_widget)
         self.mainLayout = QHBoxLayout(self.central_widget)
         self.leftLayout = QVBoxLayout()
@@ -208,7 +231,7 @@ class MainWindow(QMainWindow):
         self.gridWidget = grid.GridWidget()
         self.case_widget = Case()
         self.contenu_widget = Contenu()
-        
+        self.load_window = LoadProjectWindow()
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
@@ -219,25 +242,47 @@ class MainWindow(QMainWindow):
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
 
         # Ajouter la barre de menu
-        action_ouvrir = menu_fichier.addAction("Ouvrir")
-        action_ouvrir.triggered.connect(self.open_project)
 
-        self.load_window = LoadProjectWindow()
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
         self.setCentralWidget(self.load_window)
-            
+        
+        
+        
+        menu_bar = self.menuBar()
+        menu_fichier = menu_bar.addMenu("Fichier")
+        menu_fichier.addAction('Nouveau', self.new)        
+        menu_fichier.addAction('Ouvrir', self.signalOpen)
+        menu_fichier.addSeparator()
+        menu_fichier.addAction('Enregistrer', self.save)
+        menu_fichier.addSeparator()
+        menu_fichier.addAction('Exporter...', self.export) 
+
     def open_project(self):
         self.load_window.show()
 
     def open_existing_project(self, project_name):
         self.signalOpenProject.emit(project_name)
         
+    '''methods for the menu'''
+        
+    def new(self):
+        self.load_window.create_project()
+        self.load_window.signalCreateProject.connect(self.open_existing_project)
+
+        
+    def save(self):
+        self.signalSave.emit()
+        
+    def export(self):
+        ...
+        
 
     def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int , height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
         self.contenu_widget.updateArticle(articles)
-        # self.case_widget.updateCase(position, status, categories, current_category)
+        self.case_widget.updateCase(position, status, categories, current_category)
+        self.gridWidget.updateSpinbox(width, height)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

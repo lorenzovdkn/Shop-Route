@@ -27,7 +27,6 @@ class Grid(QGraphicsView):
         self.locked : bool = False
         self.picture : str = ""
         self.gridContent : dict = {}
-        self.sizeWidth = self.size().width()
         self.sceneWidth = self.size().width()
         self.sceneHeight = self.size().height()
         self.drawGrid({})
@@ -83,9 +82,9 @@ class Grid(QGraphicsView):
 
         self.scene.clear()
         
-        if(self.picture != None and self.sizeWidth != None):
+        if(self.picture != None):
             pixmap = QPixmap(self.picture)
-            pixmap = pixmap.scaledToWidth(self.sizeWidth, Qt.TransformationMode.SmoothTransformation)
+            pixmap = pixmap.scaledToWidth(self.sceneWidth, Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
         
@@ -99,10 +98,10 @@ class Grid(QGraphicsView):
                         rect.setBrush(color)
                     self.scene.addItem(rect)
         else:
-            long = self.width * self.step + self.offset.x()
-            haut = self.height * self.step + self.offset.y()
-            for x in range(0,self.width+2):
-                for y in range(0,self.height+2):
+            long = (self.width-1) * self.step + self.offset.x()
+            haut = (self.height-1) * self.step + self.offset.y()
+            for x in range(0,self.width+1):
+                for y in range(0,self.height+1):
                                         
                     lineX = QGraphicsLineItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), long ,(y-1)*self.step + self.offset.y())
                     lineY = QGraphicsLineItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), (x-1)*self.step + self.offset.x() , haut)
@@ -159,6 +158,7 @@ class Grid(QGraphicsView):
                 self.step = self.step - 1
                 self.drawGrid()
                 self.update_timer.start(10)
+                self.update_timer.start(10)
         # Increase the size of the grid
         elif event.angleDelta().y() > 0 and not self.locked:
             if(self.step < 50):
@@ -176,7 +176,6 @@ class Grid(QGraphicsView):
             
     # Define the caracteristic of the grid and update the grid in the app
     def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
-        
         if(width is not None):
             self.width = width
         if(height is not None):
@@ -231,6 +230,7 @@ class GridWidget(QWidget):
     def modifiedSize(self):
         if(self.widthEdit.text() != self.grid.width and self.widthEdit.value() is not None):
             self.grid.width = int(self.widthEdit.value())
+            self.grid.width = int(self.widthEdit.value())
         if(self.heightEdit.text() != self.grid.height and self.heightEdit.value() is not None):
             self.grid.height = int(self.heightEdit.value())
 
@@ -274,6 +274,11 @@ class GridWidget(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")
             return None
+        
+    # use to update the Qspinboxs
+    def updateSpinbox(self, width, height):
+        self.heightEdit.setValue(height)
+        self.widthEdit.setValue(width)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
