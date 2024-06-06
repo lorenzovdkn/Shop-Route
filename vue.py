@@ -58,6 +58,8 @@ class Case(QWidget):
         
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
+        self.controllerChangeCategory = False
+        
         # signaux
         self.category_combo.currentIndexChanged.connect(self.categoryChanged)
         self.type_case_combo.currentIndexChanged.connect(self.typeChanged)
@@ -74,11 +76,14 @@ class Case(QWidget):
     
     def setCategory(self, category : str):
         if category != None:
+            self.controllerChangeCategory = True
             self.category_combo.setCurrentText(category)
+            self.controllerChangeCategory = False
     
     # Send the new category
     def categoryChanged(self):
-        self.signalChangedCategory.emit(self.category_combo.currentText())
+        if not self.controllerChangeCategory:
+            self.signalChangedCategory.emit(self.category_combo.currentText())
         
     def setType(self, type : str):
         if(type == "Privé" or type == "Publique"):

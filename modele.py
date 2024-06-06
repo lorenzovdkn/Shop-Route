@@ -223,7 +223,9 @@ class ModelMagasin:
                 color = self.categoryColors[self.category]
             elif self.category != "Aucune":
                 color = "purple"
+            print(color)
             self.ajouterCase([self.currentCase, {}, self.category ,color , "Publique"])
+            print(self.getUsedCase())
         
         # Si la case existe
         else:
@@ -236,6 +238,7 @@ class ModelMagasin:
                         
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
+                        print(case.couleur)
                     break
     
     def setCurrentCase(self, position : tuple) -> None:
@@ -297,6 +300,7 @@ class ModelMagasin:
         '''
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
+        print(caseAJoutee)
 
     def getAllPosition(self) -> list:
         '''

@@ -49,7 +49,6 @@ class Controller:
     
     # Define the offset of the grid
     def setOffset(self, offset : tuple):
-        print("new offset : ", offset)
         self.model.grille.setOffset(offset)
         self.model.grille.setVerrouiller(True)
     
@@ -61,7 +60,6 @@ class Controller:
     # Define the selected case    
     def setClickedCase(self, position : tuple):
         self.model.setCurrentCase(position)
-        print(self.model.getCurrentCaseCategory())
         self.view.case_widget.setType(self.model.getCurrentCaseStatut())
         self.view.case_widget.setCategory(self.model.getCurrentCaseCategory())
         self.view.contenu_widget.updateArticle(self.model.getArticlesCase())

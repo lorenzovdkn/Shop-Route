@@ -67,7 +67,6 @@ class Grid(QGraphicsView):
     '''
     def setPicture(self, picture : str):
         self.picture = picture
-        print(picture)
         self.drawGrid()
     
     def setGridContent(self, gridContent: dict):
@@ -81,9 +80,7 @@ class Grid(QGraphicsView):
         self.scene.clear()
         
         if(self.picture != None):
-            print("test")
             pixmap = QPixmap(self.picture)
-            print("R",self.sceneWidth)
             pixmap = pixmap.scaledToWidth(self.size().width(), Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
