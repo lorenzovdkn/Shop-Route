@@ -165,11 +165,9 @@ class Grid(QGraphicsView):
                 self.update_timer.start(10)
     
     def lockGrid(self):
-        if(not self.locked):
-            self.locked = True
-            self.sizeSignal.emit(self.width, self.height)
-            self.stepSignal.emit(self.step)
-            self.offsetSignal.emit((self.offset.x(), self.offset.y()))
+        self.sizeSignal.emit(self.width, self.height)
+        self.stepSignal.emit(self.step)
+        self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
     def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
@@ -207,7 +205,9 @@ class GridWidget(QWidget):
         self.heightEdit.textChanged.connect(self.modifiedSize)
         self.statusLabel : QLabel = QLabel("Veuillez positionner la grille - Statut : Non verrouillée")
         self.bouton : QPushButton = QPushButton("Verrouiller")
-        self.bouton.clicked.connect(self.lockGrid) 
+        self.bouton.setToolTip("Lorsqu'elle est verrouillé une fois, il \nn'est plus possible de redimensionner la grille")
+        self.bouton.clicked.connect(self.lockGrid)
+        self.bouton.clicked.connect(self.grid.lockGrid)
         
         self.topLayout = QHBoxLayout()  
         self.topLayout.addStretch()
@@ -234,11 +234,18 @@ class GridWidget(QWidget):
         self.grid.drawGrid()
         
     def lockGrid(self):
-        self.bouton.setDisabled(True)
-        self.widthEdit.setDisabled(True)
-        self.heightEdit.setDisabled(True)
-        self.grid.lockGrid()
-        self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
+        self.grid.locked = not self.grid.locked
+        self.lockStateUpdate()
+    
+    def lockStateUpdate(self):
+        if(self.grid.isLocked()):
+            self.bouton.setText("Déplacer")
+            self.widthEdit.setDisabled(True)
+            self.heightEdit.setDisabled(True)
+            self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
+        else:
+            self.bouton.setText("Verrouiller")
+            self.statusLabel.setText("Veuillez positionner la grille - Statut : Non verrouillée")
         
     # use to copy the selected image of the user to put it in the app saves (return the copy image path)
     def copyFileToAppDir(self, source_file: str) -> str:

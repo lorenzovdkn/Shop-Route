@@ -169,7 +169,7 @@ class Grille:
 class ModelMagasin:
     def __init__(self, jsonFile: (str | None) = None) -> None:
         # Attributs de la grille et des cases
-        self.grille = Grille(None, (10, 20), 1.0, (2, 5), False)
+        self.grille = Grille(None, (10, 20), 20.0, (2, 5), False)
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
         self.category : str = None
@@ -231,7 +231,7 @@ class ModelMagasin:
         else:
             for case in self.__listCase[1]:
                 if case.getPosition() == self.currentCase:
-                    if case.getCategory() == "Aucune":
+                    if self.category == "Aucune":
                         if(case.getStatut() != "Privé"):
                             self.supprimerCase()
                     else:

@@ -2,7 +2,7 @@ import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QLayout, QDialog, QScrollArea, QDateEdit, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate, QRect, QSize
-from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon, QAction
 from selectProject import LoadProjectWindow
 
 class Case(QWidget):
@@ -257,12 +257,22 @@ class MainWindow(QMainWindow):
         
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
-        menu_fichier.addAction('Nouveau', self.new)        
-        menu_fichier.addAction('Ouvrir', self.signalOpen)
+        nouveau = QAction('Nouveau',self)
+        nouveau.setShortcut('Ctrl+N')
+        nouveau.triggered.connect(self.new)
+        menu_fichier.addAction(nouveau)
+        ouvrir = QAction('Ouvrir',self)
+        ouvrir.setShortcut('Ctrl+O')
+        ouvrir.triggered.connect(self.signalOpen)
+        menu_fichier.addAction(ouvrir)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Enregistrer', self.save)
+        save = QAction('Enregistrer',self)
+        save.setShortcut('Ctrl+S')
+        save.triggered.connect(self.save)
+        menu_fichier.addAction(save)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Exporter...', self.export) 
+        export = QAction('Export',self)
+        export.triggered.connect(self.export)
         
         menu_edition = menu_bar.addMenu("Edition")
         menu_edition.addAction('déverrouiller', self.unlock)
