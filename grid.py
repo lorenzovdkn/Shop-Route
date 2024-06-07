@@ -167,6 +167,7 @@ class Grid(QGraphicsView):
     def lockGrid(self):
         self.sizeSignal.emit(self.width, self.height)
         self.stepSignal.emit(self.step)
+        print(self.step)
         self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
@@ -235,7 +236,9 @@ class GridWidget(QWidget):
         
     def lockGrid(self):
         self.grid.locked = not self.grid.locked
+        self.grid.lockedSignal.emit(self.grid.locked)
         self.lockStateUpdate()
+        self.grid.drawGrid()
     
     def lockStateUpdate(self):
         if(self.grid.isLocked()):

@@ -89,6 +89,13 @@ class Case(QWidget):
         if(type == "Privé" or type == "Publique"):
             self.type_case_combo.setCurrentText(type)
     
+    def locked(self,lock: bool):
+        if(lock):
+            self.category_combo.setEnabled(True)
+            self.type_case_combo.setEnabled(True)
+        else:
+            self.category_combo.setEnabled(False)
+            self.type_case_combo.setEnabled(False)
     def typeChanged(self):
         self.signalChangedType.emit(self.type_case_combo.currentText())
         if(self.type_case_combo.currentText() == "Privé"):
@@ -246,6 +253,7 @@ class MainWindow(QMainWindow):
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
+        self.gridWidget.grid.lockedSignal.connect(self.case_widget.locked)
 
         # Ajouter la barre de menu
 
@@ -275,7 +283,7 @@ class MainWindow(QMainWindow):
         export.triggered.connect(self.export)
         
         menu_edition = menu_bar.addMenu("Edition")
-        menu_edition.addAction('déverrouiller', self.unlock)
+        menu_edition.addAction('Déplacer', self.unlock)
                 
     def open_project(self):
         self.load_window.show()
@@ -305,6 +313,8 @@ class MainWindow(QMainWindow):
         self.contenu_widget.updateArticle(articles)
         self.case_widget.updateCase(position, status, categories, current_category)
         self.gridWidget.updateSpinbox(width, height)
+        self.case_widget.locked(lock)
+        self.gridWidget.lockStateUpdate()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
