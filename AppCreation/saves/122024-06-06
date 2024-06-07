@@ -1,0 +1,23 @@
+{
+    "grille": {
+        "image": "images/plan11.jpg",
+        "tailleGrille": [
+            10,
+            20
+        ],
+        "pas": 909328688,
+        "decalage": [
+            34,
+            40
+        ],
+        "verrouiller": true
+    },
+    "cases": [],
+    "data_projet": {
+        "nom_projet": "12",
+        "auteurs": "azeazea",
+        "nom_magasin": "sqddqs",
+        "adresse_du_magasin": "dsqdsq",
+        "date": "2024-06-06"
+    }
+}
