@@ -7,8 +7,6 @@ class Controller:
     def __init__(self):
         self.model = modele.ModelMagasin()
         self.view = vue.MainWindow()
-
-        self.addCategory()
         
         # Signaux contenu
         self.view.contenu_widget.signalAddProduct.connect(self.add_article_selection)
@@ -36,7 +34,6 @@ class Controller:
         # signaux menu
         self.view.signalOpen.connect(self.openMenu)
         self.view.signalSave.connect(self.saveMenu)
-        self.view.signalUnlock.connect(self.unlockMenu)
     
     # Define the size of the grid    
     def setGridSize(self, width : int , height : int):
@@ -132,21 +129,18 @@ class Controller:
         self.view.load_window.setParent(self.view.central_widget)
         self.view.setCentralWidget(self.view.load_window)
         
-    def saveMenu(self):
-        file_path = self.model.getFilePath()
+    def saveMenu(self, file_path):
+        if(file_path == None):
+            file_path = self.model.getFilePath()
         self.model.save(file_path)
-        
-    def unlockMenu(self):
-        self.model.grille.setVerrouiller(False)
-        self.updateAllView()
     
     def addCategory(self):
-        list_category = ['Aucune'] + list(self.model.getCategoryJson())
+        list_category = ['Aucune','Caisse','Entrée'] + list(self.model.getCategoryJson())
         self.view.case_widget.updateProductCategory(list_category)
         
     def add_article_selection(self) -> None :
         category : str = self.view.case_widget.getCategory()
-        if category != 'Aucune' :
+        if category != 'Aucune' and category != 'Caisse' and category != 'Entrée':
             list_article = self.model.getArticlesJson(category)
         else:
             list_article = [] 

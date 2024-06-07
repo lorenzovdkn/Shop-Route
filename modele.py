@@ -175,6 +175,8 @@ class ModelMagasin:
         self.category : str = None
         self.filepath : str = None
         self.categoryColors: dict = {
+        'Caisse': '#FF5733',
+        'Entrée': '#1FB89B',
         'Légumes': '#228B22',           
         'Poissons': '#1E90FF',          
         'Viandes': '#FF4500',           
@@ -371,9 +373,8 @@ class ModelMagasin:
         ''' 
         Permet de récupérer la liste des catégories existantes.
         '''
-        dict_product = self.getProductsJson()
-        
-        return dict_product.keys()
+        list_category = ['Aucune','Caisse','Entrée'] + list(self.getProductsJson().keys())
+        return list_category
     
     def getArticlesCase(self) -> dict:
         ''' 

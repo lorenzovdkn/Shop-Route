@@ -1,8 +1,8 @@
 import sys,time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QLayout, QDialog, QScrollArea, QDateEdit, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate, QRect, QSize
-from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon, QAction
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QFont, QAction, QIcon
 from selectProject import LoadProjectWindow
 
 class Case(QWidget):
@@ -174,6 +174,9 @@ class Contenu(QWidget):
         elif current_category == 'Aucune':
             QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
             return 
+        elif current_category == 'Caisse' or current_category == 'Entrée':
+            QMessageBox.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
+            return
         
         product_list = product_list_import
         product, ok = QInputDialog.getItem(self, 'Ajouter un produit', 'Sélectionnez un produit:',product_list,0,False)        
@@ -221,10 +224,9 @@ class MainWindow(QMainWindow):
     
     '''signals for the menu'''
     signalNew = pyqtSignal()
-    signalSave = pyqtSignal()
+    signalSave = pyqtSignal(str)
     signalExport = pyqtSignal()
     signalOpen = pyqtSignal()
-    signalUnlock = pyqtSignal()
     
     def __init__(self):
         super().__init__()
@@ -260,9 +262,9 @@ class MainWindow(QMainWindow):
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
         self.setCentralWidget(self.load_window)
+             
         
-        
-        
+        # Menu bar
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
         nouveau = QAction('Nouveau',self)
@@ -278,12 +280,15 @@ class MainWindow(QMainWindow):
         save.setShortcut('Ctrl+S')
         save.triggered.connect(self.save)
         menu_fichier.addAction(save)
+        save_as = QAction('Enregistrer Sous',self)
+        save_as.setShortcut('Ctrl+Shift+S')
+        save_as.triggered.connect(self.saveas)
+        menu_fichier.addAction(save_as)
         menu_fichier.addSeparator()
-        export = QAction('Export',self)
-        export.triggered.connect(self.export)
+        leave = QAction('Quitter',self)
+        leave.triggered.connect(self.leave)
+        menu_fichier.addAction(leave)
         
-        menu_edition = menu_bar.addMenu("Edition")
-        menu_edition.addAction('Déplacer', self.unlock)
                 
     def open_project(self):
         self.load_window.show()
@@ -299,14 +304,33 @@ class MainWindow(QMainWindow):
 
         
     def save(self):
-        self.signalSave.emit()
+        self.signalSave.emit(None)
         
-    def export(self):
-        ...
-        
-    def unlock(self):
-        self.signalUnlock.emit()
-        
+    def saveas(self):
+        selected_directory : list = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
+        if(selected_directory[0] != ''):
+            self.signalSave.emit(selected_directory[0])
+    
+    def leave(self):
+        if(self.load_window.isHidden()):
+            warning_leave = QMessageBox()
+            warning_leave.setWindowTitle("Enregistrer le document ?")
+            warning_leave.setIcon(QMessageBox.Icon.Warning)
+            warning_leave.setText("Enregistrer le projet avant la fermeture de l'application.")
+            warning_leave.setStandardButtons(QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel)
+            result = warning_leave.exec()
+            
+            if result == QMessageBox.StandardButton.Save:
+                self.save()
+                QApplication.quit()
+            elif result == QMessageBox.StandardButton.Discard:
+                QApplication.quit()
+        QApplication.quit()
+            
+    def closeEvent(self, event):
+        if(self.load_window.isHidden()):
+            event.ignore()
+            self.leave() 
 
     def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int , height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
