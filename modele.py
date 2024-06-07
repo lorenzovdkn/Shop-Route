@@ -169,7 +169,7 @@ class Grille:
 class ModelMagasin:
     def __init__(self, jsonFile: (str | None) = None) -> None:
         # Attributs de la grille et des cases
-        self.grille = Grille(None, (10, 20), 1.0, (2, 5), False)
+        self.grille = Grille(None, (10, 20), 20.0, (2, 5), False)
         self.__listCase = [self.grille, []]
         self.currentCase : tuple = (0,0)
         self.category : str = None
@@ -215,7 +215,7 @@ class ModelMagasin:
         '''
         self.category = category
         positionList = self.getAllPosition()
-
+        print(category)
         # Si la case n'existe pas
         if(self.currentCase not in positionList):
             color : str = ""
@@ -223,18 +223,22 @@ class ModelMagasin:
                 color = self.categoryColors[self.category]
             elif self.category != "Aucune":
                 color = "purple"
+            print(color)
             self.ajouterCase([self.currentCase, {}, self.category ,color , "Publique"])
+            print(self.getUsedCase())
         
         # Si la case existe
         else:
             for case in self.__listCase[1]:
                 if case.getPosition() == self.currentCase:
                     if self.category == "Aucune":
-                        if(case.statut != "Privé"):
+                        if(case.getStatut() != "Privé"):
                             self.supprimerCase()
                     else:
+                        
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
+                        print(case.couleur)
                     break
     
     def setCurrentCase(self, position : tuple) -> None:
@@ -266,9 +270,10 @@ class ModelMagasin:
     def lockCase(self, statut):
         if(self.currentCase in self.getAllPosition()):
             case : Case = self.getCase(self.currentCase)
-            case.setCategory("Aucune")
             case.setStatut(statut)
+            print(case.getCategory())
             if(statut == "Privé"):
+                case.setCategory("Aucune")
                 case.setColor(self.categoryColors["Privé"])
         else :
             color = ""
@@ -295,6 +300,7 @@ class ModelMagasin:
         '''
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
+        print(caseAJoutee)
 
     def getAllPosition(self) -> list:
         '''

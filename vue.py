@@ -2,7 +2,7 @@ import sys,time, grid
 import json, os
 from PyQt6.QtWidgets import QApplication, QWidget, QLayout, QDialog, QScrollArea, QDateEdit, QFormLayout, QMainWindow, QHBoxLayout, QVBoxLayout, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QDate, QRect, QSize
-from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon
+from PyQt6.QtGui import QPixmap, QFont, QColor, QIcon, QAction
 from selectProject import LoadProjectWindow
 
 class Case(QWidget):
@@ -58,6 +58,8 @@ class Case(QWidget):
         
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
+        self.controllerChangeCategory = False
+        
         # signaux
         self.category_combo.currentIndexChanged.connect(self.categoryChanged)
         self.type_case_combo.currentIndexChanged.connect(self.typeChanged)
@@ -74,16 +76,26 @@ class Case(QWidget):
     
     def setCategory(self, category : str):
         if category != None:
+            self.controllerChangeCategory = True
             self.category_combo.setCurrentText(category)
+            self.controllerChangeCategory = False
     
     # Send the new category
     def categoryChanged(self):
-        self.signalChangedCategory.emit(self.category_combo.currentText())
+        if not self.controllerChangeCategory:
+            self.signalChangedCategory.emit(self.category_combo.currentText())
         
     def setType(self, type : str):
         if(type == "Privé" or type == "Publique"):
             self.type_case_combo.setCurrentText(type)
     
+    def locked(self,lock: bool):
+        if(lock):
+            self.category_combo.setEnabled(True)
+            self.type_case_combo.setEnabled(True)
+        else:
+            self.category_combo.setEnabled(False)
+            self.type_case_combo.setEnabled(False)
     def typeChanged(self):
         self.signalChangedType.emit(self.type_case_combo.currentText())
         if(self.type_case_combo.currentText() == "Privé"):
@@ -241,6 +253,7 @@ class MainWindow(QMainWindow):
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
+        self.gridWidget.grid.lockedSignal.connect(self.case_widget.locked)
 
         # Ajouter la barre de menu
 
@@ -252,15 +265,25 @@ class MainWindow(QMainWindow):
         
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
-        menu_fichier.addAction('Nouveau', self.new)        
-        menu_fichier.addAction('Ouvrir', self.signalOpen)
+        nouveau = QAction('Nouveau',self)
+        nouveau.setShortcut('Ctrl+N')
+        nouveau.triggered.connect(self.new)
+        menu_fichier.addAction(nouveau)
+        ouvrir = QAction('Ouvrir',self)
+        ouvrir.setShortcut('Ctrl+O')
+        ouvrir.triggered.connect(self.signalOpen)
+        menu_fichier.addAction(ouvrir)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Enregistrer', self.save)
+        save = QAction('Enregistrer',self)
+        save.setShortcut('Ctrl+S')
+        save.triggered.connect(self.save)
+        menu_fichier.addAction(save)
         menu_fichier.addSeparator()
-        menu_fichier.addAction('Exporter...', self.export) 
+        export = QAction('Export',self)
+        export.triggered.connect(self.export)
         
         menu_edition = menu_bar.addMenu("Edition")
-        menu_edition.addAction('déverrouiller', self.unlock)
+        menu_edition.addAction('Déplacer', self.unlock)
                 
     def open_project(self):
         self.load_window.show()
@@ -290,6 +313,8 @@ class MainWindow(QMainWindow):
         self.contenu_widget.updateArticle(articles)
         self.case_widget.updateCase(position, status, categories, current_category)
         self.gridWidget.updateSpinbox(width, height)
+        self.case_widget.locked(lock)
+        self.gridWidget.lockStateUpdate()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

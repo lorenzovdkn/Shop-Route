@@ -67,10 +67,7 @@ class Grid(QGraphicsView):
     '''
     def setPicture(self, picture : str):
         self.picture = picture
-        pixmap = QPixmap(self.picture)
-        pixmap = pixmap.scaledToWidth(int(self.size().width()), Qt.TransformationMode.SmoothTransformation)
-        self.image_item = QGraphicsPixmapItem(pixmap)
-        self.scene.addItem(self.image_item)
+        self.drawGrid()
     
     def setGridContent(self, gridContent: dict):
         self.gridContent = gridContent
@@ -84,7 +81,7 @@ class Grid(QGraphicsView):
         
         if(self.picture != None):
             pixmap = QPixmap(self.picture)
-            pixmap = pixmap.scaledToWidth(self.sceneWidth, Qt.TransformationMode.SmoothTransformation)
+            pixmap = pixmap.scaledToWidth(self.size().width(), Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
             self.scene.addItem(self.image_item)
         
@@ -128,17 +125,17 @@ class Grid(QGraphicsView):
         if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
-            if self.offset.x() <= -self.sceneWidth//10:
+            if self.offset.x() <= -self.size().width()//10:
                 self.offset.setX(0)
                 #self.dragging = False
-            if self.offset.x() + (self.width * self.step) > self.sceneWidth + self.sceneWidth//10:
-                self.offset.setX((int) (self.sceneWidth - (self.width * self.step)))
+            if self.offset.x() + (self.width * self.step) > self.size().width() + self.size().width()//10:
+                self.offset.setX((int) (self.size().width() - (self.width * self.step)))
                 #self.dragging = False
-            if self.offset.y() <= -self.sceneHeight//10:
+            if self.offset.y() <= -self.size().height()//10:
                 self.offset.setY(0)
                 #self.dragging = False
-            if self.offset.y() + (self.height * self.step) > self.sceneHeight + self.sceneHeight//10:
-                self.offset.setY((int) (self.sceneHeight - (self.height * self.step)))
+            if self.offset.y() + (self.height * self.step) > self.size().height() + self.size().height()//10:
+                self.offset.setY((int) (self.size().height() - (self.height * self.step)))
                 #self.dragging = False
             
             self.lastPos = event.pos()
@@ -168,11 +165,10 @@ class Grid(QGraphicsView):
                 self.update_timer.start(10)
     
     def lockGrid(self):
-        if(not self.locked):
-            self.locked = True
-            self.sizeSignal.emit(self.width, self.height)
-            self.stepSignal.emit(self.step)
-            self.offsetSignal.emit((self.offset.x(), self.offset.y()))
+        self.sizeSignal.emit(self.width, self.height)
+        self.stepSignal.emit(self.step)
+        print(self.step)
+        self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
     def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
@@ -181,7 +177,7 @@ class Grid(QGraphicsView):
         if(height is not None):
             self.height = height
         if(step is not None):
-            self.gridStep = step
+            self.step = step
         if(offset is not None):
             self.offset = QPoint(offset[0],offset[1])
         if(locked is not None):
@@ -210,7 +206,9 @@ class GridWidget(QWidget):
         self.heightEdit.textChanged.connect(self.modifiedSize)
         self.statusLabel : QLabel = QLabel("Veuillez positionner la grille - Statut : Non verrouillée")
         self.bouton : QPushButton = QPushButton("Verrouiller")
-        self.bouton.clicked.connect(self.lockGrid) 
+        self.bouton.setToolTip("Lorsqu'elle est verrouillé une fois, il \nn'est plus possible de redimensionner la grille")
+        self.bouton.clicked.connect(self.lockGrid)
+        self.bouton.clicked.connect(self.grid.lockGrid)
         
         self.topLayout = QHBoxLayout()  
         self.topLayout.addStretch()
@@ -237,11 +235,20 @@ class GridWidget(QWidget):
         self.grid.drawGrid()
         
     def lockGrid(self):
-        self.bouton.setDisabled(True)
-        self.widthEdit.setDisabled(True)
-        self.heightEdit.setDisabled(True)
-        self.grid.lockGrid()
-        self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
+        self.grid.locked = not self.grid.locked
+        self.grid.lockedSignal.emit(self.grid.locked)
+        self.lockStateUpdate()
+        self.grid.drawGrid()
+    
+    def lockStateUpdate(self):
+        if(self.grid.isLocked()):
+            self.bouton.setText("Déplacer")
+            self.widthEdit.setDisabled(True)
+            self.heightEdit.setDisabled(True)
+            self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
+        else:
+            self.bouton.setText("Verrouiller")
+            self.statusLabel.setText("Veuillez positionner la grille - Statut : Non verrouillée")
         
     # use to copy the selected image of the user to put it in the app saves (return the copy image path)
     def copyFileToAppDir(self, source_file: str) -> str:
