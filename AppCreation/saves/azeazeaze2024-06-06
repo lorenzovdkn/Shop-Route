@@ -1,0 +1,23 @@
+{
+    "grille": {
+        "image": "AppCreation/images/plan5.jpeg",
+        "tailleGrille": [
+            10,
+            20
+        ],
+        "pas": 10,
+        "decalage": [
+            2,
+            5
+        ],
+        "verrouiller": false
+    },
+    "cases": [],
+    "data_projet": {
+        "nom_projet": "azeazeaze",
+        "auteurs": "zaeazeaz",
+        "nom_magasin": "azeaez",
+        "adresse_du_magasin": "azeaze",
+        "date": "2024-06-06"
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "grille": {
+        "image": "AppCreation/images/plan11.jpg",
+        "tailleGrille": [
+            84,
+            60
+        ],
+        "pas": 16,
+        "decalage": [
+            61,
+            29
+        ],
+        "verrouiller": true
+    },
+    "cases": [
+        {
+            "position": [
+                1,
+                1
+            ],
+            "articles": {},
+            "categorie": "Poissons",
+            "couleur": "#1E90FF",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                42,
+                6
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        }
+    ],
+    "data_projet": {
+        "nom_projet": "wxcwxc",
+        "auteurs": "wxcwxc",
+        "nom_magasin": "wxcwxc",
+        "adresse_du_magasin": "wxcwc",
+        "date": "2024-06-06"
+    }
+}

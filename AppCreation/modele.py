@@ -352,7 +352,7 @@ class ModelMagasin:
         ''' 
         Permet de récupérer le dictionnaire des produits existants dans le fichier liste_produits.json
         '''
-        with open('liste_produits.json', 'r', encoding='utf-8') as f:
+        with open('AppCreation/liste_produits.json', 'r', encoding='utf-8') as f:
             self.data = json.load(f)
 
         return self.data
@@ -488,7 +488,7 @@ class ModelMagasin:
         filename (str): Chemin du fichier de sauvegarde
         '''
         # Vérifier si le dossier 'saves' existe, sinon le créer
-        save_dir = 'saves'
+        save_dir = 'AppCreation/saves'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
