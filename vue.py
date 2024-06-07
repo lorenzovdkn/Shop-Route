@@ -69,6 +69,7 @@ class Case(QWidget):
         self.case_number.setText(f"{position[0]}, {position[1]}")
     
     def updateProductCategory(self, list_article: list):
+        self.category_combo.clear()
         self.category_combo.addItems(list_article)
     
     def getCategory(self):
@@ -169,13 +170,20 @@ class Contenu(QWidget):
         
     def addProduct(self, product_list_import : list, current_category : str, current_state :str):
         if  current_state == 'Privé':
-            QMessageBox.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            erreurState : QMessageBox = QMessageBox()
+            erreurState.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            erreurState.setIcon(QMessageBox.Icon.Warning)
+            
             return 
         elif current_category == 'Aucune':
-            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
+            erreurCategory : QMessageBox = QMessageBox()
+            erreurCategory.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
+            erreurCategory.setIcon(QMessageBox.Icon.Warning)
             return 
         elif current_category == 'Caisse' or current_category == 'Entrée':
-            QMessageBox.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
+            erreurCategory : QMessageBox = QMessageBox()
+            erreurCategory.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
+            erreurCategory.setIcon(QMessageBox.Icon.Warning)
             return
         
         product_list = product_list_import
@@ -303,6 +311,16 @@ class MainWindow(QMainWindow):
         changePicture.setIcon(QIcon("./images/picture.png"))
         changePicture.triggered.connect(self.changePicture)
         menu_edition.addAction(changePicture)
+        lock : QAction = QAction("Verrouiller la grille",self)
+        lock.setShortcut("Ctrl+Shift+L")
+        lock.setIcon(QIcon("./images/lock.png"))
+        lock.triggered.connect(self.lock)
+        menu_edition.addAction(lock)
+        unlock : QAction = QAction("Déplacer la grille",self)
+        unlock.setShortcut("Ctrl+Shift+U")
+        unlock.setIcon(QIcon("./images/unlock.png"))
+        unlock.triggered.connect(self.unlock)
+        menu_edition.addAction(unlock)
                 
     def open_project(self):
         self.load_window.show()
@@ -336,9 +354,9 @@ class MainWindow(QMainWindow):
             
             if result == QMessageBox.StandardButton.Save:
                 self.save()
-                QApplication.quit()
+                QApplication.exit()
             elif result == QMessageBox.StandardButton.Discard:
-                QApplication.quit()
+                QApplication.exit()
         QApplication.quit()
         
     def changePicture(self):
@@ -350,7 +368,21 @@ class MainWindow(QMainWindow):
                 self.signalChangedPicture.emit(file_name)
         else:
             self.statusBar().showMessage("Impossible de modifier une image dans ce menu")
-            
+    
+    def lock(self):
+        if(self.load_window.isHidden()):
+            if(not self.gridWidget.grid.isLocked()):
+                self.gridWidget.lockGrid()
+        else:
+            self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu")
+    
+    def unlock(self):
+        if(self.load_window.isHidden()):
+            if(self.gridWidget.grid.isLocked()):
+                self.gridWidget.lockGrid()
+        else:
+            self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu")
+    
     def closeEvent(self, event):
         if(self.load_window.isHidden()):
             event.ignore()
