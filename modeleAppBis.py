@@ -157,9 +157,8 @@ class Modele(object):
 
     def __init__(self) -> None:
         self.information = {}
-        self.lireJson("adrien.json")
         self.position = (0,0)
-        self.grille = Grille(self.setLargeur(),self.setHauteur())
+        self.grille = Grille(10,10)
         self.liste_course = []
         self.index = 0
         self.produit_coche = []
@@ -169,7 +168,7 @@ class Modele(object):
     def lireJson(self,fichier : str ):
         with open(fichier, 'r', encoding='utf-8') as f:
             self.information = json.load(f)
-
+        self.grille = Grille(self.setLargeur(),self.setHauteur())
     #Definir la liste de course
     def setListeCourse(self,produit):
         if produit not in self.liste_course:

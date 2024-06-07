@@ -20,10 +20,6 @@ class Controller:
         self.vue.indexClicked.connect(self.cheminContinu)
         self.vue.grid.indexReset.connect(self.indexReset)
 
-        # Definir:
-        self.vue.afficherArticles(self.modele.getArticle())
-        self.vue.grid.setCasePrive(self.modele.getCasesLock())
-        self.vue.grid.setCaisses(self.modele.getCaisses())
 
     def update_position(self, pos):
         # Vérifie si la case est privée
@@ -40,6 +36,8 @@ class Controller:
         # Ouvre un fichier et met à jour les informations dans le modèle
         self.modele.lireJson(chemin)
         self.vue.afficherArticles(self.modele.getArticle())
+        self.vue.grid.setCasePrive(self.modele.getCasesLock())
+        self.vue.grid.setCaisses(self.modele.getCaisses())
 
     def ajouter_article(self, produit):
         if produit not in self.modele.getListeCourse():
