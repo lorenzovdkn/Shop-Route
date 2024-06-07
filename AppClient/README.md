@@ -4,5 +4,5 @@ Faire ses courses dans un supermarché est une contrainte pour beaucoup de perso
 ## Membres
 - Lorenzo Vandenkoornhuyse (xMegumi)
 - Adrien Mallevaey (Zwartkat)
-- Théo Morel
+- Théo Morel (Hildragul)
 - Hendin Qantouche (Neiky62)
