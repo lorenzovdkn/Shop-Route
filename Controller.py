@@ -2,6 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow
 import vue
 import modele
+import selectProject
 
 class Controller:
     def __init__(self):
@@ -69,13 +70,11 @@ class Controller:
     def create_new_project(self, name, authors, store_name, store_address, creation_date, file_name) :  # name, authors, store_name, store_address, creation_date, file_name
         self.image_path = self.view.gridWidget.copyFileToAppDir(file_name)
         
-        self.model.grille.setImage(self.image_path)
+        self.setPicture(self.image_path)
         self.model.setDataProject(name, authors, store_name, store_address, creation_date)
-        self.model.save(str(name) + str(creation_date))
+        self.model.save("./saves/" + str(name) + str(creation_date))
         
-        self.view.load_window.hide()
-        self.view.setCentralWidget(self.view.central_widget)
-        
+        self.view.switchWidget("project_open")
         imagePath = self.view.gridWidget.copyFileToAppDir(file_name)
         self.view.gridWidget.grid.setPicture(imagePath)
         self.updateAllView()
@@ -86,8 +85,7 @@ class Controller:
     def open_project(self, filename):
         print("Opening project...")
         self.model.load(filename)
-        self.view.load_window.setParent(None)  # Détacher load_window de la MainWindow
-        self.view.setCentralWidget(self.view.central_widget)
+        self.view.switchWidget("project_open")
         self.view.showMaximized()
         
         width = self.model.grille.getTailleGrille()[0]
@@ -114,8 +112,7 @@ class Controller:
                                width, height, step, offset, lock, positions)
         
     def open_new_project(self, project):
-        self.view.load_window.hide()
-        self.view.setCentralWidget(self.view.central_widget)
+        self.view.switchWidget("project_open")
         self.updateAllView()
         
         # manque la mise à jour de la vue
@@ -127,9 +124,8 @@ class Controller:
     # Use for the action "ouvrir" in the menu to put back the select project window
     def openMenu(self):
         self.view.showNormal()
-        self.view.central_widget.setParent(None)
-        self.view.load_window.setParent(self.view.central_widget)
-        self.view.setCentralWidget(self.view.load_window)
+        print("Open Project")
+        self.view.switchWidget("load_window")
         
     def saveMenu(self, file_path):
         if(file_path == '' or file_path == None):

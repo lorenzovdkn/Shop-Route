@@ -272,7 +272,7 @@ class GridWidget(QWidget):
 
             # Retourner le chemin relatif du fichier copié
             print(dest_file)
-            file_path = "images/" + str(dest_file.split('/')[-1])
+            file_path = str(dest_file.split('/')[-1])
             return file_path
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")

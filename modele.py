@@ -230,9 +230,9 @@ class ModelMagasin:
                         if(case.getStatut() != "Privé"):
                             self.supprimerCase()
                     else:
-                        
-                        case.setCategory(category)
-                        case.setColor(self.categoryColors[category])
+                        if category != '':
+                            case.setCategory(category)
+                            case.setColor(self.categoryColors[category])
                     break
     
     def setCurrentCase(self, position : tuple) -> None:

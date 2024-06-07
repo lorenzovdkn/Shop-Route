@@ -1,6 +1,6 @@
 import sys,time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QStatusBar
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow,QStackedLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QStatusBar
 from PyQt6.QtCore import Qt, pyqtSignal, QDir
 from PyQt6.QtGui import QFont, QAction, QIcon
 from selectProject import LoadProjectWindow
@@ -246,7 +246,6 @@ class MainWindow(QMainWindow):
         
         self.central_widget = QWidget()
         self.temp_widget = QWidget()
-        # self.setCentralWidget(self.central_widget)
         self.mainLayout = QHBoxLayout(self.central_widget)
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
@@ -260,8 +259,15 @@ class MainWindow(QMainWindow):
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
-        
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(self.mainLayout)
         self.mainLayout.addWidget(self.gridWidget,2)
+        
+        self.centrallayout = QStackedLayout()
+        self.centrallayout.addWidget(self.load_window)
+        self.centrallayout.addWidget(self.mainWidget)
+        self.central = QWidget()
+        self.central.setLayout(self.centrallayout)
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
@@ -271,10 +277,10 @@ class MainWindow(QMainWindow):
 
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
-        self.setCentralWidget(self.load_window)
-             
+        self.setCentralWidget(self.central)
         
         menu_bar = self.menuBar()
+        
         # Menu fichier
         menu_fichier = menu_bar.addMenu("Fichier")
         nouveau = QAction('Nouveau',self)
@@ -321,8 +327,15 @@ class MainWindow(QMainWindow):
         unlock.setIcon(QIcon("./images/unlock.png"))
         unlock.triggered.connect(self.unlock)
         menu_edition.addAction(unlock)
+    
+    def switchWidget(self, widget : str):
+        if widget == "load_window":
+            self.central.layout().setCurrentIndex(0)
+        elif widget == "project_open":
+            print("project_open")
+            self.central.layout().setCurrentIndex(1)
                 
-    def open_project(self):
+    def open_project(self) -> LoadProjectWindow:
         self.load_window.show()
 
     def open_existing_project(self, project_name):
@@ -360,7 +373,7 @@ class MainWindow(QMainWindow):
         QApplication.quit()
         
     def changePicture(self):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             file_name, _ = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
             if file_name:
                 file_name : str = QDir().relativeFilePath(file_name)
@@ -370,21 +383,21 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Impossible de modifier une image dans ce menu")
     
     def lock(self):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             if(not self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
         else:
             self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu")
     
     def unlock(self):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             if(self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
         else:
             self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu")
     
     def closeEvent(self, event):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             event.ignore()
             self.leave() 
 
