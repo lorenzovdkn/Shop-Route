@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QApplication
 from ModeleAppBis import Modele
 from VueAPP2 import VueProjet,Grid  # Assurez-vous que le fichier contenant la classe VueProjet est nommé vue.py
 from PyQt6.QtWidgets import QApplication, QTreeWidgetItem
-
+import time
 
 class Controller:
     def __init__(self):
@@ -17,6 +17,8 @@ class Controller:
         self.vue.fnameOpen.connect(self.ouvrir_fichier)
         self.vue.grid.positionSignal.connect(self.update_position)
         self.vue.dicoAleatoireClicked.connect(self.creation_liste_random)
+        self.vue.indexClicked.connect(self.cheminContinu)
+        self.vue.grid.indexReset.connect(self.indexReset)
 
         # Charger les articles depuis le modèle
         self.vue.afficherArticles(self.modele.getArticle())
@@ -24,10 +26,10 @@ class Controller:
 
     def update_position(self, pos):
         # Vérifie si la case est privée
-        print(self.modele.getAllCasesLock())
         if [pos.x(), pos.y()] in self.modele.getAllCasesLock():
             # Affiche un message à l'utilisateur pour lui indiquer que la case est privée
-            self.vue.definirPosition()
+            #self.vue.definirPosition()
+            print("OOOH")
         else:
         # Met à jour la position de départ dans le modèle lorsque l'utilisateur clique sur la grille
             self.modele.setPosition((pos.x(), pos.y()))
@@ -54,14 +56,20 @@ class Controller:
         produit = self.modele.article_priorite()
         self.vue.grid.setProduit(produit)
         self.vue.afficher_liste_course(liste)
-        #self.vue.liste_course.takeTopLevelItem(self.vue.liste_course.indexOfTopLevelItem(item))
 
     def analyser_parcours(self):
         # Analyse le parcours et met à jour la grille
-        chemin = self.modele.coordonneeChemin()
-        print(chemin)
-        print(self.modele.getListeCourse())
-        self.vue.grid.setParcours(chemin)
+        if  self.vue.grid.parcours:
+            self.modele.indexZero()
+            self.vue.grid.setIndex(self.modele.getIndex())
+
+        chemins = self.modele.coordonneeChemin()
+        self.vue.grid.setParcours(chemins)
+        self.vue.setpos.setVisible(True)
+
+    def continu_parcours(self):
+        chemins = self.modele.coordonneeChemin()
+        self.vue.grid.setParcours(chemins)
 
     def creation_liste_random(self):
         self.modele.random_course()
@@ -71,6 +79,14 @@ class Controller:
         liste = self.modele.getListeCourse()
         self.vue.afficher_liste_course(liste)
 
+    def cheminContinu(self):
+
+        self.modele.plusUnIndex()
+        self.vue.grid.setIndex(self.modele.getIndex())
+        self.continu_parcours()
+
+    def indexReset(self):
+        self.vue.setpos.setVisible(False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

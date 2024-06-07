@@ -3,6 +3,7 @@ import time
 from PyQt6.QtWidgets import QApplication, QMainWindow,QMessageBox, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
 from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtCore import QTimer
 
 class Grid(QGraphicsView):
     positionSignal = pyqtSignal(QPoint)
@@ -10,6 +11,7 @@ class Grid(QGraphicsView):
     sizeSignal = pyqtSignal(int, int)
     stepSignal = pyqtSignal(int)
     offsetSignal = pyqtSignal(tuple)
+    indexReset = pyqtSignal()
     
 
     def __init__(self, parent=None):
@@ -32,6 +34,7 @@ class Grid(QGraphicsView):
         self.position = ()
         self.caseprive = []
         self.couleur = "brown"
+        self.index = 0
 
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -65,8 +68,11 @@ class Grid(QGraphicsView):
         self.drawGrid()
 
     def setCasePrive(self,prive):
-        self.caseprive.append(prive)
-        print(self.caseprive)
+        self.caseprive = prive
+        self.drawGrid()
+
+    def setIndex(self,index):
+        self.index = index
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -91,14 +97,7 @@ class Grid(QGraphicsView):
             self.scene.addItem(self.image_item)
         
         if self.parcours:
-            for pos in self.parcours:
-                x, y = pos
-                if 0 <= x < width and 0 <= y < height:
-                    rect = QGraphicsRectItem(x * step - step + self.offset.x(), y * step + self.offset.y() -step, step, step)
-                    color = QColor("purple")
-                    color.setAlpha(100)
-                    rect.setBrush(color)
-                    self.scene.addItem(rect)
+            self.drawNextParcours()
 
         if self.produit:
             for pos,couleur in self.produit:
@@ -138,7 +137,21 @@ class Grid(QGraphicsView):
                     color.setAlpha(100)
                     rect.setBrush(color)
                 self.scene.addItem(rect)
-                
+
+    def drawNextParcours(self):
+        # Vérifier si l'index de parcours est inférieur à la longueur de parcours
+        if self.index + 2 > len(self.parcours):
+            print("DDDD")
+            self.indexReset.emit()
+        for pos in self.parcours[self.index]:
+            x, y = pos
+            if 0 <= x < self.width and 0 <= y < self.height:
+                rect = QGraphicsRectItem(x * self.gridStep - self.gridStep + self.offset.x(), y * self.gridStep + self.offset.y() - self.gridStep, self.gridStep, self.gridStep)
+                color = QColor("#000000")
+                color.setAlpha(200)
+                rect.setBrush(color)
+                self.scene.addItem(rect)
+
     def mousePressEvent(self, event):
         if event.buttons() == Qt.MouseButton.LeftButton:
             if self.locked:
@@ -203,6 +216,7 @@ class VueProjet(QMainWindow):
     analyseClicked = pyqtSignal() # Lance l'affichage du parcours
     fnameOpen = pyqtSignal(str)
     dicoAleatoireClicked = pyqtSignal()
+    indexClicked = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -228,18 +242,23 @@ class VueProjet(QMainWindow):
         self.ajout = QPushButton('Ajouter à la liste de courses')
         self.supprimer = QPushButton('Supprimer de la liste de courses')
         self.dico_create = QPushButton('Génerer une liste de courses aléatoire')
-        self.setpos = QPushButton('Definir un point de départ')
+        self.setpos = QPushButton('Continuer')
+
+        self.setpos.setVisible(False)
 
         # Grid Widget
         self.grid = Grid()
         
         # Right Layout
         self.rightLayout = QVBoxLayout()
-        self.rightLayout.addWidget(self.setpos)
+        self.topLayout = QHBoxLayout()
+        self.rightLayout.addLayout(self.topLayout)
+        self.topLayout.addWidget(self.analyse)
+        self.topLayout.addWidget(self.dico_create)
         self.rightLayout.addWidget(self.grid)
-        self.bottomRight_layout.addWidget(self.analyse)
+        self.bottomRight_layout.addWidget(self.setpos)
         self.rightLayout.addLayout(self.bottomRight_layout)
-        self.bottomRight_layout.addWidget(self.dico_create)
+        
         
         # Add right layout to main layout
         self.layout_principal.addLayout(self.dock_container)
@@ -372,13 +391,11 @@ class VueProjet(QMainWindow):
             self.liste_course.addTopLevelItem(course_item)
 
     def definirPosition(self):
-        msg = QMessageBox()
-        msg.setText("Choissisez une Position avant de commencer")
-        msg.exec()
+        self.indexClicked.emit()
 
     def analyseParcours(self):
         self.analyseClicked.emit()
-        
+    
     def set_parcours(self, liste_cases):
         self.parcours = liste_cases
         

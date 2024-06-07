@@ -157,10 +157,11 @@ class Modele(object):
 
     def __init__(self) -> None:
         self.information = {}
-        self.lireJson("message.json")
+        self.lireJson("adrien.json")
         self.position = (0,0)
         self.grille = Grille(self.setLargeur(),self.setHauteur())
         self.liste_course = []
+        self.index = 0
         
 
     #Méthode pour lire les données d'un fichier JSON et les stocker dans l'objet
@@ -173,6 +174,14 @@ class Modele(object):
         if produit not in self.liste_course:
             self.liste_course.append(produit)
 
+    def plusUnIndex(self):
+        self.index +=1
+
+    def indexZero(self):
+        self.index = 0
+
+    def getIndex(self):
+        return self.index
     #Supprime un produit dans la liste de course
     def deleteProduct(self,produit):
         if produit in self.liste_course:
@@ -247,7 +256,6 @@ class Modele(object):
             return self.distance(self.position, case["position"])
         sorted_cases = sorted(cases,key=distance_case)
         produits_tries = []
-        print(sorted_cases)
         for case in sorted_cases:
             for produit, (quantite, x) in case["articles"].items():
                 #Si le produit est dans la liste de course et que la quantite en stock est supérieur à 0 alors on peut ajouter dans le chemin
@@ -255,7 +263,6 @@ class Modele(object):
                     #On regroupe les produits si ils sont au même endroit
                     if tuple(case["position"]) not in produits_tries:
                         produits_tries.append(tuple(case["position"])) 
-        print(produits_tries)
         return produits_tries 
 
     # Retourne toutes les coordonnées du chemin pour faire les courses
@@ -264,40 +271,57 @@ class Modele(object):
         self.casesLock()
         liste = []
         position = self.position
-        for destination in chemin:
-            final = self.grille.parcours_min(position, destination)
-            for i in final:
-                liste.append(i)
+        while chemin:
+            print(chemin)
+            element = chemin[0]  # Prendre le premier élément du chemin
+            final = self.grille.parcours_min(position, element)
+            liste.append(final)
             position = final[-1]
+            
+            chemin_a_supprimer = []  # Liste temporaire pour les éléments à supprimer
+            for destination in chemin:
+                cells_to_check = [
+                    (destination[0] - 1, destination[1]),
+                    (destination[0] + 1, destination[1]),
+                    (destination[0], destination[1] - 1),
+                    (destination[0], destination[1] + 1)
+                ]
+                if any(cell in sublist for sublist in liste for cell in cells_to_check):
+                    chemin_a_supprimer.append(destination)  # Ajouter à la liste de suppression
+                    
+            for destination in chemin_a_supprimer:
+                chemin.remove(destination)  # Supprimer les éléments de la liste d'origine
+                
         return liste
-    
+
     # Definir les cases que le client ne peut pas accéder
     def casesLock(self) -> list:
         cases = self.getCasesProducts()
         for case in cases:
-            if case["statut"] == "True" or case["statut"] == "Produit":
+            if case["statut"] == "Privé" or case["statut"] == "Publique":
                 self.grille.setLockGrid(tuple(case["position"]),True)
-            if case["statut"] == "Produit":
+            if case["statut"] == "Publique":
                 self.grille.getCases()[case["position"][1]][case["position"][0]].setContenu("Produit")
 
     def getCasesLock(self):
+        liste = []
         cases = self.getCasesProducts()
         for case in cases:
-            if case["statut"] == "True" and case["statut"] != "Produit":
-                return case["position"]
+            if case["statut"] == "Privé":
+                liste.append(case["position"])
+        return liste
             
     def getAllCasesLock(self):
         liste = []
         cases = self.getCasesProducts()
         for case in cases:
-            if case["statut"] == "True" or case["statut"] == "Produit":
+            if case["statut"] == "Privé" or case["statut"] == "Publique":
                 liste.append(case["position"])
         return liste
 
     def random_course(self):
         self.liste_course = []
         article_list = self.getArticlesList()
-        print(article_list)
         if len(article_list) < 20:
             self.liste_course = article_list
         else:
@@ -313,5 +337,4 @@ class Modele(object):
 ########### Exemple d'utilisation ######################################################################################
 if __name__ == '__main__' :
     modele = Modele()
-    print(modele.coordonneeChemin())
     modele.grille.afficheGrille()
