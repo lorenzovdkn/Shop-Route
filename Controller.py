@@ -20,9 +20,10 @@ class Controller:
         self.vue.indexClicked.connect(self.cheminContinu)
         self.vue.grid.indexReset.connect(self.indexReset)
 
-        # Charger les articles depuis le modèle
+        # Definir:
         self.vue.afficherArticles(self.modele.getArticle())
         self.vue.grid.setCasePrive(self.modele.getCasesLock())
+        self.vue.grid.setCaisses(self.modele.getCaisses())
 
     def update_position(self, pos):
         # Vérifie si la case est privée
@@ -59,16 +60,19 @@ class Controller:
 
     def analyser_parcours(self):
         # Analyse le parcours et met à jour la grille
+        self.vue.afficherArticles(self.modele.getArticle())
         if  self.vue.grid.parcours:
             self.modele.indexZero()
             self.vue.grid.setIndex(self.modele.getIndex())
 
         chemins = self.modele.coordonneeChemin()
+        self.vue.cocheCourse(self.modele.getListeCourse(),self.modele.getProduitCoche())
         self.vue.grid.setParcours(chemins)
         self.vue.setpos.setVisible(True)
 
     def continu_parcours(self):
         chemins = self.modele.coordonneeChemin()
+        self.vue.cocheCourse(self.modele.getListeCourse(),self.modele.getProduitCoche())
         self.vue.grid.setParcours(chemins)
 
     def creation_liste_random(self):

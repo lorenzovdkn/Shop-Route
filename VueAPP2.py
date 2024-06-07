@@ -35,6 +35,7 @@ class Grid(QGraphicsView):
         self.caseprive = []
         self.couleur = "brown"
         self.index = 0
+        self.caisses = []
 
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -73,6 +74,10 @@ class Grid(QGraphicsView):
 
     def setIndex(self,index):
         self.index = index
+        self.drawGrid()
+
+    def setCaisses(self,caisses):
+        self.caisses = caisses
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -126,6 +131,16 @@ class Grid(QGraphicsView):
                     rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
                     color = QColor("red")
                     color.setAlpha(100)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+
+        if self.caisses :
+            for pos in self.caisses:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
+                    color = QColor("grey")
+                    color.setAlpha(120)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
         
@@ -373,22 +388,27 @@ class VueProjet(QMainWindow):
             
                 
     def afficher_liste_course(self,liste):
-        """
-        Display the current list of courses in the `liste_course` QTreeWidget.
-
-        This function clears the existing items in the `liste_course` QTreeWidget and then iterates over the `dico_courses` list,
-        creating a new `QTreeWidgetItem` for each product and adding it to the `liste_course`.
-
-        Parameters:
-            self (object): The instance of the class.
-
-        Returns:
-            None
-        """
         self.liste_course.clear()
         for product in liste:
             course_item = QTreeWidgetItem([product])
             self.liste_course.addTopLevelItem(course_item)
+
+    def cocheCourse(self, liste, produits):
+        self.liste_course.clear()
+        for product in liste:
+            found = False
+            for i in range(self.grid.index + 1):
+                print(product)
+                print(produits)
+                if product in produits[i]:
+                    course_item = QTreeWidgetItem([product + " ✓"])
+                    self.liste_course.addTopLevelItem(course_item)
+                    found = True
+                    break
+            if not found:
+                course_item = QTreeWidgetItem([product])
+                self.liste_course.addTopLevelItem(course_item)
+
 
     def definirPosition(self):
         self.indexClicked.emit()

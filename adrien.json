@@ -293,6 +293,39 @@
             "couleur": "#808080",
             "statut": "Privé"
         }
+        ,
+        {
+            "position": [
+                0,
+                10
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#808080",
+            "statut": "Publique"
+        }
+        ,
+        {
+            "position": [
+                0,
+                12
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#808080",
+            "statut": "Publique"
+        }
+        ,
+        {
+            "position": [
+                0,
+                14
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#808080",
+            "statut": "Publique"
+        }
     ],
     "data_projet": {
         "nom_projet": "test1",
