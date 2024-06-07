@@ -34,6 +34,7 @@ class Controller:
         # signaux menu
         self.view.signalOpen.connect(self.openMenu)
         self.view.signalSave.connect(self.saveMenu)
+        self.view.signalChangedPicture.connect(self.setPicture)
     
     # Define the size of the grid    
     def setGridSize(self, width : int , height : int):
@@ -42,7 +43,7 @@ class Controller:
     
     # Define the size of each case
     def setStep(self, step : float):
-        self.model.grille.setStep(step)
+        self.model.grille.setPas(step)
     
     # Define the offset of the grid
     def setOffset(self, offset : tuple):
@@ -51,7 +52,8 @@ class Controller:
     
     # Define the picture
     def setPicture(self, picture : str):
-        self.model.grille.setPicture(picture)
+        print(picture)
+        self.model.grille.setImage(picture)
         self.view.gridWidget.grid.setPicture(picture)
     
     # Define the selected case    
@@ -130,10 +132,11 @@ class Controller:
         self.view.setCentralWidget(self.view.load_window)
         
     def saveMenu(self, file_path):
-        if(file_path == None):
+        if(file_path == '' or file_path == None):
             file_path = self.model.getFilePath()
+            self.model.save(file_path)
         self.model.save(file_path)
-    
+
     def addCategory(self):
         list_category = ['Aucune','Caisse','Entrée'] + list(self.model.getCategoryJson())
         self.view.case_widget.updateProductCategory(list_category)
