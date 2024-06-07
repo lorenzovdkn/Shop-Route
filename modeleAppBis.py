@@ -157,7 +157,7 @@ class Modele(object):
 
     def __init__(self) -> None:
         self.information = {}
-        self.position = (0,0)
+        self.position = ()
         self.grille = Grille(10,10)
         self.liste_course = []
         self.index = 0
@@ -314,8 +314,9 @@ class Modele(object):
             #determiner les produit à cocher en meme temps
             self.determineProduitCoche(produit_coche)
 
-        caisse = self.trier_positions_par_distance_avec_chemin(position,self.getCaisses())
-        liste.append(self.grille.parcours_min(position,caisse[0]))
+        if self.getCaisses():
+            caisse = self.trier_positions_par_distance_avec_chemin(position,self.getCaisses())
+            liste.append(self.grille.parcours_min(position,caisse[0]))
         return liste
 
     # Definir les cases que le client ne peut pas accéder
@@ -377,6 +378,14 @@ class Modele(object):
                             if article in self.liste_course:
                                 liste.append(article)
         self.produit_coche.append(liste)
+
+    def getEntree(self):
+        liste = []
+        article_list = self.getCasesProducts()
+        for case in article_list:
+            if case["categorie"] == "Entree":
+                liste.append(case["position"])
+        return liste
 
     def getProduitCoche(self):
         return self.produit_coche

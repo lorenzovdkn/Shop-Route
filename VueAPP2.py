@@ -36,6 +36,7 @@ class Grid(QGraphicsView):
         self.couleur = "brown"
         self.index = 0
         self.caisses = []
+        self.entree = []
 
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -52,6 +53,7 @@ class Grid(QGraphicsView):
 
     def setPicture(self, picture):
         self.picture = picture
+        self.drawGrid()
     
     def setGrid(self, grid):
         self.grid = grid
@@ -78,6 +80,10 @@ class Grid(QGraphicsView):
 
     def setCaisses(self,caisses):
         self.caisses = caisses
+        self.drawGrid()
+
+    def setEntree(self,entree):
+        self.entree = entree
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -140,6 +146,16 @@ class Grid(QGraphicsView):
                 if 0 <= x < width and 0 <= y < height:
                     rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
                     color = QColor("grey")
+                    color.setAlpha(120)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+
+        if self.entree:
+            for pos in self.entree:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
+                    color = QColor("green")
                     color.setAlpha(120)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
@@ -232,6 +248,7 @@ class VueProjet(QMainWindow):
     fnameOpen = pyqtSignal(str)
     dicoAleatoireClicked = pyqtSignal()
     indexClicked = pyqtSignal()
+    fnameOpen_bis = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -283,6 +300,7 @@ class VueProjet(QMainWindow):
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
         menu_fichier.addAction('Ouvrir', self.ouvrir)
+        menu_fichier.addAction('Ouvrir plan',self.ouvrir_plan)
         
         # Docks
         self.dock = QDockWidget('Liste des articles')
@@ -325,10 +343,15 @@ class VueProjet(QMainWindow):
         Returns:
             str: The selected file path if a file is chosen, otherwise None.
         """
-        boite = QFileDialog()
-        chemin, validation = boite.getOpenFileName(directory=sys.path[0])
-        if validation:
-            self.fnameOpen.emit(chemin)
+        boite = QFileDialog.getOpenFileName(self, "Sélectionner un fichier", "", "Fichiers JSON (*.json)")
+        if boite[0] != '':
+            self.fnameOpen.emit(boite[0])
+
+    def ouvrir_plan(self) -> str :
+        boite = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
+        if boite[0] != '':
+            self.fnameOpen_bis.emit(boite[0])
+
 
     def afficherArticles(self, data):        
         """
