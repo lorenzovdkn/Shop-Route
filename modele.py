@@ -144,9 +144,6 @@ class Grille:
     def setOffset(self, offset : tuple) -> None:
         print("setOffset function : ", offset)
         self.decalage = offset
-        
-    def setStep(self, step : int) -> None:
-        self.pas = step
     
     def getDecalage(self) -> tuple:
         return self.decalage
@@ -155,6 +152,7 @@ class Grille:
         return self.pas
         
     def setPas(self, pas : float) -> None:
+        print("Pas",pas)
         self.pas = pas
         
     def getVerrouiller(self) -> bool:
@@ -175,6 +173,8 @@ class ModelMagasin:
         self.category : str = None
         self.filepath : str = None
         self.categoryColors: dict = {
+        'Caisse': '#FF5733',
+        'Entrée': '#1FB89B',
         'Légumes': '#228B22',           
         'Poissons': '#1E90FF',          
         'Viandes': '#FF4500',           
@@ -238,7 +238,6 @@ class ModelMagasin:
                         
                         case.setCategory(category)
                         case.setColor(self.categoryColors[category])
-                        print(case.couleur)
                     break
     
     def setCurrentCase(self, position : tuple) -> None:
@@ -371,9 +370,8 @@ class ModelMagasin:
         ''' 
         Permet de récupérer la liste des catégories existantes.
         '''
-        dict_product = self.getProductsJson()
-        
-        return dict_product.keys()
+        list_category = ['Aucune','Caisse','Entrée'] + list(self.getProductsJson().keys())
+        return list_category
     
     def getArticlesCase(self) -> dict:
         ''' 
@@ -497,6 +495,7 @@ class ModelMagasin:
         self.filepath = full_path
         print("save : ", full_path)
         # Convertir la grille en dictionnaire
+        print("Save",self.grille.pas)
         grille_dict = {
             "image": self.grille.getImage(),
             "tailleGrille": self.grille.getTailleGrille(),

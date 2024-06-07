@@ -9,7 +9,7 @@ class Grid(QGraphicsView):
     positionSignal : pyqtSignal = pyqtSignal(tuple)
     lockedSignal : pyqtSignal = pyqtSignal(bool)
     sizeSignal : pyqtSignal = pyqtSignal(int,int)
-    stepSignal : pyqtSignal = pyqtSignal(int)
+    stepSignal : pyqtSignal = pyqtSignal(float)
     offsetSignal : pyqtSignal = pyqtSignal(tuple)
     
     def __init__(self, parent=None):
@@ -81,8 +81,9 @@ class Grid(QGraphicsView):
         
         if(self.picture != None):
             pixmap = QPixmap(self.picture)
-            pixmap = pixmap.scaledToWidth(self.size().width(), Qt.TransformationMode.SmoothTransformation)
+            pixmap = pixmap.scaledToWidth(1000, Qt.TransformationMode.SmoothTransformation)
             self.image_item = QGraphicsPixmapItem(pixmap)
+            self.image_item.setPos(0,0)
             self.scene.addItem(self.image_item)
         
         if(self.locked):
@@ -127,16 +128,12 @@ class Grid(QGraphicsView):
             self.offset += delta
             if self.offset.x() <= -self.size().width()//10:
                 self.offset.setX(0)
-                #self.dragging = False
             if self.offset.x() + (self.width * self.step) > self.size().width() + self.size().width()//10:
                 self.offset.setX((int) (self.size().width() - (self.width * self.step)))
-                #self.dragging = False
             if self.offset.y() <= -self.size().height()//10:
                 self.offset.setY(0)
-                #self.dragging = False
             if self.offset.y() + (self.height * self.step) > self.size().height() + self.size().height()//10:
                 self.offset.setY((int) (self.size().height() - (self.height * self.step)))
-                #self.dragging = False
             
             self.lastPos = event.pos()
             self.drawGrid()
@@ -167,7 +164,6 @@ class Grid(QGraphicsView):
     def lockGrid(self):
         self.sizeSignal.emit(self.width, self.height)
         self.stepSignal.emit(self.step)
-        print(self.step)
         self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
     # Define the caracteristic of the grid and update the grid in the app
@@ -220,8 +216,8 @@ class GridWidget(QWidget):
         self.topLayout.addSpacing(15)
         
         self.gridLayout = QVBoxLayout()
-        self.gridLayout.addLayout(self.topLayout)
         self.gridLayout.addWidget(self.grid)
+        self.gridLayout.addLayout(self.topLayout)
         self.setLayout(self.gridLayout)
     
             
