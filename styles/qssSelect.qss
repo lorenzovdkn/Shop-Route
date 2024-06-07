@@ -122,3 +122,8 @@ QScrollBar::sub-line:vertical {
     subcontrol-position: top;
     subcontrol-origin: margin;
 }
+
+/* Style des QDialog */
+QDialog{
+    background-color: #E0E0E0
+}

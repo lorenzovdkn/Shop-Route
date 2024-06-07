@@ -2,17 +2,28 @@
     "grille": {
         "image": "images/plan11.jpg",
         "tailleGrille": [
-            10,
-            20
+            76,
+            53
         ],
-        "pas": 1.0,
+        "pas": 13.0,
         "decalage": [
-            2,
-            5
+            18,
+            16
         ],
-        "verrouiller": false
+        "verrouiller": true
     },
-    "cases": [],
+    "cases": [
+        {
+            "position": [
+                4,
+                16
+            ],
+            "articles": {},
+            "categorie": "Entrée",
+            "couleur": "#1FB89B",
+            "statut": "Publique"
+        }
+    ],
     "data_projet": {
         "nom_projet": "Nom du projet",
         "auteurs": "lorenzo",
