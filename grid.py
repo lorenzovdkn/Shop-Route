@@ -180,14 +180,14 @@ class Grid(QGraphicsView):
         if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
-            if self.offset.x() <= -self.size().width()//10:
-                self.offset.setX(0)
-            if self.offset.x() + (self.width * self.step) > self.size().width() + self.size().width()//10:
-                self.offset.setX((int) (self.size().width() - (self.width * self.step)))
-            if self.offset.y() <= -self.size().height()//10:
-                self.offset.setY(0)
-            if self.offset.y() + (self.height * self.step) > self.size().height() + self.size().height()//10:
-                self.offset.setY((int) (self.size().height() - (self.height * self.step)))
+            if self.offset.x() <= -self.size().width()//5:
+                self.offset.setX(-self.size().width()//5 +1)
+            if self.offset.x() + (self.width * self.step) > self.size().width() + 500:
+                self.offset.setX((int) (self.size().width() + 499 - (self.width * self.step)))
+            if self.offset.y() <= -self.size().height()//5:
+                self.offset.setY(-self.size().height()//5+1)
+            if self.offset.y() + (self.height * self.step) > self.size().height() + self.size().height()//5:
+                self.offset.setY((int) (self.size().height() + self.size().height()//5 -1 - (self.height * self.step)))
             
             self.lastPos = event.pos()
             self.drawGrid()
