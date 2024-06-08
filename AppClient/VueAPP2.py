@@ -1,9 +1,10 @@
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow,QMessageBox, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
-from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtGui import QPixmap, QColor,QKeySequence,QShortcut
 from PyQt6.QtCore import QTimer
+
 
 class Grid(QGraphicsView):
     positionSignal = pyqtSignal(QPoint)
@@ -36,6 +37,7 @@ class Grid(QGraphicsView):
         self.couleur = "brown"
         self.index = 0
         self.caisses = []
+        self.entree = []
 
         self.drawGrid()
         self.sceneWidth = self.scene.width()
@@ -52,6 +54,7 @@ class Grid(QGraphicsView):
 
     def setPicture(self, picture):
         self.picture = picture
+        self.drawGrid()
     
     def setGrid(self, grid):
         self.grid = grid
@@ -78,6 +81,10 @@ class Grid(QGraphicsView):
 
     def setCaisses(self,caisses):
         self.caisses = caisses
+        self.drawGrid()
+
+    def setEntree(self,entree):
+        self.entree = entree
         self.drawGrid()
 
     def drawGrid(self, width=None, height=None, step=None, position_dict=None):
@@ -140,6 +147,16 @@ class Grid(QGraphicsView):
                 if 0 <= x < width and 0 <= y < height:
                     rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
                     color = QColor("grey")
+                    color.setAlpha(120)
+                    rect.setBrush(color)
+                    self.scene.addItem(rect)
+
+        if self.entree:
+            for pos in self.entree:
+                x, y = pos
+                if 0 <= x < width and 0 <= y < height:
+                    rect = QGraphicsRectItem(x * step + self.offset.x() - step, y * step + self.offset.y() - step, step, step)
+                    color = QColor("green")
                     color.setAlpha(120)
                     rect.setBrush(color)
                     self.scene.addItem(rect)
@@ -232,6 +249,7 @@ class VueProjet(QMainWindow):
     fnameOpen = pyqtSignal(str)
     dicoAleatoireClicked = pyqtSignal()
     indexClicked = pyqtSignal()
+    fnameOpen_bis = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -283,6 +301,12 @@ class VueProjet(QMainWindow):
         menu_bar = self.menuBar()
         menu_fichier = menu_bar.addMenu("Fichier")
         menu_fichier.addAction('Ouvrir', self.ouvrir)
+        menu_fichier.addAction('Ouvrir plan',self.ouvrir_plan)
+        menu_action = menu_bar.addMenu("Action")
+        menu_action.addAction('Analyser le parcours',self.analyseParcours)
+        menu_action.addAction('Créer une liste de course aléatoire',self.course_aleatoire)
+        menu_action.addAction('Suivant',self.definirPosition)
+
         
         # Docks
         self.dock = QDockWidget('Liste des articles')
@@ -318,6 +342,22 @@ class VueProjet(QMainWindow):
         self.dico_create.clicked.connect(self.course_aleatoire)
         self.setpos.clicked.connect(self.definirPosition)
 
+        # Define shortcuts
+        self.shortcut_analyser = QShortcut(QKeySequence('a'), self)
+        self.shortcut_analyser.activated.connect(self.analyseParcours)
+
+        self.shortcut_continue = QShortcut(QKeySequence(Qt.Key.Key_Right), self)
+        self.shortcut_continue.activated.connect(self.definirPosition)
+
+        self.shortcut_create_random = QShortcut(QKeySequence('r'), self)
+        self.shortcut_create_random.activated.connect(self.course_aleatoire)
+
+        self.shortcut_add_product = QShortcut(QKeySequence(Qt.Key.Key_Return), self)
+        self.shortcut_add_product.activated.connect(self.ajouter_article)
+
+        self.shortcut_add_product = QShortcut(QKeySequence(Qt.Key.Key_Backspace), self)
+        self.shortcut_add_product.activated.connect(self.supprimer_article)
+
     def ouvrir(self) -> str:
         """
         Opens a file dialog and emits the selected file path if a file is chosen.
@@ -325,10 +365,15 @@ class VueProjet(QMainWindow):
         Returns:
             str: The selected file path if a file is chosen, otherwise None.
         """
-        boite = QFileDialog()
-        chemin, validation = boite.getOpenFileName(directory=sys.path[0])
-        if validation:
-            self.fnameOpen.emit(chemin)
+        boite = QFileDialog.getOpenFileName(self, "Sélectionner un fichier", "", "Fichiers JSON (*.json)")
+        if boite[0] != '':
+            self.fnameOpen.emit(boite[0])
+
+    def ouvrir_plan(self) -> str :
+        boite = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
+        if boite[0] != '':
+            self.fnameOpen_bis.emit(boite[0])
+
 
     def afficherArticles(self, data):        
         """
@@ -411,7 +456,8 @@ class VueProjet(QMainWindow):
 
 
     def definirPosition(self):
-        self.indexClicked.emit()
+        if self.grid.parcours:
+            self.indexClicked.emit()
 
     def analyseParcours(self):
         self.analyseClicked.emit()

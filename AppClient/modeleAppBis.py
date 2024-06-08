@@ -157,7 +157,7 @@ class Modele(object):
 
     def __init__(self) -> None:
         self.information = {}
-        self.position = (0,0)
+        self.position = ()
         self.grille = Grille(10,10)
         self.liste_course = []
         self.index = 0
@@ -168,7 +168,7 @@ class Modele(object):
     def lireJson(self,fichier : str ):
         with open(fichier, 'r', encoding='utf-8') as f:
             self.information = json.load(f)
-        self.grille = Grille(self.setLargeur(),self.setHauteur())
+        self.grille = Grille(self.setLargeur()+1,self.setHauteur()+1)
     #Definir la liste de course
     def setListeCourse(self,produit):
         if produit not in self.liste_course:
@@ -223,11 +223,11 @@ class Modele(object):
             categorie = case['categorie']
             articles = case['articles']
 
-            if categorie not in dico_categorie:
+            if categorie not in dico_categorie and categorie != "Caisse" and categorie != "Entree" and categorie != "Aucune":
                 dico_categorie[categorie] = []
 
-            for article,(quantite,x) in articles.items():
-                if quantite > 0:
+            for article,quantite in articles.items():
+                if quantite[0] > 0:
                     dico_categorie[categorie].append(article)
     
         return dico_categorie
@@ -239,8 +239,8 @@ class Modele(object):
         for case in cases:
             articles = case['articles']
 
-            for article, (quantite, x) in articles.items():
-                if quantite > 0:
+            for article, quantite in articles.items():
+                if quantite[0] > 0:
                     articles_list.append(article)
 
         return articles_list
@@ -257,9 +257,9 @@ class Modele(object):
         sorted_cases = sorted(cases,key=distance_case)
         produits_tries = []
         for case in sorted_cases:
-            for produit, (quantite, x) in case["articles"].items():
+            for produit, quantite in case["articles"].items():
                 #Si le produit est dans la liste de course et que la quantite en stock est supérieur à 0 alors on peut ajouter dans le chemin
-                if produit in self.liste_course and quantite > 0:
+                if produit in self.liste_course and quantite[0] > 0:
                     #On regroupe les produits si ils sont au même endroit
                     if tuple(case["position"]) not in produits_tries:
                         produits_tries.append(tuple(case["position"])) 
@@ -314,8 +314,9 @@ class Modele(object):
             #determiner les produit à cocher en meme temps
             self.determineProduitCoche(produit_coche)
 
-        caisse = self.trier_positions_par_distance_avec_chemin(position,self.getCaisses())
-        liste.append(self.grille.parcours_min(position,caisse[0]))
+        if self.getCaisses():
+            caisse = self.trier_positions_par_distance_avec_chemin(position,self.getCaisses())
+            liste.append(self.grille.parcours_min(position,caisse[0]))
         return liste
 
     # Definir les cases que le client ne peut pas accéder
@@ -324,8 +325,6 @@ class Modele(object):
         for case in cases:
             if case["statut"] == "Privé" or case["statut"] == "Publique":
                 self.grille.setLockGrid(tuple(case["position"]),True)
-            if case["statut"] == "Publique":
-                self.grille.getCases()[case["position"][1]][case["position"][0]].setContenu("Produit")
 
     def getCasesLock(self):
         liste = []
@@ -377,6 +376,14 @@ class Modele(object):
                             if article in self.liste_course:
                                 liste.append(article)
         self.produit_coche.append(liste)
+
+    def getEntree(self):
+        liste = []
+        article_list = self.getCasesProducts()
+        for case in article_list:
+            if case["categorie"] == "Entree":
+                liste.append(case["position"])
+        return liste
 
     def getProduitCoche(self):
         return self.produit_coche
