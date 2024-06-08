@@ -1,0 +1,133 @@
+/* Style de la fenêtre principale */
+QMainWindow {
+    background-color: #E0E0E0;
+}
+
+/* Style des boutons */
+QPushButton {
+    background-color: #3A7BD5;
+    color: white; /* La couleur du texte des boutons reste blanche */
+    border: 1px solid #2A5BA5;
+    padding: 5px 5px;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: #357ABD;
+}
+
+QPushButton:pressed {
+    background-color: #2A5BA5;
+}
+
+/* Style des labels */
+QLabel {
+    color: #2A2A2A; /* Couleur du texte des labels */
+}
+
+/* Style des entrées de texte */
+QLineEdit {
+    background-color: #F5F5F5;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des entrées de texte */
+}
+
+QLineEdit:focus {
+    border: 1px solid #3A7BD5;
+}
+
+/* Style des zones de texte */
+QTextEdit {
+    background-color: #F5F5F5;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des zones de texte */
+}
+
+QTextEdit:focus {
+    border: 1px solid #3A7BD5;
+}
+
+/* Style des listes */
+QListWidget {
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    padding: 5px;
+    border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des listes */
+}
+
+QListWidget::item {
+    padding: 5px;
+}
+
+QListWidget::item:selected {
+    background-color: #3A7BD5;
+    color: white; /* La couleur du texte sélectionné dans la liste reste blanche */
+}
+
+/* Style des barres de défilement */
+QScrollBar:horizontal {
+    border: 1px solid #CCCCCC;
+    background: #F5F5F5;
+    height: 15px;
+    margin: 0px 16px 0 16px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #3A7BD5;
+    min-width: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: 1px solid #CCCCCC;
+    background: #E0E0E0;
+    width: 16px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 1px solid #CCCCCC;
+    background: #E0E0E0;
+    width: 16px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:vertical {
+    border: 1px solid #CCCCCC;
+    background: #F5F5F5;
+    width: 15px;
+    margin: 16px 0 16px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #3A7BD5;
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical {
+    border: 1px solid #CCCCCC;
+    background: #E0E0E0;
+    height: 16px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: 1px solid #CCCCCC;
+    background: #E0E0E0;
+    height: 16px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+/* Style des QDialog */
+QDialog {
+    background-color: #E0E0E0;
+    color: #2A2A2A; /* Couleur du texte des QDialog */
+}

@@ -1,0 +1,1888 @@
+{
+    "grille": {
+        "image": "images/plan10.gif",
+        "tailleGrille": [
+            41,
+            28
+        ],
+        "pas": 25.0,
+        "decalage": [
+            18,
+            19
+        ],
+        "verrouiller": true
+    },
+    "cases": [
+        {
+            "position": [
+                4,
+                22
+            ],
+            "articles": {},
+            "categorie": "Entrée",
+            "couleur": "#1FB89B",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                25
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                25
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                25
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                22
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                22
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                22
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                20
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                20
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                20
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                18
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                18
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                18
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                16
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                16
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                16
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                14
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                9,
+                14
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                8,
+                14
+            ],
+            "articles": {},
+            "categorie": "Caisse",
+            "couleur": "#FF5733",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                9
+            ],
+            "articles": {},
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                11,
+                9
+            ],
+            "articles": {},
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                12,
+                9
+            ],
+            "articles": {},
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                13,
+                9
+            ],
+            "articles": {},
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                14,
+                9
+            ],
+            "articles": {
+                "Ail": [
+                    23
+                ]
+            },
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                15,
+                9
+            ],
+            "articles": {},
+            "categorie": "Légumes",
+            "couleur": "#228B22",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                15,
+                8
+            ],
+            "articles": {
+                "Abricots": [
+                    30
+                ]
+            },
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                14,
+                8
+            ],
+            "articles": {},
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                13,
+                8
+            ],
+            "articles": {},
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                12,
+                8
+            ],
+            "articles": {},
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                11,
+                8
+            ],
+            "articles": {},
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                10,
+                8
+            ],
+            "articles": {},
+            "categorie": "Fruits",
+            "couleur": "#FF8C00",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                21,
+                16
+            ],
+            "articles": {
+                "Après rasage": [
+                    5
+                ]
+            },
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                22,
+                16
+            ],
+            "articles": {
+                "Brosse à dents": [
+                    12
+                ]
+            },
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                23,
+                16
+            ],
+            "articles": {
+                "Cire épilation": [
+                    4
+                ]
+            },
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                24,
+                16
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                25,
+                16
+            ],
+            "articles": {
+                "Couches bébé": [
+                    50
+                ]
+            },
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                4,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                5,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                6,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                7,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                8,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                9,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                10,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                11,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                12,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                13,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                14,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                15,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                16,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                17,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                18,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                19,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                20,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                21,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                22,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                23,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                24,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                5
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                6
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                7
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                8
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                9
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                10
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                11
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                12
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                13
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                14
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                15
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                16
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                17
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                5,
+                18
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                4,
+                18
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                19
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                20
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                24
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                25
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                26
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                2
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                3
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                1
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                26,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                27,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                28,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                29,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                30,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                31,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                33,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                32,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                34,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                35,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                36,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                37,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                38,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                39,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                0
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                1
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                2
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                3
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                4
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                5
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                6
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                7
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                8
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                9
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                10
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                11
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                12
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                13
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                14
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                15
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                16
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                17
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                18
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                41,
+                19
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                19
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                20
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                21
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                22
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                23
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                24
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                25
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                26
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                40,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                39,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                38,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                37,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                36,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                35,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                34,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                33,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                32,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                31,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                30,
+                28
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                30,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                29,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                28,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                27,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                26,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                25,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                24,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                23,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                22,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                21,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                20,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                19,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                18,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                17,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                16,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                15,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                14,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                13,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                12,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                11,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                10,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                9,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                8,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                7,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                6,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                5,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                4,
+                27
+            ],
+            "articles": {},
+            "categorie": "Aucune",
+            "couleur": "#808080",
+            "statut": "Privé"
+        },
+        {
+            "position": [
+                15,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                16,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                17,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                18,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                19,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                20,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                21,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                22,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                23,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                24,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                25,
+                19
+            ],
+            "articles": {},
+            "categorie": "Hygiène",
+            "couleur": "#FFB6C1",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                15,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                16,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                17,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                18,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                19,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                20,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                21,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                22,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                23,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                24,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        },
+        {
+            "position": [
+                25,
+                20
+            ],
+            "articles": {},
+            "categorie": "Boissons",
+            "couleur": "#87CEFA",
+            "statut": "Publique"
+        }
+    ],
+    "data_projet": {
+        "nom_projet": "test des nouveaux chemins",
+        "auteurs": "lorenzo",
+        "nom_magasin": "qsdqsd",
+        "adresse_du_magasin": "qsdqsd",
+        "date": "2024-06-08"
+    }
+}
