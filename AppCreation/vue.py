@@ -1,6 +1,6 @@
 import sys,time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow,QStackedLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QStatusBar
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow,QStackedLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QToolBar
 from PyQt6.QtCore import Qt, pyqtSignal, QDir
 from PyQt6.QtGui import QFont, QAction, QIcon
 from selectProject import LoadProjectWindow
@@ -327,6 +327,17 @@ class MainWindow(QMainWindow):
         unlock.setIcon(QIcon("./images/unlock.png"))
         unlock.triggered.connect(self.unlock)
         menu_edition.addAction(unlock)
+
+        toolbar : QToolBar = QToolBar()
+        toolbar.addAction(nouveau)
+        toolbar.addAction(ouvrir)
+        toolbar.addAction(save)
+        toolbar.addSeparator()
+        toolbar.addAction(changePicture)
+        toolbar.addAction(lock)
+        toolbar.addAction(unlock)
+        
+        self.addToolBar(toolbar)
     
     def switchWidget(self, widget : str):
         if widget == "load_window":
@@ -349,15 +360,17 @@ class MainWindow(QMainWindow):
 
         
     def save(self):
-        self.signalSave.emit(None)
+        if(self.central.layout().currentIndex() == 1):
+            self.signalSave.emit(None)
         
     def saveas(self):
-        selected_directory : list = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
-        if(selected_directory[0] != ''):
-            self.signalSave.emit(selected_directory[0])
+        if(self.central.layout().currentIndex() == 1):
+            selected_directory : list = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
+            if(selected_directory[0] != ''):
+                self.signalSave.emit(selected_directory[0])
     
     def leave(self):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             warning_leave = QMessageBox()
             warning_leave.setWindowTitle("Enregistrer le document ?")
             warning_leave.setIcon(QMessageBox.Icon.Warning)
