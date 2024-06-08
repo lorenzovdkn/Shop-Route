@@ -395,21 +395,21 @@ class MainWindow(QMainWindow):
                 self.gridWidget.grid.setPicture(file_name)
                 self.signalChangedPicture.emit(file_name)
         else:
-            self.statusBar().showMessage("Impossible de modifier une image dans ce menu")
+            self.statusBar().showMessage("Impossible de modifier une image dans ce menu",5000)
     
     def lock(self):
         if(self.central.layout().currentIndex() == 1):
             if(not self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
         else:
-            self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu")
+            self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu",5000)
     
     def unlock(self):
         if(self.central.layout().currentIndex() == 1):
             if(self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
         else:
-            self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu")
+            self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu",5000)
     
     def closeEvent(self, event):
         if(self.central.layout().currentIndex() == 1):
