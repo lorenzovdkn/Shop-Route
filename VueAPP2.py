@@ -456,7 +456,7 @@ class VueProjet(QMainWindow):
 
 
     def definirPosition(self):
-        if self.grid.parcours:
+        if self.grid.parcours and self.setpos.isVisible():
             self.indexClicked.emit()
 
     def analyseParcours(self):
