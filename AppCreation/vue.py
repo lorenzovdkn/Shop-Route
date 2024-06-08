@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setGeometry(100, 100, 800, 600)
         
-        self.setStyleSheet(open("styles/qssSelect.qss").read())
+        self.setStyleSheet(open("AppCreation/styles/qssSelect.qss").read())
         
         self.central_widget = QWidget()
         self.temp_widget = QWidget()

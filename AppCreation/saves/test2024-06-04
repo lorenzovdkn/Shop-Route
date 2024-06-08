@@ -1,6 +1,6 @@
 {
     "grille": {
-        "image": "images/plan11.jpg",
+        "image": "./images/plan11.jpg",
         "tailleGrille": [
             76,
             53

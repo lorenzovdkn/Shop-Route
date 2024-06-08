@@ -99,7 +99,7 @@ class LoadProjectWindow(QWidget):
                 self.project_layout.removeWidget(widget_to_remove)
                 widget_to_remove.deleteLater()
 
-        saves_folder = "saves"
+        saves_folder = "AppCreation/saves"
         if not os.path.exists(saves_folder):
             os.makedirs(saves_folder)
         
@@ -153,7 +153,7 @@ class LoadProjectWindow(QWidget):
             self.signalCreateProject.emit(name, authors, store_name, store_address, creation_date, file_name)
 
     def project_selected(self, project_name):
-        saves_folder = "saves"
+        saves_folder = "AppCreation/saves"
         file_path = os.path.join(saves_folder, project_name)
 
         with open(file_path, 'r', encoding='utf-8') as file:
