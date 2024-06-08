@@ -142,7 +142,6 @@ class Grille:
         self.verrouiller = state
     
     def setOffset(self, offset : tuple) -> None:
-        print("setOffset function : ", offset)
         self.decalage = offset
     
     def getDecalage(self) -> tuple:
@@ -152,7 +151,6 @@ class Grille:
         return self.pas
         
     def setPas(self, pas : float) -> None:
-        print("Pas",pas)
         self.pas = pas
         
     def getVerrouiller(self) -> bool:
@@ -215,7 +213,6 @@ class ModelMagasin:
         '''
         self.category = category
         positionList = self.getAllPosition()
-        print(category)
         # Si la case n'existe pas
         if(self.currentCase not in positionList):
             color : str = ""
@@ -223,9 +220,7 @@ class ModelMagasin:
                 color = self.categoryColors[self.category]
             elif self.category != "Aucune":
                 color = "purple"
-            print(color)
             self.ajouterCase([self.currentCase, {}, self.category ,color , "Publique"])
-            print(self.getUsedCase())
         
         # Si la case existe
         else:
@@ -235,9 +230,9 @@ class ModelMagasin:
                         if(case.getStatut() != "Privé"):
                             self.supprimerCase()
                     else:
-                        
-                        case.setCategory(category)
-                        case.setColor(self.categoryColors[category])
+                        if category != '':
+                            case.setCategory(category)
+                            case.setColor(self.categoryColors[category])
                     break
     
     def setCurrentCase(self, position : tuple) -> None:
@@ -270,7 +265,6 @@ class ModelMagasin:
         if(self.currentCase in self.getAllPosition()):
             case : Case = self.getCase(self.currentCase)
             case.setStatut(statut)
-            print(case.getCategory())
             if(statut == "Privé"):
                 case.setCategory("Aucune")
                 case.setColor(self.categoryColors["Privé"])
@@ -282,7 +276,6 @@ class ModelMagasin:
     
     
     def setDataProject(self, projectName : str, authors : str, marketName : str, addressMarket :str, dateCreation : str) -> None:
-        print("setdataproject :", projectName, authors, marketName, addressMarket, dateCreation)
         self.data_projet["nom_projet"] = projectName
         self.data_projet["auteurs"] = authors
         self.data_projet["nom_magasin"] = marketName
@@ -299,7 +292,6 @@ class ModelMagasin:
         '''
         caseAJoutee = Case(case[0], case[1], case[2], case[3], case[4])
         self.__listCase[1].append(caseAJoutee)
-        print(caseAJoutee)
 
     def getAllPosition(self) -> list:
         '''
@@ -397,7 +389,8 @@ class ModelMagasin:
                 if(case.getStatut() == "Privé"):
                     caseList[case.getPosition()] = self.categoryColors["Privé"]
                 else:
-                    caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
+                    if(case.getCategory() in self.categoryColors.keys()):
+                        caseList[case.getPosition()] = self.categoryColors[case.getCategory()]
         return caseList
     
     def getCase(self, position : tuple) -> Case :
@@ -495,7 +488,6 @@ class ModelMagasin:
         self.filepath = full_path
         print("save : ", full_path)
         # Convertir la grille en dictionnaire
-        print("Save",self.grille.pas)
         grille_dict = {
             "image": self.grille.getImage(),
             "tailleGrille": self.grille.getTailleGrille(),
