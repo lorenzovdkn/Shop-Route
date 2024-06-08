@@ -484,8 +484,18 @@ class ModelMagasin:
             os.makedirs(save_dir)
 
         # Construire le chemin complet du fichier
-        self.filepath = filename
         print("save : ", filename)
+        if filename != None :
+            if "/" in filename:
+                filename = filename.split("/")[-1]
+            if "\\" in filename:
+                filename = filename.split("\\")[-1]
+            if ".json" not in filename:
+                filename = filename + ".json" 
+
+        filename = os.path.join(save_dir, filename )
+        print("save : ", filename)
+        
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
