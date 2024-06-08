@@ -435,6 +435,7 @@ class MainWindow(QMainWindow):
     def save(self):
         """Sauvegarde le projet actuel."""
         if self.central.layout().currentIndex() == 1:
+            self.statusBar().showMessage("Projet enregistré",5000)
             self.signalSave.emit(None)
         
     def saveas(self):
@@ -442,6 +443,7 @@ class MainWindow(QMainWindow):
         if self.central.layout().currentIndex() == 1:
             selected_directory = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
             if selected_directory[0] != '':
+                self.statusBar().showMessage("Projet enregistré",5000)
                 self.signalSave.emit(selected_directory[0])
     
     def leave(self):

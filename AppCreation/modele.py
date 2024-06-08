@@ -479,14 +479,13 @@ class ModelMagasin:
         filename (str): Chemin du fichier de sauvegarde
         '''
         # Vérifier si le dossier 'saves' existe, sinon le créer
-        save_dir = 'AppCreation/saves'
+        save_dir = 'AppCreation\saves'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
         # Construire le chemin complet du fichier
-        full_path = os.path.join('AppCreation', filename)
-        self.filepath = full_path
-        print("save : ", full_path)
+        self.filepath = filename
+        print("save : ", filename)
         # Convertir la grille en dictionnaire
         grille_dict = {
             "image": self.grille.getImage(),
@@ -518,7 +517,7 @@ class ModelMagasin:
         }
 
         # Sauvegarder dans un fichier JSON
-        with open(full_path, 'w', encoding='utf-8') as f:
+        with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
 
