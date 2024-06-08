@@ -1,18 +1,23 @@
-import sys,time, grid
+import sys, time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow,QStackedLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QToolBar
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QMainWindow, QStackedLayout, QHBoxLayout,
+    QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget,
+    QInputDialog, QPushButton, QLineEdit, QMessageBox, QToolBar
+)
 from PyQt6.QtCore import Qt, pyqtSignal, QDir
 from PyQt6.QtGui import QFont, QAction, QIcon
 from selectProject import LoadProjectWindow
 
 class Case(QWidget):
-    
-    signalChangedCategory : pyqtSignal = pyqtSignal(str)
-    signalChangedType : pyqtSignal = pyqtSignal(str)
-    
+    # Définir des signaux personnalisés pour les changements de catégorie et de type
+    signalChangedCategory: pyqtSignal = pyqtSignal(str)
+    signalChangedType: pyqtSignal = pyqtSignal(str)
+
     def __init__(self):
-        
         super().__init__()
+        
+        # Initialiser les layouts
         self.layout1 = QVBoxLayout()
         self.layout2 = QHBoxLayout()
         self.layout3 = QHBoxLayout()
@@ -21,30 +26,29 @@ class Case(QWidget):
         self.setLayout(self.layout1)
         self.resize(800, 600) 
         
+        # Définir le label du titre
         self.titre = QLabel("Mode Edition de plan")
         self.titre_font = QFont()
         self.titre_font.setPointSize(30)
         self.titre.setFont(self.titre_font)
 
-        #self.case = QLabel("Case")
-        #self.case_font = QFont()
-        #self.case_font.setPointSize(20)
-        #self.case.setFont(self.case_font)
-
+        # Définir le label et la combo box pour le type de case
         self.type_case_label = QLabel("Type de case:")
         self.type_case_combo = QComboBox()
         self.type_case_combo.addItems(["Publique", "Privé"])
         
+        # Définir le label et la combo box pour la catégorie de la case
         self.category_label = QLabel("Catégorie de la case:")
         self.category_combo = QComboBox()
         
+        # Position par défaut de la case
         position = (0, 0)
         self.case_number_label = QLabel("Numéro de la case:")
         self.case_number = QLineEdit(f"{position[0]}, {position[1]}")
         self.case_number.setReadOnly(True)
         
+        # Ajouter les widgets aux layouts
         self.layout1.addWidget(self.titre)
-        #self.layout1.addWidget(self.case)
         self.layout1.addLayout(self.layout2)
         self.layout1.addLayout(self.layout3)
         self.layout1.addLayout(self.layout4)
@@ -58,45 +62,77 @@ class Case(QWidget):
         
         self.layout1.setAlignment(Qt.AlignmentFlag.AlignTop)
         
+        # Initialiser le contrôleur de changement de catégorie
         self.controllerChangeCategory = False
         
-        # signaux
+        # Connecter les signaux aux méthodes correspondantes
         self.category_combo.currentIndexChanged.connect(self.categoryChanged)
         self.type_case_combo.currentIndexChanged.connect(self.typeChanged)
+    
+    def setCase(self, position: tuple):
+        """
+        Met à jour l'affichage de la case actuelle.
         
-    # Set the display of the current case
-    def setCase(self, position : tuple):
+        :param position: La position de la case sous forme de tuple (x, y).
+        """
         self.case_number.setText(f"{position[0]}, {position[1]}")
     
     def updateProductCategory(self, list_article: list):
+        """
+        Met à jour la liste des catégories de produits.
+        
+        :param list_article: Liste des articles à afficher dans la combo box.
+        """
         self.category_combo.clear()
         self.category_combo.addItems(list_article)
     
     def getCategory(self):
+        """
+        Retourne la catégorie actuellement sélectionnée.
+        """
         return self.category_combo.currentText()
     
-    def setCategory(self, category : str):
-        if category != None:
+    def setCategory(self, category: str):
+        """
+        Définit la catégorie sélectionnée.
+        
+        :param category: La catégorie à sélectionner.
+        """
+        if category is not None:
             self.controllerChangeCategory = True
             self.category_combo.setCurrentText(category)
             self.controllerChangeCategory = False
     
-    # Send the new category
     def categoryChanged(self):
+        """
+        Méthode appelée lorsque la catégorie est changée.
+        Émet un signal si le changement n'est pas contrôlé.
+        """
         if not self.controllerChangeCategory:
             self.signalChangedCategory.emit(self.category_combo.currentText())
         
-    def setType(self, type : str):
-        if(type == "Privé" or type == "Publique"):
+    def setType(self, type: str):
+        """
+        Définit le type de case sélectionné.
+        
+        :param type: Le type de case ("Privé" ou "Publique").
+        """
+        if type in ["Privé", "Publique"]:
             self.type_case_combo.setCurrentText(type)
     
-    def locked(self,lock: bool):
+    def locked(self, lock: bool):
+        """
+        Verrouille ou déverrouille les widgets de la case.
+        
+        :param lock: Booléen indiquant si la case est verrouillée.
+        """
         if(lock):
             self.category_combo.setEnabled(True)
             self.type_case_combo.setEnabled(True)
         else:
             self.category_combo.setEnabled(False)
             self.type_case_combo.setEnabled(False)
+        
     def typeChanged(self):
         self.signalChangedType.emit(self.type_case_combo.currentText())
         if(self.type_case_combo.currentText() == "Privé"):
@@ -133,7 +169,7 @@ class Case(QWidget):
 
 
 class Contenu(QWidget):
-    
+    # Définir des signaux personnalisés pour les interactions avec les produits
     signalAddProduct = pyqtSignal()
     signalProduct = pyqtSignal(dict)
     signalDeleteProduct = pyqtSignal(str)
@@ -142,6 +178,7 @@ class Contenu(QWidget):
     
     def __init__(self):
         super().__init__()
+        
         self.layout1 = QVBoxLayout()
         self.setLayout(self.layout1)
         self.resize(800, 600) 
@@ -162,13 +199,28 @@ class Contenu(QWidget):
         self.addButton.clicked.connect(self.signalAddProduct.emit)
         self.removeButton.clicked.connect(self.removeProductClicked)
       
-    def setCase(self, case : tuple):
+    def setCase(self, case: tuple):
+        """
+        Définir la case actuelle.
+        
+        :param case: Position de la case sous forme de tuple (x, y).
+        """
         self.case = case
     
     def getCase(self):
+        """
+        Retourner la case actuelle.
+        """
         return self.case
         
-    def addProduct(self, product_list_import : list, current_category : str, current_state :str):
+    def addProduct(self, product_list_import: list, current_category: str, current_state: str):
+        """
+        Ajouter un produit à la case actuelle.
+        
+        :param product_list_import: Liste des produits disponibles.
+        :param current_category: Catégorie actuelle de la case.
+        :param current_state: État actuel de la case ("Privé" ou "Publique").
+        """
         if  current_state == 'Privé':
             erreurState : QMessageBox = QMessageBox()
             erreurState.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
@@ -194,30 +246,44 @@ class Contenu(QWidget):
                 item_text = f"{product} - Quantité: {quantity}"
                 self.signalProduct.emit({product: [quantity]})
             
-    def updateArticle(self, articles : dict | None) :
+    def updateArticle(self, articles: dict | None):
+        """
+        Mettre à jour la liste des articles affichés.
+        
+        :param articles: Dictionnaire des articles à afficher.
+        """
         self.productList.clear()
         if articles != None :
             for key, value in articles.items():
                 item_text = f"{key} - Quantité : {value[0]}"
                 self.productList.addItem(item_text)
     
-    def removeProductClicked(self):
-        selected_items = self.productList.selectedItems()
-        
-        if selected_items:
-            item = selected_items[0]
-            nameSelection = item.text()
-            parts = nameSelection.split(' - ')
-            nameArticle = parts[0]
-            self.signalDeleteProduct.emit(nameArticle)
-
     def productClicked(self, item):
+        """
+        Méthode appelée lors du clic sur un produit.
+        
+        :param item: L'élément cliqué dans la liste des produits.
+        """
         item_text = item.text()
         product, quantity = item_text.split(" - Quantité : ")
         quantity = int(quantity)
         self.signalProductClick.emit({product : [quantity, False]})
-
+    
+    def removeProductClicked(self):
+        """
+        Méthode appelée pour supprimer un produit sélectionné.
+        """
+        item = self.productList.currentItem()
+        if item:
+            product = item.text().split(' - ')[0]
+            self.signalDeleteProduct.emit(product)
+    
     def editProductDoubleClicked(self, item):
+        """
+        Méthode appelée lors du double-clic sur un produit pour le modifier.
+        
+        :param item: L'élément double-cliqué dans la liste des produits.
+        """
         item_text = item.text()
         product, quantity = item_text.split(" - Quantité : ")
         
@@ -236,12 +302,12 @@ class MainWindow(QMainWindow):
     signalExport = pyqtSignal()
     signalOpen = pyqtSignal()
     signalChangedPicture = pyqtSignal(str)
-    
-    
     def __init__(self):
         super().__init__()
         self.setGeometry(100, 100, 800, 600)
+        self.setWindowTitle("ShopRoute")
         
+        # Appliquer le style à l'application
         self.setStyleSheet(open("AppCreation/styles/qssSelect.qss").read())
         
         self.central_widget = QWidget()
@@ -250,18 +316,18 @@ class MainWindow(QMainWindow):
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
         
-        
-        # Widget creation
+        # Création des widgets
         self.gridWidget = grid.GridWidget()
         self.case_widget = Case()
         self.contenu_widget = Contenu()
         self.load_window = LoadProjectWindow()
 
+        # Ajouter les widgets à la mise en page
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
         self.mainWidget = QWidget()
         self.mainWidget.setLayout(self.mainLayout)
-        self.mainLayout.addWidget(self.gridWidget,2)
+        self.mainLayout.addWidget(self.gridWidget, 2)
         
         self.centrallayout = QStackedLayout()
         self.centrallayout.addWidget(self.load_window)
@@ -269,16 +335,16 @@ class MainWindow(QMainWindow):
         self.central = QWidget()
         self.central.setLayout(self.centrallayout)
         
+        # Connexion des signaux et des slots
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
         self.gridWidget.grid.lockedSignal.connect(self.case_widget.locked)
 
         # Ajouter la barre de menu
-
         self.load_window.signalOpenProject.connect(self.open_existing_project)
-
         self.setCentralWidget(self.central)
         
+        """Initialise le menu de la fenêtre principale."""
         menu_bar = self.menuBar()
         
         # Menu fichier
@@ -327,7 +393,7 @@ class MainWindow(QMainWindow):
         unlock.setIcon(QIcon("./images/unlock.png"))
         unlock.triggered.connect(self.unlock)
         menu_edition.addAction(unlock)
-
+        
         toolbar : QToolBar = QToolBar()
         toolbar.addAction(nouveau)
         toolbar.addAction(ouvrir)
@@ -339,7 +405,11 @@ class MainWindow(QMainWindow):
         
         self.addToolBar(toolbar)
     
-    def switchWidget(self, widget : str):
+    def switchWidget(self, widget: str):
+        """Permet de changer de widget affiché.
+        
+        param: widget (str): Le nom du widget à afficher ('load_window' ou 'project_open').
+        """
         if widget == "load_window":
             self.central.layout().setCurrentIndex(0)
         elif widget == "project_open":
@@ -347,30 +417,36 @@ class MainWindow(QMainWindow):
             self.central.layout().setCurrentIndex(1)
                 
     def open_project(self) -> LoadProjectWindow:
+        """Affiche la fenêtre de sélection de projet."""
         self.load_window.show()
 
-    def open_existing_project(self, project_name):
+    def open_existing_project(self, project_name: str):
+        """Ouvre un projet existant.
+        
+        param: project_name (str): Le nom du projet à ouvrir.
+        """
         self.signalOpenProject.emit(project_name)
         
-    '''methods for the menu'''
-        
     def new(self):
+        """Crée un nouveau projet."""
         self.load_window.create_project()
         self.load_window.signalCreateProject.connect(self.open_existing_project)
-
         
     def save(self):
-        if(self.central.layout().currentIndex() == 1):
+        """Sauvegarde le projet actuel."""
+        if self.central.layout().currentIndex() == 1:
             self.signalSave.emit(None)
         
     def saveas(self):
-        if(self.central.layout().currentIndex() == 1):
-            selected_directory : list = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
-            if(selected_directory[0] != ''):
+        """Sauvegarde le projet actuel sous un nouveau nom."""
+        if self.central.layout().currentIndex() == 1:
+            selected_directory = QFileDialog.getSaveFileName(self, "Enregistrer sous", "", "JSON Files (*.json)")
+            if selected_directory[0] != '':
                 self.signalSave.emit(selected_directory[0])
     
     def leave(self):
-        if(self.central.layout().currentIndex() == 1):
+        """Quitte l'application après avoir demandé à l'utilisateur de sauvegarder."""
+        if self.central.layout().currentIndex() == 1:
             warning_leave = QMessageBox()
             warning_leave.setWindowTitle("Enregistrer le document ?")
             warning_leave.setIcon(QMessageBox.Icon.Warning)
@@ -388,16 +464,18 @@ class MainWindow(QMainWindow):
         QApplication.quit()
         
     def changePicture(self):
-        if(self.central.layout().currentIndex() == 1):
+        """Change l'image de fond de la grille."""
+        if self.central.layout().currentIndex() == 1:
             file_name, _ = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
             if file_name:
-                file_name : str = QDir().relativeFilePath(file_name)
+                file_name = QDir().relativeFilePath(file_name)
                 self.gridWidget.grid.setPicture(file_name)
                 self.signalChangedPicture.emit(file_name)
         else:
-            self.statusBar().showMessage("Impossible de modifier une image dans ce menu",5000)
+            self.statusBar().showMessage("Impossible de modifier une image dans ce menu", 5000)
     
     def lock(self):
+        """Verrouille la grille pour empêcher les modifications."""
         if(self.central.layout().currentIndex() == 1):
             if(not self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
@@ -405,18 +483,34 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu",5000)
     
     def unlock(self):
+        """Déverrouille la grille pour permettre les modifications."""
         if(self.central.layout().currentIndex() == 1):
             if(self.gridWidget.grid.isLocked()):
                 self.gridWidget.lockGrid()
         else:
             self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu",5000)
-    
     def closeEvent(self, event):
-        if(self.central.layout().currentIndex() == 1):
+        """Gère l'événement de fermeture de la fenêtre."""
+        if self.central.layout().currentIndex() == 1:
             event.ignore()
             self.leave() 
 
-    def updateAllView(self, articles : dict, position : tuple, categories : list, status : bool, current_category : str, width : int , height : int, step : float, offset : tuple, lock : bool, position_dict : dict):
+    def updateAllView(self, articles: dict, position: tuple, categories: list, status: bool, current_category: str, width: int, height: int, step: float, offset: tuple, lock: bool, position_dict: dict):
+        """Met à jour toutes les vues avec les nouvelles données.
+        
+        param:
+            articles (dict): Dictionnaire contenant les informations sur les articles.
+            position (tuple): Tuple contenant la position actuelle.
+            categories (list): Liste des catégories disponibles.
+            status (bool): Statut actuel.
+            current_category (str): Catégorie actuellement sélectionnée.
+            width (int): Largeur de la grille.
+            height (int): Hauteur de la grille.
+            step (float): Taille des cases de la grille.
+            offset (tuple): Décalage de la grille.
+            lock (bool): Statut de verrouillage de la grille.
+            position_dict (dict): Dictionnaire contenant les positions.
+        """
         self.gridWidget.widthEdit.setEnabled(True)
         self.gridWidget.heightEdit.setEnabled(True)
         self.gridWidget.grid.setGrid(width, height, step , offset , lock , position_dict)
