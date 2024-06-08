@@ -31,49 +31,91 @@ class Grid(QGraphicsView):
         self.sceneHeight = self.size().height()
         self.drawGrid({})
         
-        
+        ########### QTimer de la grille ###########
         self.update_timer = QTimer()
         self.update_timer.setSingleShot(True)
         self.update_timer.timeout.connect(self.drawGrid)
 
-    '''
-    Permet de récupérer la taille de la grille
-    Return
-    tuple : (longueur, hauteur) de la grille
-    '''
+    
+    ############## Setter/Getter de la grille ##############
+
     def getGridSize(self) -> tuple:
+        '''
+        Permet de récupérer la taille de la grille
+        Return
+        tuple : (longueur, hauteur) de la grille
+        '''
         return (self.width,self.height)
     
-    '''
-    Permet de récupérer la taille d'une case
-    Return:
-    float: Taille longueur/hauteur d'une case
-    '''
     def getStep(self) -> float:
+        '''
+        Permet de récupérer la taille d'une case
+        Return:
+        float: Taille longueur/hauteur d'une case
+        '''
         return self.step
     
-    '''
-    Permet de récupérer l'état de la grille.
-    Return:
-    boolean : True, la grille est verrouillé / False , la grille n'est pas verrouillé
-    '''
+
     def isLocked(self) -> bool:
+        '''
+        Permet de récupérer l'état de la grille.
+        Return:
+        boolean : True, la grille est verrouillé / False , la grille n'est pas verrouillé
+        '''
         return self.locked
 
-    '''
-    Permet de définir l'image en fond de la grille
-    Paramètre:
-    picture (str): chemin vers l'image
-    '''
+    
     def setPicture(self, picture : str):
+        '''
+        Permet de définir l'image en fond de la grille
+        Paramètre:
+        picture (str): chemin vers l'image
+        '''
         self.picture = picture
         self.drawGrid()
     
     def setGridContent(self, gridContent: dict):
+        '''
+        Permet de définir le contenu de la grille
+        @param gridContent (dict) : dictionnaire des cases à afficher
+        '''
         self.gridContent = gridContent
+    
+    
+    ############## Dessin de la grille ##############
+    
+    def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
         
-    # Draw the grid
+        '''
+        Permet de redéfinir toutes les caratéristiques de la grille 
+        si elle ne valent pas None et redessine la grille
+        @param width (int) : longueur de la grille
+        @param height (int) : hauteur de la grille
+        @param step (float) : taille des cases
+        @param offset (tuples) : décalage de la grille (x,y)
+        @param locked (bool) : grille verrouillé ou non
+        @param position_dict (dict) : dictionnaire des cases à afficher
+        '''
+        if(width is not None):
+            self.width = width
+        if(height is not None):
+            self.height = height
+        if(step is not None):
+            self.step = step
+        if(offset is not None):
+            self.offset = QPoint(offset[0],offset[1])
+        if(locked is not None):
+            self.locked = locked
+        self.drawGrid(position_dict)
+    
     def drawGrid(self, position_dict : dict = None):
+        '''
+        Permet de dessinner la grille, utilise des lignes lorsque la grille est en mouvement 
+        et des rectangles lorsqu'elle est verrouillée. Supprime tout pour réafficher l'image 
+        et la grille.
+        @param position_dict (dict) : dictionnaire des cases à afficher (non obligatoire), redéfinit automatiquement
+            la valeur de l'attribut gridContent si le paramètre est utilisé
+        '''
         if(position_dict is not None):
             self.gridContent = position_dict
 
@@ -87,6 +129,7 @@ class Grid(QGraphicsView):
             self.scene.addItem(self.image_item)
         
         if(self.locked):
+            # Grille dessinnée en rectangle
             for x in range(0, self.width):
                 for y in range(0, self.height):
                     rect : QGraphicsRectItem = QGraphicsRectItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), self.step, self.step)
@@ -96,6 +139,8 @@ class Grid(QGraphicsView):
                         rect.setBrush(color)
                     self.scene.addItem(rect)
         else:
+            # Grille dessinée en lignes (optimisation : reduction du nombre de calcul par rapport aux rectangles)
+            # n'affiche pas les couleurs
             long = (self.width-1) * self.step + self.offset.x()
             haut = (self.height-1) * self.step + self.offset.y()
             for x in range(0,self.width+1):
@@ -105,9 +150,15 @@ class Grid(QGraphicsView):
                     lineY = QGraphicsLineItem((x-1)*self.step + self.offset.x(), (y-1)*self.step + self.offset.y(), (x-1)*self.step + self.offset.x() , haut)
                     self.scene.addItem(lineX)
                     self.scene.addItem(lineY)
-                
-     # Manage the click event
+                    
+    
+    ############## Redefinition de méthode ##############
+    
     def mousePressEvent(self, event):
+        '''
+        Redéfinition de la méthode de clique event. Remplace l'action de base par la possibilité de mouvoir
+        la grille lorsqu'on clique gauche dessus ou récupère la case cliqué si la grille est verrouillée
+        '''
         if event.buttons() == Qt.MouseButton.LeftButton:
             if self.locked:
                 # Get the case who the user clicked
@@ -121,8 +172,11 @@ class Grid(QGraphicsView):
                 self.lastPos = event.pos()
                 self.dragging = True
 
-    # Move the grid if a click is detected
     def mouseMoveEvent(self, event):
+        '''
+        Redéfinition de la méthode de mouvement de la souris. Si un mouvement est détecté et que l'utilisateur
+        est en train de maintenir son clique. Une limite de mouvement est définit sur la taille de la scène
+        '''
         if self.dragging and not self.locked:
             delta = event.pos() - self.lastPos
             self.offset += delta
@@ -138,47 +192,40 @@ class Grid(QGraphicsView):
             self.lastPos = event.pos()
             self.drawGrid()
 
-    # Disable the move click event
     def mouseReleaseEvent(self, event):
+        '''
+        Redéfinition de la méthode du relachement de la souris. Désactive la possibilité de mouvoir la grille
+        '''
         if event.button() == Qt.MouseButton.LeftButton:
             self.dragging = False
     
-    # Scroll event
     def wheelEvent(self, event):
-        # Reduce the size of the grid
-        if event.angleDelta().y() < 0 and not self.locked:
+        '''
+        Redéfinition de la méthode de la molette. Zoom ou dézoom la grille en fonction du sens de rotation.
+        '''
+        # Increase the size of the grid
+        if event.angleDelta().y() > 0 and not self.locked:
             if(self.step > 10):
                 event.ignore()
                 self.step = self.step - 1
                 self.drawGrid()
                 self.update_timer.start(10)
-                self.update_timer.start(10)
-        # Increase the size of the grid
-        elif event.angleDelta().y() > 0 and not self.locked:
+        # Reduce the size of the grid
+        elif event.angleDelta().y() < 0 and not self.locked:
             if(self.step < 50):
                 event.ignore()
                 self.step = self.step + 1
                 self.drawGrid()
                 self.update_timer.start(10)
     
+    
+    ############# Verrouillage de la grille #############
+    
     def lockGrid(self):
         self.sizeSignal.emit(self.width, self.height)
         self.stepSignal.emit(self.step)
         self.offsetSignal.emit((self.offset.x(), self.offset.y()))
             
-    # Define the caracteristic of the grid and update the grid in the app
-    def setGrid(self, width : int, height : int, step : float, offset : tuple, locked : bool, position_dict : dict):
-        if(width is not None):
-            self.width = width
-        if(height is not None):
-            self.height = height
-        if(step is not None):
-            self.step = step
-        if(offset is not None):
-            self.offset = QPoint(offset[0],offset[1])
-        if(locked is not None):
-            self.locked = locked
-        self.drawGrid(position_dict)
 
 class GridWidget(QWidget):
     
@@ -187,6 +234,7 @@ class GridWidget(QWidget):
         
         self.grid = Grid()
         
+        # Création des widgets à inclure en bas
         self.widthEdit : QSpinBox = QSpinBox()
         self.widthEdit.setFixedWidth(50)
         self.widthEdit.setMinimum(10)
@@ -206,22 +254,36 @@ class GridWidget(QWidget):
         self.bouton.clicked.connect(self.lockGrid)
         self.bouton.clicked.connect(self.grid.lockGrid)
         
-        self.topLayout = QHBoxLayout()  
-        self.topLayout.addStretch()
-        self.topLayout.addWidget(self.widthEdit)
-        self.topLayout.addWidget(self.label)
-        self.topLayout.addWidget(self.heightEdit)
-        self.topLayout.addWidget(self.statusLabel)
-        self.topLayout.addWidget(self.bouton)
-        self.topLayout.addSpacing(15)
+        # Layout en bas (options de la grille)
+        self.bottomLayout = QHBoxLayout()  
+        self.bottomLayout.addStretch()
+        self.bottomLayout.addWidget(self.widthEdit)
+        self.bottomLayout.addWidget(self.label)
+        self.bottomLayout.addWidget(self.heightEdit)
+        self.bottomLayout.addWidget(self.statusLabel)
+        self.bottomLayout.addWidget(self.bouton)
+        self.bottomLayout.addSpacing(15)
         
         self.gridLayout = QVBoxLayout()
         self.gridLayout.addWidget(self.grid)
-        self.gridLayout.addLayout(self.topLayout)
+        self.gridLayout.addLayout(self.bottomLayout)
         self.setLayout(self.gridLayout)
     
+    # use to update the Qspinboxs
+    def updateSpinbox(self, width, height):
+        '''
+        Met à jour les spinbox de taille de la grille
+        @param width (int) : nombre de case en longueur
+        @param height (int) : nombre de case en hauteur
+        '''
+        self.heightEdit.setValue(height)
+        self.widthEdit.setValue(width)
             
     def modifiedSize(self):
+        '''
+        Permet de modifier le nombre de case de la grille en longueur et hauteur.
+        Redessinne la grille a chaque modification
+        '''
         if(self.widthEdit.text() != self.grid.width and self.widthEdit.value() is not None):
             self.grid.width = int(self.widthEdit.value())
             self.grid.width = int(self.widthEdit.value())
@@ -229,25 +291,42 @@ class GridWidget(QWidget):
             self.grid.height = int(self.heightEdit.value())
 
         self.grid.drawGrid()
-        
+    
+    
+    ############# Grid locking methods #############
+    
     def lockGrid(self):
+        '''
+        Inverse le verrouillage de la grille et met à jour la vue en conséquence
+        '''
         self.grid.locked = not self.grid.locked
         self.grid.lockedSignal.emit(self.grid.locked)
         self.lockStateUpdate()
         self.grid.drawGrid()
     
     def lockStateUpdate(self):
+        '''
+        Permet de mettre à jour l'affichage en fonction du verrouillage de la grille.
+        '''
         if(self.grid.isLocked()):
+            # Grille en mode verrouiller
             self.bouton.setText("Déplacer")
             self.widthEdit.setDisabled(True)
             self.heightEdit.setDisabled(True)
             self.statusLabel.setText("Grille positionnée - Statut : Verrouillée")
         else:
+            # Grille en mode déplacer
             self.bouton.setText("Verrouiller")
             self.statusLabel.setText("Veuillez positionner la grille - Statut : Non verrouillée")
-        
-    # use to copy the selected image of the user to put it in the app saves (return the copy image path)
+    
+    ############# Manage picture path #############
+    
     def copyFileToAppDir(self, source_file: str) -> str:
+        '''
+        Permet de copier l'image utilisée dans un répertoire propre à l'application pour éviter les
+        problèmes de chemin sortant du répertoire d'execution de l'application.
+        @param source_file (str) : chemin source de l'image
+        '''
         # Vérifier si le dossier 'images' existe, sinon le créer
         dest_dir = 'images'
         if not os.path.exists(dest_dir):
@@ -271,21 +350,17 @@ class GridWidget(QWidget):
             QMessageBox.information(self, "Succès", f"Le fichier a été copié dans {dest_file}")
 
             # Retourner le chemin relatif du fichier copié
-            print(dest_file)
             file_path = str(dest_file.split('/')[-1])
             return file_path
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la copie du fichier : {e}")
             return None
         
-    # use to update the Qspinboxs
-    def updateSpinbox(self, width, height):
-        self.heightEdit.setValue(height)
-        self.widthEdit.setValue(width)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     gridWidget = GridWidget()
-    #gridLayout.grid.setPicture('./plan11.jpg')
+    gridWidget.grid.setPicture('./images/plan11.jpg')
     gridWidget.show()
     sys.exit(app.exec())

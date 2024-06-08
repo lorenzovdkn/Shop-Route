@@ -64,7 +64,7 @@ class LoadProjectWindow(QWidget):
 
     def __init__(self,parent = None):
         super().__init__(parent)
-        self.setStyleSheet(open("styles/qssSelect.qss").read())
+        self.setStyleSheet(open("AppCreation/styles/qssSelect.qss").read())
         self.setWindowTitle('Charger ou Créer un Projet')
         self.setMinimumSize(1000, 400)
         self.setMaximumSize(1200, 800)

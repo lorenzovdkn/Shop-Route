@@ -6,7 +6,7 @@ QMainWindow {
 /* Style des boutons */
 QPushButton {
     background-color: #3A7BD5;
-    color: white;
+    color: white; /* La couleur du texte des boutons reste blanche */
     border: 1px solid #2A5BA5;
     padding: 5px 5px;
     border-radius: 5px;
@@ -22,7 +22,7 @@ QPushButton:pressed {
 
 /* Style des labels */
 QLabel {
-    color: #2A2A2A;
+    color: #2A2A2A; /* Couleur du texte des labels */
 }
 
 /* Style des entrées de texte */
@@ -30,6 +30,7 @@ QLineEdit {
     background-color: #F5F5F5;
     border: 1px solid #CCCCCC;
     border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des entrées de texte */
 }
 
 QLineEdit:focus {
@@ -41,6 +42,7 @@ QTextEdit {
     background-color: #F5F5F5;
     border: 1px solid #CCCCCC;
     border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des zones de texte */
 }
 
 QTextEdit:focus {
@@ -53,6 +55,7 @@ QListWidget {
     border: 1px solid #CCCCCC;
     padding: 5px;
     border-radius: 4px;
+    color: #2A2A2A; /* Couleur du texte des listes */
 }
 
 QListWidget::item {
@@ -61,7 +64,7 @@ QListWidget::item {
 
 QListWidget::item:selected {
     background-color: #3A7BD5;
-    color: white;
+    color: white; /* La couleur du texte sélectionné dans la liste reste blanche */
 }
 
 /* Style des barres de défilement */
@@ -124,6 +127,7 @@ QScrollBar::sub-line:vertical {
 }
 
 /* Style des QDialog */
-QDialog{
-    background-color: #E0E0E0
+QDialog {
+    background-color: #E0E0E0;
+    color: #2A2A2A; /* Couleur du texte des QDialog */
 }
