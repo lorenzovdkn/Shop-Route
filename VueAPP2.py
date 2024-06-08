@@ -1,9 +1,10 @@
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow,QMessageBox, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QDockWidget, QFileDialog, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsPixmapItem, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal
-from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtGui import QPixmap, QColor,QKeySequence,QShortcut
 from PyQt6.QtCore import QTimer
+
 
 class Grid(QGraphicsView):
     positionSignal = pyqtSignal(QPoint)
@@ -301,6 +302,11 @@ class VueProjet(QMainWindow):
         menu_fichier = menu_bar.addMenu("Fichier")
         menu_fichier.addAction('Ouvrir', self.ouvrir)
         menu_fichier.addAction('Ouvrir plan',self.ouvrir_plan)
+        menu_action = menu_bar.addMenu("Action")
+        menu_action.addAction('Analyser le parcours',self.analyseParcours)
+        menu_action.addAction('Créer une liste de course aléatoire',self.course_aleatoire)
+        menu_action.addAction('Suivant',self.definirPosition)
+
         
         # Docks
         self.dock = QDockWidget('Liste des articles')
@@ -335,6 +341,22 @@ class VueProjet(QMainWindow):
         self.analyse.clicked.connect(self.analyseParcours)  # Corrected signal connection
         self.dico_create.clicked.connect(self.course_aleatoire)
         self.setpos.clicked.connect(self.definirPosition)
+
+        # Define shortcuts
+        self.shortcut_analyser = QShortcut(QKeySequence('a'), self)
+        self.shortcut_analyser.activated.connect(self.analyseParcours)
+
+        self.shortcut_continue = QShortcut(QKeySequence(Qt.Key.Key_Right), self)
+        self.shortcut_continue.activated.connect(self.definirPosition)
+
+        self.shortcut_create_random = QShortcut(QKeySequence('r'), self)
+        self.shortcut_create_random.activated.connect(self.course_aleatoire)
+
+        self.shortcut_add_product = QShortcut(QKeySequence(Qt.Key.Key_Return), self)
+        self.shortcut_add_product.activated.connect(self.ajouter_article)
+
+        self.shortcut_add_product = QShortcut(QKeySequence(Qt.Key.Key_Backspace), self)
+        self.shortcut_add_product.activated.connect(self.supprimer_article)
 
     def ouvrir(self) -> str:
         """
@@ -434,7 +456,8 @@ class VueProjet(QMainWindow):
 
 
     def definirPosition(self):
-        self.indexClicked.emit()
+        if self.grid.parcours:
+            self.indexClicked.emit()
 
     def analyseParcours(self):
         self.analyseClicked.emit()

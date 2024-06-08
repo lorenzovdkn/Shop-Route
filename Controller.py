@@ -43,6 +43,7 @@ class Controller:
         self.vue.grid.setCaisses(self.modele.getCaisses())
         self.vue.grid.setEntree(self.modele.getEntree())
         self.modele.setPosition(tuple(self.modele.getEntree()[0]))
+        self.modele.grille.afficheGrille()
 
     def ouvrir_plan(self,chemin):
         self.vue.grid.setPicture(chemin)
@@ -72,14 +73,12 @@ class Controller:
             self.vue.afficherArticles(self.modele.getArticle())
             if  self.vue.grid.parcours:
                 self.modele.indexZero()
-                self.vue.grid.setIndex(self.modele.getIndex())      
+                self.vue.grid.setIndex(self.modele.getIndex())     
             chemins = self.modele.coordonneeChemin()
             self.vue.cocheCourse(self.modele.getListeCourse(),self.modele.getProduitCoche())
             #ne peut pas continuer si il a pas d'article (il va directement a la caisse)
-            if not self.vue.grid.parcours:
-                self.vue.setpos.setVisible(False)
-            else:
-                self.vue.setpos.setVisible(True)
+            
+            self.vue.setpos.setVisible(True)
             self.vue.grid.setParcours(chemins)
 
 
