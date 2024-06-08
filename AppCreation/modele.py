@@ -172,7 +172,7 @@ class ModelMagasin:
         self.filepath : str = None
         self.categoryColors: dict = {
         'Caisse': '#FF5733',
-        'Entrée': '#1FB89B',
+        'Entree': '#1FB89B',
         'Légumes': '#228B22',           
         'Poissons': '#1E90FF',          
         'Viandes': '#FF4500',           
@@ -362,7 +362,7 @@ class ModelMagasin:
         ''' 
         Permet de récupérer la liste des catégories existantes.
         '''
-        list_category = ['Aucune','Caisse','Entrée'] + list(self.getProductsJson().keys())
+        list_category = ['Aucune','Caisse','Entree'] + list(self.getProductsJson().keys())
         return list_category
     
     def getArticlesCase(self) -> dict:
@@ -482,6 +482,10 @@ class ModelMagasin:
         save_dir = 'AppCreation\saves'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
+        
+        for case in self.__listCase[1]:
+            if(case.getCategory() == "Aucune" and case.getStatut() == "Publique"):
+                self.__listCase[1].remove(case)
 
         # Construire le chemin complet du fichier
         print("save : ", filename)

@@ -232,7 +232,7 @@ class Contenu(QWidget):
             erreurCategory.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
             erreurCategory.setIcon(QMessageBox.Icon.Warning)
             return 
-        elif current_category == 'Caisse' or current_category == 'Entrée':
+        elif current_category == 'Caisse' or current_category == 'Entree':
             erreurCategory : QMessageBox = QMessageBox()
             erreurCategory.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
             erreurCategory.setIcon(QMessageBox.Icon.Warning)
