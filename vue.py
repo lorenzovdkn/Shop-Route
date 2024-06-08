@@ -192,7 +192,7 @@ class Contenu(QWidget):
             quantity, ok = QInputDialog.getInt(self, 'Ajouter un produit', f'Sélectionnez la quantité pour {product}:', 1, 1)
             if ok:
                 item_text = f"{product} - Quantité: {quantity}"
-                self.signalProduct.emit({product: [quantity, False]})
+                self.signalProduct.emit({product: [quantity]})
             
     def updateArticle(self, articles : dict | None) :
         self.productList.clear()
@@ -370,6 +370,8 @@ class MainWindow(QMainWindow):
                 QApplication.exit()
             elif result == QMessageBox.StandardButton.Discard:
                 QApplication.exit()
+            else:
+                return
         QApplication.quit()
         
     def changePicture(self):
