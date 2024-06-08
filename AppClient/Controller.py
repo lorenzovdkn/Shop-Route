@@ -70,14 +70,14 @@ class Controller:
     def analyser_parcours(self):
         if self.modele.information:
             # Analyse le parcours et met à jour la grille
-            self.vue.afficherArticles(self.modele.getArticle())
+            self.vue.afficher_liste_course(self.modele.getListeCourse())
             if  self.vue.grid.parcours:
                 self.modele.indexZero()
-                self.vue.grid.setIndex(self.modele.getIndex())     
+                self.vue.grid.setIndex(self.modele.getIndex())
             chemins = self.modele.coordonneeChemin()
             self.vue.cocheCourse(self.modele.getListeCourse(),self.modele.getProduitCoche())
             #ne peut pas continuer si il a pas d'article (il va directement a la caisse)
-            
+
             self.vue.setpos.setVisible(True)
             self.vue.grid.setParcours(chemins)
 
