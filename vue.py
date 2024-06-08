@@ -1,6 +1,6 @@
 import sys,time, grid
 import json, os
-from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QStatusBar
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow,QStackedLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QComboBox, QLabel, QListWidget, QInputDialog, QPushButton, QLineEdit, QMessageBox, QStatusBar
 from PyQt6.QtCore import Qt, pyqtSignal, QDir
 from PyQt6.QtGui import QFont, QAction, QIcon
 from selectProject import LoadProjectWindow
@@ -69,6 +69,7 @@ class Case(QWidget):
         self.case_number.setText(f"{position[0]}, {position[1]}")
     
     def updateProductCategory(self, list_article: list):
+        self.category_combo.clear()
         self.category_combo.addItems(list_article)
     
     def getCategory(self):
@@ -169,13 +170,20 @@ class Contenu(QWidget):
         
     def addProduct(self, product_list_import : list, current_category : str, current_state :str):
         if  current_state == 'Privé':
-            QMessageBox.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            erreurState : QMessageBox = QMessageBox()
+            erreurState.warning(self, "Erreur", "Cette case a été mise en privé, il est impossible d'y placer des articles")
+            erreurState.setIcon(QMessageBox.Icon.Warning)
+            
             return 
         elif current_category == 'Aucune':
-            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
+            erreurCategory : QMessageBox = QMessageBox()
+            erreurCategory.warning(self, "Erreur", "Veuillez sélectionner une catégorie de case pour ajouter un produit.")
+            erreurCategory.setIcon(QMessageBox.Icon.Warning)
             return 
         elif current_category == 'Caisse' or current_category == 'Entrée':
-            QMessageBox.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
+            erreurCategory : QMessageBox = QMessageBox()
+            erreurCategory.warning(self, "Erreur", "Une case qui a pour catégorie %s ne peut pas avoir d'article assigné" % current_category)  
+            erreurCategory.setIcon(QMessageBox.Icon.Warning)
             return
         
         product_list = product_list_import
@@ -238,7 +246,6 @@ class MainWindow(QMainWindow):
         
         self.central_widget = QWidget()
         self.temp_widget = QWidget()
-        # self.setCentralWidget(self.central_widget)
         self.mainLayout = QHBoxLayout(self.central_widget)
         self.leftLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.leftLayout)
@@ -252,8 +259,15 @@ class MainWindow(QMainWindow):
 
         self.leftLayout.addWidget(self.case_widget)
         self.leftLayout.addWidget(self.contenu_widget)
-        
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(self.mainLayout)
         self.mainLayout.addWidget(self.gridWidget,2)
+        
+        self.centrallayout = QStackedLayout()
+        self.centrallayout.addWidget(self.load_window)
+        self.centrallayout.addWidget(self.mainWidget)
+        self.central = QWidget()
+        self.central.setLayout(self.centrallayout)
         
         self.gridWidget.grid.positionSignal.connect(self.case_widget.setCase)
         self.gridWidget.grid.positionSignal.connect(self.contenu_widget.setCase)
@@ -263,32 +277,36 @@ class MainWindow(QMainWindow):
 
         self.load_window.signalOpenProject.connect(self.open_existing_project)
 
-        self.setCentralWidget(self.load_window)
-             
+        self.setCentralWidget(self.central)
         
         menu_bar = self.menuBar()
+        
         # Menu fichier
         menu_fichier = menu_bar.addMenu("Fichier")
-        nouveau = QAction(QIcon.fromTheme("document-save"), "Sauvegarder", self)#QAction('Nouveau',self)
+        nouveau = QAction('Nouveau',self)
         nouveau.setShortcut('Ctrl+N')
-        #nouveau.setIcon(QIcon.fromTheme("document-save"))
+        nouveau.setIcon(self.style().standardIcon(QApplication.style().StandardPixmap.SP_FileIcon))
         nouveau.triggered.connect(self.new)
         menu_fichier.addAction(nouveau)
         ouvrir = QAction('Ouvrir',self)
         ouvrir.setShortcut('Ctrl+O')
+        ouvrir.setIcon(self.style().standardIcon(QApplication.style().StandardPixmap.SP_DirIcon))
         ouvrir.triggered.connect(self.signalOpen)
         menu_fichier.addAction(ouvrir)
         menu_fichier.addSeparator()
         save = QAction('Enregistrer',self)
         save.setShortcut('Ctrl+S')
+        save.setIcon(self.style().standardIcon(QApplication.style().StandardPixmap.SP_DialogSaveButton))
         save.triggered.connect(self.save)
         menu_fichier.addAction(save)
         save_as = QAction('Enregistrer sous',self)
         save_as.setShortcut('Ctrl+Shift+S')
+        save_as.setIcon(self.style().standardIcon(QApplication.style().StandardPixmap.SP_DialogSaveButton))
         save_as.triggered.connect(self.saveas)
         menu_fichier.addAction(save_as)
         menu_fichier.addSeparator()
         leave = QAction('Quitter',self)
+        leave.setIcon(self.style().standardIcon(QApplication.style().StandardPixmap.SP_DialogCloseButton))
         leave.triggered.connect(self.leave)
         menu_fichier.addAction(leave)
         
@@ -296,10 +314,28 @@ class MainWindow(QMainWindow):
         menu_edition = menu_bar.addMenu("Edition")
         changePicture : QAction = QAction("Changer d'image",self)
         changePicture.setShortcut("Ctrl+Q")
+        changePicture.setIcon(QIcon("./images/picture.png"))
         changePicture.triggered.connect(self.changePicture)
         menu_edition.addAction(changePicture)
+        lock : QAction = QAction("Verrouiller la grille",self)
+        lock.setShortcut("Ctrl+Shift+L")
+        lock.setIcon(QIcon("./images/lock.png"))
+        lock.triggered.connect(self.lock)
+        menu_edition.addAction(lock)
+        unlock : QAction = QAction("Déplacer la grille",self)
+        unlock.setShortcut("Ctrl+Shift+U")
+        unlock.setIcon(QIcon("./images/unlock.png"))
+        unlock.triggered.connect(self.unlock)
+        menu_edition.addAction(unlock)
+    
+    def switchWidget(self, widget : str):
+        if widget == "load_window":
+            self.central.layout().setCurrentIndex(0)
+        elif widget == "project_open":
+            print("project_open")
+            self.central.layout().setCurrentIndex(1)
                 
-    def open_project(self):
+    def open_project(self) -> LoadProjectWindow:
         self.load_window.show()
 
     def open_existing_project(self, project_name):
@@ -331,13 +367,13 @@ class MainWindow(QMainWindow):
             
             if result == QMessageBox.StandardButton.Save:
                 self.save()
-                QApplication.quit()
+                QApplication.exit()
             elif result == QMessageBox.StandardButton.Discard:
-                QApplication.quit()
+                QApplication.exit()
         QApplication.quit()
         
     def changePicture(self):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             file_name, _ = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
             if file_name:
                 file_name : str = QDir().relativeFilePath(file_name)
@@ -345,9 +381,23 @@ class MainWindow(QMainWindow):
                 self.signalChangedPicture.emit(file_name)
         else:
             self.statusBar().showMessage("Impossible de modifier une image dans ce menu")
-            
+    
+    def lock(self):
+        if(self.central.layout().currentIndex() == 1):
+            if(not self.gridWidget.grid.isLocked()):
+                self.gridWidget.lockGrid()
+        else:
+            self.statusBar().showMessage("Impossible de verrouiller la grille dans ce menu")
+    
+    def unlock(self):
+        if(self.central.layout().currentIndex() == 1):
+            if(self.gridWidget.grid.isLocked()):
+                self.gridWidget.lockGrid()
+        else:
+            self.statusBar().showMessage("Impossible de déplacer la grille dans ce menu")
+    
     def closeEvent(self, event):
-        if(self.load_window.isHidden()):
+        if(self.central.layout().currentIndex() == 1):
             event.ignore()
             self.leave() 
 

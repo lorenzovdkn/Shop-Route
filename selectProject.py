@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from PyQt6.QtCore import Qt, pyqtSignal, QDate, QSize
+from PyQt6.QtCore import Qt, pyqtSignal, QDate, QSize, QDir
 from PyQt6.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QDateEdit, QFormLayout,
     QWidget, QScrollArea, QGridLayout, QSizePolicy, QSpacerItem, QFileDialog
@@ -62,8 +62,8 @@ class LoadProjectWindow(QWidget):
     signalCreateProject = pyqtSignal(str, str, str, str, str, str)
     signalDeleteProject = pyqtSignal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent = None):
+        super().__init__(parent)
         self.setStyleSheet(open("styles/qssSelect.qss").read())
         self.setWindowTitle('Charger ou Créer un Projet')
         self.setMinimumSize(1000, 400)
@@ -165,7 +165,7 @@ class LoadProjectWindow(QWidget):
         ret = dialog.exec()
 
         if ret == QDialog.DialogCode.Accepted:
-            print("Accepté")
+            print("Accepté", file_path)
             self.signalOpenProject.emit(file_path)
         elif ret == QDialog.DialogCode.Rejected:
             print("Rejeté")
@@ -237,9 +237,10 @@ class CreateProjectDialog(QDialog):
         self.signalOpenImage.connect(self.update_image_label)
     
     def select_image(self):
-        self.file_name, _ = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
-        if self.file_name:
-            self.signalOpenImage.emit(self.file_name)
+        self.file_name = QFileDialog.getOpenFileName(self, "Sélectionner une image", "", "Images (*.png *.xpm *.jpg *.jpeg *.bmp *.gif)")
+        if self.file_name[0] != '':
+            print(QDir().relativeFilePath(self.file_name[0]))
+            self.signalOpenImage.emit(QDir().relativeFilePath(self.file_name[0]))
         else:
             self.image_label.setText("Aucune image sélectionnée")
             self.file_name = None
